@@ -1,0 +1,42 @@
+{
+  "descricao": "Repositório de palavras-gatilho ligadas a negócios (pt-BR). Quando o app ouve uma delas, pergunta se deve gravar a conversa.",
+  "categorias": {
+    "vendas": [
+      "venda", "vender", "vendedor", "proposta", "proposta comercial", "orçamento",
+      "cotação", "cliente", "negócio", "fechamento", "fechar negócio", "fechar o contrato",
+      "pedido", "desconto", "promoção", "oferta", "condição de pagamento",
+      "prazo de entrega", "tabela de preços", "preço", "valor", "investimento",
+      "carteira de clientes", "prospecção", "follow up", "comissão", "meta",
+      "faturamento", "pós-venda", "indicação", "renovar", "upgrade"
+    ],
+    "negociacao": [
+      "negociação", "negociar", "contraproposta", "acordo", "parceria", "condições",
+      "margem", "reajuste", "renovação", "aditivo", "cláusula", "assinatura",
+      "assinar", "vigência", "multa", "garantia", "entrada", "parcela",
+      "parcelamento", "à vista", "boleto", "nota fiscal", "pagamento", "vencimento",
+      "carência", "fidelidade", "cancelamento", "rescisão"
+    ],
+    "corretagem_seguros": [
+      "corretora", "corretor", "corretagem", "seguro", "seguradora", "apólice",
+      "prêmio", "sinistro", "franquia", "cobertura", "endosso", "resseguro",
+      "subscrição", "benefícios", "plano de saúde", "plano odontológico",
+      "previdência", "consórcio", "capitalização", "vida em grupo", "coparticipação",
+      "reembolso", "rede credenciada", "portabilidade", "sinistralidade"
+    ],
+    "financeiro": [
+      "financiamento", "empréstimo", "juros", "taxa", "câmbio", "imposto",
+      "lucro", "prejuízo", "receita", "despesa", "fluxo de caixa", "capital",
+      "investidor", "ações", "dividendos", "rentabilidade", "aporte", "caixa"
+    ],
+    "reunioes_projetos": [
+      "reunião", "agenda", "apresentação", "alinhamento", "projeto", "cronograma",
+      "entrega", "escopo", "prospecto", "briefing", "prazo", "kickoff",
+      "ata", "pauta", "demanda", "orçamentário"
+    ],
+    "empresa": [
+      "empresa", "sociedade", "sócio", "fornecedor", "distribuidor", "licitação",
+      "edital", "concorrência", "mercado", "filial", "matriz", "cnpj",
+      "razão social", "contrato social", "diretoria", "compliance"
+    ]
+  }
+}

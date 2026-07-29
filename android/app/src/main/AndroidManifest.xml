@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Microfone: escuta de palavras-gatilho e gravação -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- Serviços em primeiro plano com microfone (obrigatório no Android 10+) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <!-- Pop-up em tela cheia sobre a tela bloqueada -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <!-- Notificações (Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:label="@string/app_name"
+        android:theme="@style/Theme.VozEmocao"
+        android:supportsRtl="true">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Pop-up que aparece mesmo com a tela travada -->
+        <activity
+            android:name=".RecordPromptActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true" />
+
+        <!-- Escuta contínua de palavras-gatilho -->
+        <service
+            android:name=".ListeningService"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
+
+        <!-- Gravação + análise emocional -->
+        <service
+            android:name=".RecordingService"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
+
+    </application>
+</manifest>
