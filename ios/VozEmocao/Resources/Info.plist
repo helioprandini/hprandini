@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDisplayName</key>
+    <string>VozEmoção</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>UILaunchScreen</key>
+    <dict/>
+
+    <!-- Permissões exigidas pela Apple, mostradas ao usuário -->
+    <key>NSMicrophoneUsageDescription</key>
+    <string>O VozEmoção usa o microfone para ouvir palavras de negócio e, com sua confirmação, gravar e analisar o tom da conversa.</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>O reconhecimento de fala identifica palavras ligadas a negócios para sugerir a gravação da conversa. O processamento é feito no aparelho quando possível.</string>
+</dict>
+</plist>
