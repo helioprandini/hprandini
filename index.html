@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VozEmoção — Gravação e Análise Emocional de Conversas</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🎙️</span>
+      <div>
+        <h1>VozEmoção</h1>
+        <p class="tagline">Grave suas conversas e leia as variações emocionais do tom de voz</p>
+      </div>
+    </div>
+    <div class="status" id="statusBadge">Pronto</div>
+  </header>
+
+  <main>
+    <!-- Painel de gravação -->
+    <section class="card recorder">
+      <div class="recorder-main">
+        <button id="recordBtn" class="record-btn" aria-label="Gravar">
+          <span class="record-icon"></span>
+        </button>
+        <div class="recorder-info">
+          <div class="timer" id="timer">00:00</div>
+          <div class="hint" id="recorderHint">Clique para começar a gravar a conversa</div>
+        </div>
+      </div>
+
+      <!-- Medidores ao vivo -->
+      <div class="live-meters" id="liveMeters" hidden>
+        <div class="meter">
+          <label>Energia / Volume</label>
+          <div class="bar"><div class="fill energy" id="energyFill"></div></div>
+        </div>
+        <div class="meter">
+          <label>Altura da voz (pitch)</label>
+          <div class="bar"><div class="fill pitch" id="pitchFill"></div></div>
+        </div>
+        <div class="meter">
+          <label>Expressividade</label>
+          <div class="bar"><div class="fill expr" id="exprFill"></div></div>
+        </div>
+        <div class="live-emotion" id="liveEmotion">—</div>
+      </div>
+
+      <!-- Onda ao vivo -->
+      <canvas id="waveform" class="waveform" hidden></canvas>
+    </section>
+
+    <!-- Resultado da última análise -->
+    <section class="card result" id="resultCard" hidden>
+      <h2>Resumo emocional da conversa</h2>
+
+      <div class="summary-grid">
+        <div class="dominant" id="dominantEmotion">
+          <div class="emoji" id="domEmoji">🙂</div>
+          <div class="dom-label" id="domLabel">—</div>
+          <div class="dom-sub" id="domSub">emoção predominante</div>
+        </div>
+
+        <div class="dims">
+          <div class="dim">
+            <span class="dim-label">Energia (excitação)</span>
+            <div class="bar sm"><div class="fill energy" id="dimEnergy"></div></div>
+          </div>
+          <div class="dim">
+            <span class="dim-label">Positividade (tom)</span>
+            <div class="bar sm"><div class="fill valence" id="dimValence"></div></div>
+          </div>
+          <div class="dim">
+            <span class="dim-label">Expressividade (variação)</span>
+            <div class="bar sm"><div class="fill expr" id="dimExpr"></div></div>
+          </div>
+          <div class="dim">
+            <span class="dim-label">Fluência (poucas pausas)</span>
+            <div class="bar sm"><div class="fill flow" id="dimFlow"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Linha do tempo emocional -->
+      <h3>Linha do tempo emocional</h3>
+      <canvas id="timeline" class="timeline"></canvas>
+      <div class="timeline-legend" id="timelineLegend"></div>
+
+      <!-- Áudio + insights -->
+      <div class="playback">
+        <audio id="audioPlayer" controls></audio>
+        <a id="downloadLink" class="btn ghost" download>⬇️ Baixar gravação</a>
+      </div>
+
+      <div class="insights">
+        <h3>Observações de coaching</h3>
+        <ul id="insightsList"></ul>
+      </div>
+    </section>
+
+    <!-- Histórico -->
+    <section class="card history">
+      <div class="history-head">
+        <h2>Histórico de conversas</h2>
+        <button id="clearHistory" class="btn ghost sm">Limpar</button>
+      </div>
+      <ul id="historyList" class="history-list">
+        <li class="empty">Nenhuma conversa gravada ainda.</li>
+      </ul>
+    </section>
+
+    <p class="disclaimer">
+      🔒 Tudo roda no seu navegador. Nenhum áudio é enviado para servidores.
+      A análise emocional é uma <strong>estimativa baseada em prosódia</strong>
+      (energia, altura e variação da voz, pausas) — uma ferramenta de treino de tom,
+      não um diagnóstico. Grave apenas conversas que você tem permissão para gravar.
+    </p>
+  </main>
+
+  <script src="js/emotion.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
