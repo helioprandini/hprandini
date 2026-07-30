@@ -6,22 +6,37 @@ voz, energia e expressividade.
 
 ## O que ele faz (e o que o iOS permite)
 
-- **Modo Ouvir (app aberto):** usa reconhecimento de fala em pt-BR para detectar
-  palavras de negócio (o repositório em `BusinessKeywords.swift`, com dezenas de
-  termos de vendas, negociação, corretagem/seguros, financeiro etc.). Ao ouvir
-  uma, mostra um **pop-up perguntando se quer gravar** e também envia uma
-  **notificação** (que aparece na tela de bloqueio).
+- **Modo Ouvir:** usa reconhecimento de fala em pt-BR (no próprio aparelho quando
+  disponível) para detectar palavras de negócio (o repositório em
+  `BusinessKeywords.swift`, com dezenas de termos de vendas, negociação,
+  corretagem/seguros, financeiro etc.). Depois de iniciado, **continua ouvindo
+  mesmo com a tela bloqueada ou o app minimizado** (modo de áudio em background).
+- **Aviso na tela de bloqueio com ação:** ao ouvir uma palavra de negócio, chega
+  uma **notificação com os botões "🔴 Gravar agora" / "Agora não"** direto no
+  bloqueio — você decide sem precisar abrir o app antes.
+- **Início mãos-livres pela Siri:** *"Ei Siri, gravar conversa no VozEmoção"* ou
+  *"ouvir com o VozEmoção"* (App Intents / Atalhos).
 - **Gravação + análise:** captura o áudio e mede, quadro a quadro, energia, altura
   da voz (pitch), variação (expressividade), brilho espectral e pausas. Ao parar,
   classifica a emoção predominante, monta a linha do tempo e dá dicas de coaching.
 - **Palavras personalizadas, histórico e compartilhamento** da gravação.
 
-> ⚠️ **Limite honesto do iOS:** a Apple **não permite** que um app ouça o
-> microfone continuamente em segundo plano com a tela travada, nem abra uma tela
-> por cima do bloqueio automaticamente. Por isso a escuta ocorre com o app
-> aberto, e o aviso na tela travada é uma **notificação** (que você toca para
-> abrir e confirmar). Isso não tem como ser contornado sem jailbreak — que
-> quebra a segurança do aparelho, sai da App Store e não é recomendável.
+> ⚠️ **Limite honesto do iOS (o que ainda NÃO dá):** o app não **inicia sozinho**
+> a escuta quando está fechado ou o telefone está apenas bloqueado — quem começa
+> é você (abrindo o app, pela Siri ou por um Atalho). A Apple não permite que um
+> app ligue o microfone sozinho em background sem uma ação sua, nem abra uma tela
+> por cima do bloqueio automaticamente. O que conseguimos: **uma vez iniciado, ele
+> segue ouvindo com a tela travada** e te avisa por **notificação com botão de
+> gravar**. Contornar isso exigiria jailbreak — que quebra a segurança do
+> aparelho, sai da App Store e não é recomendável.
+
+### Fluxo real de uso
+1. Antes da reunião/visita, você diz *"Ei Siri, ouvir com o VozEmoção"* (ou abre e
+   toca **Ouvir**).
+2. Bloqueia o telefone e guarda no bolso. O app continua escutando.
+3. Quando alguém fala "proposta", "desconto", "apólice"… chega a notificação no
+   bloqueio. Você toca **🔴 Gravar agora**.
+4. Ao final, toca **Parar e analisar** e vê o resumo emocional.
 
 ## Como compilar e testar no seu iPhone
 
@@ -43,9 +58,15 @@ Windows/Linux — é exigência da Apple.
 3. No Xcode: selecione o target **VozEmocao** → aba **Signing & Capabilities** →
    escolha seu **Apple ID** (Team). Um Apple ID grátis já permite instalar no seu
    próprio iPhone por 7 dias.
+   - A escuta em background já vem ligada pelo `Info.plist` (`UIBackgroundModes:
+     audio`). Se preferir, confirme em **+ Capability → Background Modes → Audio**.
+   - A notificação usa nível *time-sensitive* para aparecer mesmo no modo Foco.
+     Com Apple ID grátis isso pode ser ignorado (a notificação ainda chega, só
+     sem prioridade extra) — sem problema para testar.
 4. Conecte o iPhone, selecione-o como destino e clique em **Run (▶)**.
 5. No iPhone, autorize **Microfone**, **Reconhecimento de fala** e
-   **Notificações** quando pedir.
+   **Notificações** quando pedir. Para os atalhos de voz, diga uma vez
+   *"Ei Siri, ouvir com o VozEmoção"* para a Siri aprender o comando.
 
 ## Estrutura
 
@@ -62,7 +83,8 @@ ios/
       EmotionEngine.swift         # análise de prosódia (energia, pitch, etc.)
       AudioAnalyzer.swift         # FFT (Accelerate) para brilho espectral
       BusinessKeywords.swift      # repositório de palavras de negócio
-      Support.swift               # settings, histórico, notificações
+      VozIntents.swift            # atalhos Siri (gravar/ouvir mãos-livres)
+      Support.swift               # settings, histórico, notificações c/ ações
 ```
 
 ## Privacidade

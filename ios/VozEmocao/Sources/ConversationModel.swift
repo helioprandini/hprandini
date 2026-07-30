@@ -14,6 +14,10 @@ import Combine
 @MainActor
 final class ConversationModel: NSObject, ObservableObject {
 
+    /// Instância única, usada também pela Siri (App Intents) e pelas ações da
+    /// notificação para iniciar escuta/gravação.
+    static let shared = ConversationModel()
+
     enum Mode { case idle, listening, recording }
 
     @Published var mode: Mode = .idle
@@ -86,7 +90,7 @@ final class ConversationModel: NSObject, ObservableObject {
             do {
                 try self.beginSpeechRecognition()
                 self.mode = .listening
-                self.statusText = "Ouvindo… fale naturalmente. Vou avisar quando ouvir um assunto de negócio."
+                self.statusText = "Ouvindo… pode bloquear a tela: continuo escutando e te aviso por notificação quando surgir um assunto de negócio."
             } catch {
                 self.statusText = "Não foi possível iniciar a escuta: \(error.localizedDescription)"
             }
@@ -100,6 +104,11 @@ final class ConversationModel: NSObject, ObservableObject {
 
         let request = SFSpeechAudioBufferRecognitionRequest()
         request.shouldReportPartialResults = true
+        // Reconhecimento no próprio aparelho quando disponível: mais privado e
+        // sem o limite de duração das sessões enviadas ao servidor da Apple.
+        if recognizer?.supportsOnDeviceRecognition == true {
+            request.requiresOnDeviceRecognition = true
+        }
         recognitionRequest = request
 
         let input = audioEngine.inputNode

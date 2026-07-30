@@ -75,11 +75,16 @@ enum History {
 }
 
 /// Notificação local que aparece na tela de bloqueio quando uma palavra de
-/// negócio é ouvida. Ao tocar, o usuário abre o app e confirma a gravação.
+/// negócio é ouvida. Traz botões de ação ("Gravar agora" / "Agora não") para
+/// o usuário decidir direto no bloqueio, sem precisar abrir o app antes.
 ///
 /// (No iOS não é possível abrir uma tela sobre o bloqueio automaticamente; a
-/// notificação é o mecanismo legítimo mais próximo.)
+/// notificação com ações é o mecanismo legítimo mais próximo disso.)
 enum NotificationScheduler {
+    static let categoryId = "RECORD_PROMPT"
+    static let actionRecord = "RECORD_NOW"
+    static let actionDismiss = "DISMISS_PROMPT"
+
     static func requestAuthorization() {
         UNUserNotificationCenter.current()
             .requestAuthorization(options: [.alert, .sound]) { _, _ in }
@@ -90,7 +95,8 @@ enum NotificationScheduler {
         content.title = "Assunto de negócio detectado"
         content.body = "Ouvi \"\(keyword)\". Quer gravar e analisar esta conversa?"
         content.sound = .default
-        content.categoryIdentifier = "RECORD_PROMPT"
+        content.categoryIdentifier = categoryId
+        content.interruptionLevel = .timeSensitive // aparece mesmo em foco/bloqueio
 
         let request = UNNotificationRequest(
             identifier: "record-prompt-\(Int(Date().timeIntervalSince1970))",
@@ -98,5 +104,59 @@ enum NotificationScheduler {
             trigger: nil
         )
         UNUserNotificationCenter.current().add(request)
+    }
+}
+
+/// Registra as categorias de notificação e trata os toques do usuário,
+/// encaminhando para o modelo de conversa.
+final class NotificationCoordinator: NSObject, UNUserNotificationCenterDelegate {
+    static let shared = NotificationCoordinator()
+
+    func register() {
+        let center = UNUserNotificationCenter.current()
+        center.delegate = self
+
+        let record = UNNotificationAction(
+            identifier: NotificationScheduler.actionRecord,
+            title: "🔴 Gravar agora",
+            options: [.foreground]
+        )
+        let dismiss = UNNotificationAction(
+            identifier: NotificationScheduler.actionDismiss,
+            title: "Agora não",
+            options: []
+        )
+        let category = UNNotificationCategory(
+            identifier: NotificationScheduler.categoryId,
+            actions: [record, dismiss],
+            intentIdentifiers: [],
+            options: []
+        )
+        center.setNotificationCategories([category])
+    }
+
+    // Mostra a notificação mesmo com o app aberto.
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification,
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.banner, .sound])
+    }
+
+    // Trata o toque no botão da notificação.
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
+        let action = response.actionIdentifier
+        Task { @MainActor in
+            switch action {
+            case NotificationScheduler.actionRecord, UNNotificationDefaultActionIdentifier:
+                ConversationModel.shared.confirmRecording()
+            case NotificationScheduler.actionDismiss:
+                ConversationModel.shared.dismissPrompt()
+            default:
+                break
+            }
+            completionHandler()
+        }
     }
 }

@@ -11,6 +11,13 @@
     <key>UILaunchScreen</key>
     <dict/>
 
+    <!-- Permite que a escuta/gravação continue com a tela bloqueada ou o app
+         em segundo plano (uma vez iniciada pelo usuário). -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>audio</string>
+    </array>
+
     <!-- Permissões exigidas pela Apple, mostradas ao usuário -->
     <key>NSMicrophoneUsageDescription</key>
     <string>O VozEmoção usa o microfone para ouvir palavras de negócio e, com sua confirmação, gravar e analisar o tom da conversa.</string>
