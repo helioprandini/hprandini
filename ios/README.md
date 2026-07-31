@@ -14,8 +14,9 @@ voz, energia e expressividade.
 - **Aviso na tela de bloqueio com ação:** ao ouvir uma palavra de negócio, chega
   uma **notificação com os botões "🔴 Gravar agora" / "Agora não"** direto no
   bloqueio — você decide sem precisar abrir o app antes.
-- **Início mãos-livres pela Siri:** *"Ei Siri, gravar conversa no VozEmoção"* ou
-  *"ouvir com o VozEmoção"* (App Intents / Atalhos).
+- **Início mãos-livres pela Siri:** *(temporariamente desativado — o build phase
+  `AppIntentsSSUTraining` do Xcode estava falhando; o recurso foi removido para
+  destravar a instalação e será reativado depois.)*
 - **Gravação + análise:** captura o áudio e mede, quadro a quadro, energia, altura
   da voz (pitch), variação (expressividade), brilho espectral e pausas. Ao parar,
   classifica a emoção predominante, monta a linha do tempo e dá dicas de coaching.
@@ -31,8 +32,7 @@ voz, energia e expressividade.
 > aparelho, sai da App Store e não é recomendável.
 
 ### Fluxo real de uso
-1. Antes da reunião/visita, você diz *"Ei Siri, ouvir com o VozEmoção"* (ou abre e
-   toca **Ouvir**).
+1. Antes da reunião/visita, abra o app e toque **Ouvir**.
 2. Bloqueia o telefone e guarda no bolso. O app continua escutando.
 3. Quando alguém fala "proposta", "desconto", "apólice"… chega a notificação no
    bloqueio. Você toca **🔴 Gravar agora**.
