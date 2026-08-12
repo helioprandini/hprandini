@@ -39,7 +39,6 @@ final class ConversationModel: NSObject, ObservableObject {
     @Published var lastRecordingURL: URL?
 
     private let audioEngine = AVAudioEngine()
-    private let analyzer = AudioAnalyzer(fftSize: 2048)
     private let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "pt-BR"))
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
@@ -47,10 +46,8 @@ final class ConversationModel: NSObject, ObservableObject {
     private var keywordWords = Set<String>()
     private var keywordPhrases = [String]()
 
-    private var frames = [EmotionEngine.Frame]()
+    private var session: RecordingSession?
     private var recentPitches = [Float]()
-    private var startTime: Date?
-    private var audioFile: AVAudioFile?
     private var timer: Timer?
 
     override init() {
@@ -171,27 +168,25 @@ final class ConversationModel: NSObject, ObservableObject {
     }
 
     private func startRecording() {
-        frames.removeAll()
         recentPitches.removeAll()
-        startTime = Date()
 
         do {
-            let session = AVAudioSession.sharedInstance()
-            try session.setCategory(.record, mode: .measurement)
-            try session.setActive(true)
+            let audioSession = AVAudioSession.sharedInstance()
+            try audioSession.setCategory(.record, mode: .measurement)
+            try audioSession.setActive(true)
 
             let input = audioEngine.inputNode
             let format = input.outputFormat(forBus: 0)
             let sampleRate = Float(format.sampleRate)
 
-            // arquivo de saída para playback/compartilhamento
-            let url = FileManager.default.temporaryDirectory
-                .appendingPathComponent("conversa-\(Int(Date().timeIntervalSince1970)).caf")
-            audioFile = try AVAudioFile(forWriting: url, settings: format.settings)
-            lastRecordingURL = url
+            // Toda a captura/análise vive fora do main actor (ver RecordingSession).
+            let recording = try RecordingSession(format: format)
+            session = recording
+            lastRecordingURL = recording.url
 
             input.installTap(onBus: 0, bufferSize: 2048, format: format) { [weak self] buffer, _ in
-                self?.processBuffer(buffer, sampleRate: sampleRate)
+                guard let frame = recording.process(buffer, sampleRate: sampleRate) else { return }
+                Task { @MainActor in self?.updateLive(frame) }
             }
             audioEngine.prepare()
             try audioEngine.start()
@@ -203,32 +198,6 @@ final class ConversationModel: NSObject, ObservableObject {
             statusText = "Erro ao gravar: \(error.localizedDescription)"
             mode = .idle
         }
-    }
-
-    private func processBuffer(_ buffer: AVAudioPCMBuffer, sampleRate: Float) {
-        try? audioFile?.write(from: buffer)
-
-        guard let channel = buffer.floatChannelData?[0] else { return }
-        let count = Int(buffer.frameLength)
-        let samples = Array(UnsafeBufferPointer(start: channel, count: count))
-
-        let energy = EmotionEngine.rms(samples)
-        let pitch = EmotionEngine.detectPitch(samples, sampleRate: sampleRate)
-
-        var block = samples
-        if block.count < 2048 {
-            block.append(contentsOf: [Float](repeating: 0, count: 2048 - block.count))
-        }
-        let mags = analyzer.magnitudes(Array(block.prefix(2048)))
-        let centroid = EmotionEngine.spectralCentroid(mags, sampleRate: sampleRate, fftSize: 2048)
-        let voiced = pitch > 0 && energy > 0.008
-
-        let t = Date().timeIntervalSince(startTime ?? Date()) * 1000
-        let frame = EmotionEngine.Frame(energy: energy, pitch: pitch,
-                                        centroid: centroid, voiced: voiced, t: t)
-        frames.append(frame)
-
-        Task { @MainActor in self.updateLive(frame) }
     }
 
     @MainActor
@@ -255,6 +224,9 @@ final class ConversationModel: NSObject, ObservableObject {
         tearDownAudio()
         mode = .idle
 
+        let frames = session?.finish() ?? []
+        session = nil
+
         let summary = EmotionEngine.summarize(frames)
         lastSummary = summary
         lastTimeline = EmotionEngine.timeline(frames)
@@ -271,9 +243,9 @@ final class ConversationModel: NSObject, ObservableObject {
     private func startTimer() {
         elapsed = 0
         timer?.invalidate()
+        let start = Date()
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
-            guard let self, let start = self.startTime else { return }
-            Task { @MainActor in self.elapsed = Date().timeIntervalSince(start) }
+            Task { @MainActor in self?.elapsed = Date().timeIntervalSince(start) }
         }
     }
 
@@ -286,6 +258,5 @@ final class ConversationModel: NSObject, ObservableObject {
         recognitionTask?.cancel()
         recognitionRequest = nil
         recognitionTask = nil
-        audioFile = nil
     }
 }
