@@ -15,6 +15,11 @@ targets:
       base:
         INFOPLIST_FILE: VozEmocao/Resources/Info.plist
         PRODUCT_BUNDLE_IDENTIFIER: com.vozemocao.app
+        # Assinatura fixada aqui para que `xcodegen generate` não apague o Team
+        # a cada regeração. (Team ID pessoal do Helio — não é credencial: assinar
+        # exige o certificado privado, que fica no Keychain do Mac dele.)
+        DEVELOPMENT_TEAM: AT9X5B3TBB
+        CODE_SIGN_STYLE: Automatic
         MARKETING_VERSION: "1.0"
         CURRENT_PROJECT_VERSION: "1"
         SWIFT_VERSION: "5.0"

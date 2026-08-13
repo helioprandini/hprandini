@@ -40,6 +40,12 @@ negocia, lidera, ensina, apresenta ou defende uma ideia.
    bloqueio. Você toca **🔴 Gravar agora**.
 4. Ao final, toca **Parar e ler** e vê como você soou.
 
+> ⚠️ **Adicionou ou removeu um arquivo em `Sources/`?** Rode `xcodegen generate`
+> antes de compilar — o `.xcodeproj` só enxerga os arquivos que existiam quando
+> foi gerado. Sem isso o build falha e o iPhone continua abrindo a versão antiga.
+> O Team já está fixado no `project.yml`, então regerar **não** apaga a
+> assinatura.
+
 ## Como compilar e testar no seu iPhone
 
 Você precisa de um **Mac com Xcode**. Não dá para instalar em iPhone a partir do
