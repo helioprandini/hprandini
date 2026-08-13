@@ -21,7 +21,7 @@
     <true/>
 
     <key>CFBundleDisplayName</key>
-    <string>VozEmoção</string>
+    <string>Voice&amp;Emotion</string>
     <key>CFBundleShortVersionString</key>
     <string>1.0</string>
     <key>CFBundleVersion</key>
@@ -38,8 +38,8 @@
 
     <!-- Permissões exigidas pela Apple, mostradas ao usuário -->
     <key>NSMicrophoneUsageDescription</key>
-    <string>O VozEmoção usa o microfone para ouvir palavras de negócio e, com sua confirmação, gravar e analisar o tom da conversa.</string>
+    <string>O Voice&amp;Emotion usa o microfone para ouvir palavras de negócio e, com sua confirmação, gravar e ler o tom da conversa. O áudio fica no seu aparelho.</string>
     <key>NSSpeechRecognitionUsageDescription</key>
-    <string>O reconhecimento de fala identifica palavras ligadas a negócios para sugerir a gravação da conversa. O processamento é feito no aparelho quando possível.</string>
+    <string>O reconhecimento de fala identifica palavras ligadas a negócios para sugerir a gravação. O processamento é feito no próprio aparelho quando possível.</string>
 </dict>
 </plist>

@@ -21,7 +21,7 @@ final class ConversationModel: NSObject, ObservableObject {
     enum Mode { case idle, listening, recording }
 
     @Published var mode: Mode = .idle
-    @Published var statusText: String = "Toque em Ouvir para começar"
+    @Published var statusText: String = "Toque em Ouvir e fale como você fala no dia a dia"
     @Published var showRecordPrompt: Bool = false
     @Published var triggeredKeyword: String = ""
 
@@ -151,7 +151,7 @@ final class ConversationModel: NSObject, ObservableObject {
     func stopListening() {
         tearDownAudio()
         mode = .idle
-        statusText = "Escuta pausada."
+        statusText = "Escuta pausada. Quando quiser, é só tocar em Ouvir."
     }
 
     // MARK: - Modo gravação
@@ -192,7 +192,7 @@ final class ConversationModel: NSObject, ObservableObject {
             try audioEngine.start()
 
             mode = .recording
-            statusText = "Gravando a conversa…"
+            statusText = "Gravando… estou ouvindo você"
             startTimer()
         } catch {
             statusText = "Erro ao gravar: \(error.localizedDescription)"
@@ -231,7 +231,7 @@ final class ConversationModel: NSObject, ObservableObject {
         lastSummary = summary
         lastTimeline = EmotionEngine.timeline(frames)
         lastInsights = EmotionEngine.insights(summary)
-        statusText = summary != nil ? "Análise pronta." : "Pouca fala captada."
+        statusText = summary != nil ? "Pronto — veja como você soou." : "Não captei fala suficiente para ler."
 
         if let summary = summary {
             History.add(summary: summary, timeline: lastTimeline, durationMs: frames.last?.t ?? 0)

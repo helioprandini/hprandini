@@ -220,33 +220,36 @@ enum EmotionEngine {
 
     // MARK: - Observações de coaching
 
+    /// Fala com a pessoa, não sobre ela: profissional no conteúdo, humano no
+    /// tom. Sem vocabulário preso a um segmento — vale para quem vende, ensina,
+    /// lidera ou defende uma ideia. (Espelha `js/emotion.js`.)
     static func insights(_ s: Summary?) -> [String] {
         guard let s = s else {
-            return ["Não houve fala suficiente para analisar. Fale mais perto do microfone."]
+            return ["Não captei fala suficiente para ler. Tente falar um pouco mais perto do microfone."]
         }
         var tips = [String]()
 
         if s.expressiveness < 30 {
-            tips.append("🎵 Sua voz ficou bastante monótona. Varie mais a entonação para prender a atenção.")
+            tips.append("🎵 Sua entonação variou pouco — a fala soou mais plana. Deixar a voz subir e descer nos pontos que importam ajuda quem ouve a sentir o que você sente.")
         } else if s.expressiveness > 70 {
-            tips.append("🎵 Ótima variação de entonação — sua fala soa expressiva e envolvente.")
+            tips.append("🎵 Sua entonação variou bastante, e isso é bom: a fala soou viva e fácil de acompanhar.")
         }
         if s.energy < 30 {
-            tips.append("🔊 A energia da voz esteve baixa. Projete mais o som para passar confiança.")
+            tips.append("🔊 A energia esteve baixa. Um pouco mais de projeção costuma ser lido como convicção — sem precisar falar mais alto o tempo todo.")
         } else if s.energy > 80 {
-            tips.append("🔊 Energia bem alta. Cuidado para não soar agressivo — alterne com momentos calmos.")
+            tips.append("🔊 A energia esteve bem alta o tempo todo. Intercalar momentos mais calmos dá contraste e evita cansar quem escuta.")
         }
         if s.silenceRatio > 45 {
-            tips.append("⏸️ Muitas pausas (\(s.silenceRatio)%). Em excesso passam hesitação.")
+            tips.append("⏸️ Você fez muitas pausas (\(s.silenceRatio)% do tempo). Pausa é uma ferramenta poderosa — em excesso, porém, pode soar como hesitação.")
         } else if s.silenceRatio < 12 {
-            tips.append("⏸️ Quase não houve pausas. Pausas estratégicas ajudam o ouvinte a absorver os pontos-chave.")
+            tips.append("⏸️ Você quase não pausou. Um respiro depois de uma ideia importante dá tempo do outro absorver o que você disse.")
         }
         if s.valence < 40 {
-            tips.append("💬 O tom soou mais neutro/sério. Para acolher o cliente, experimente um tom mais caloroso.")
+            tips.append("💬 O tom soou mais sério e contido. Quando quiser aproximar alguém, um tom mais caloroso costuma abrir a porta.")
         } else if s.valence > 65 {
-            tips.append("💬 Tom caloroso e positivo — excelente para criar conexão.")
+            tips.append("💬 Seu tom soou caloroso — é o tipo de voz que cria proximidade.")
         }
-        tips.append("📊 Predominância: \(s.dominant.label) \(s.dominant.emoji) (energia \(s.energy), positividade \(s.valence), expressividade \(s.expressiveness)).")
+        tips.append("📊 No conjunto: \(s.dominant.label) \(s.dominant.emoji) · energia \(s.energy) · calor \(s.valence) · expressividade \(s.expressiveness).")
         return tips
     }
 }

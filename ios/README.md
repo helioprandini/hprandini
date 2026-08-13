@@ -1,8 +1,10 @@
-# 🎙️ VozEmoção — iOS
+# 🎙️ Voice&Emotion — iOS
 
 App iOS (SwiftUI) que ouve palavras ligadas a negócios e, com a sua confirmação,
-grava e analisa o **tom emocional** da conversa. Feito para vendedores treinarem
-voz, energia e expressividade.
+grava e lê o **tom emocional** da conversa.
+
+É para **qualquer pessoa cuja vida depende de como ela fala** — quem vende,
+negocia, lidera, ensina, apresenta ou defende uma ideia.
 
 ## O que ele faz (e o que o iOS permite)
 
@@ -24,7 +26,7 @@ voz, energia e expressividade.
 
 > ⚠️ **Limite honesto do iOS (o que ainda NÃO dá):** o app não **inicia sozinho**
 > a escuta quando está fechado ou o telefone está apenas bloqueado — quem começa
-> é você (abrindo o app, pela Siri ou por um Atalho). A Apple não permite que um
+> é você (abrindo o app e tocando em Ouvir). A Apple não permite que um
 > app ligue o microfone sozinho em background sem uma ação sua, nem abra uma tela
 > por cima do bloqueio automaticamente. O que conseguimos: **uma vez iniciado, ele
 > segue ouvindo com a tela travada** e te avisa por **notificação com botão de
@@ -36,7 +38,7 @@ voz, energia e expressividade.
 2. Bloqueia o telefone e guarda no bolso. O app continua escutando.
 3. Quando alguém fala "proposta", "desconto", "apólice"… chega a notificação no
    bloqueio. Você toca **🔴 Gravar agora**.
-4. Ao final, toca **Parar e analisar** e vê o resumo emocional.
+4. Ao final, toca **Parar e ler** e vê como você soou.
 
 ## Como compilar e testar no seu iPhone
 
@@ -65,8 +67,7 @@ Windows/Linux — é exigência da Apple.
      sem prioridade extra) — sem problema para testar.
 4. Conecte o iPhone, selecione-o como destino e clique em **Run (▶)**.
 5. No iPhone, autorize **Microfone**, **Reconhecimento de fala** e
-   **Notificações** quando pedir. Para os atalhos de voz, diga uma vez
-   *"Ei Siri, ouvir com o VozEmoção"* para a Siri aprender o comando.
+   **Notificações** quando pedir.
 
 ## Estrutura
 
@@ -83,7 +84,8 @@ ios/
       EmotionEngine.swift         # análise de prosódia (energia, pitch, etc.)
       AudioAnalyzer.swift         # FFT (Accelerate) para brilho espectral
       BusinessKeywords.swift      # repositório de palavras de negócio
-      VozIntents.swift            # atalhos Siri (gravar/ouvir mãos-livres)
+      RecordingSession.swift      # captura/análise fora do main actor
+      Theme.swift                 # sistema visual (paleta, marca, componentes)
       Support.swift               # settings, histórico, notificações c/ ações
 ```
 
