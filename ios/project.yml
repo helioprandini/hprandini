@@ -15,11 +15,13 @@ targets:
       base:
         INFOPLIST_FILE: VozEmocao/Resources/Info.plist
         PRODUCT_BUNDLE_IDENTIFIER: com.vozemocao.app
-        # Assinatura fixada aqui para que `xcodegen generate` não apague o Team
-        # a cada regeração. (Team ID pessoal do Helio — não é credencial: assinar
-        # exige o certificado privado, que fica no Keychain do Mac dele.)
-        DEVELOPMENT_TEAM: AT9X5B3TBB
         CODE_SIGN_STYLE: Automatic
+        # NÃO fixar DEVELOPMENT_TEAM com um valor adivinhado: um ID errado faz o
+        # build falhar com "No Account for Team". Para fixá-lo de vez, pegue o ID
+        # real com `security find-identity -v -p codesigning` (aparece entre
+        # parênteses) e acrescente aqui: DEVELOPMENT_TEAM: <ID>.
+        # Enquanto não estiver fixado, escolha o Team no Xcode após cada
+        # `xcodegen generate` (Target → Signing & Capabilities → Team).
         MARKETING_VERSION: "1.0"
         CURRENT_PROJECT_VERSION: "1"
         SWIFT_VERSION: "5.0"
