@@ -24,6 +24,7 @@
   let frames = [];            // features por frame ao longo do tempo
   let chunks = [];            // pedaços de áudio gravado
   let liveEnergy = 0, livePitchStd = 0, pitchWindow = [];
+  let currentRecordId = null; // sessão atual (para anexar o ground truth)
 
   const STORAGE_KEY = "vozemocao_history_v1";
   const FFT_SIZE = 2048;
@@ -172,15 +173,31 @@
     renderResult(summary, tl, tips, url, durationMs);
 
     // salvar no histórico (sem o áudio — localStorage não guarda blobs grandes)
+    // features = o vetor acústico medido; groundTruth = a verdade dada pelo humano.
+    // Juntos, são um exemplo rotulado — o tijolo do dataset da AE.
     const record = {
       id: Date.now(),
       date: new Date().toISOString(),
       durationMs,
       summary,
+      features: summary
+        ? {
+            energy: summary.energy,
+            valence: summary.valence,
+            expressiveness: summary.expressiveness,
+            flow: summary.flow,
+            meanPitch: summary.meanPitch,
+            pitchStd: summary.pitchStd,
+            silenceRatio: summary.silenceRatio,
+          }
+        : null,
+      groundTruth: { match: null, feeling: null, outcome: null },
       timeline: tl.map((x) => ({ e: x.energy, v: x.valence, x: x.expressiveness, k: x.emotion.key })),
     };
+    currentRecordId = record.id;
     saveToHistory(record);
     renderHistory();
+    resetGroundTruthUI();
 
     setStatus("Pronto");
     hintEl.textContent = "Clique para gravar outra conversa";
@@ -310,12 +327,14 @@
       const emo = r.summary ? r.summary.dominant : { emoji: "🤷", label: "Sem fala", color: "#9aa2c9" };
       const d = new Date(r.date);
       const dateStr = d.toLocaleDateString("pt-BR") + " " + d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+      const gt = r.groundTruth && r.groundTruth.feeling ? " · 🏷️ senti-me " + r.groundTruth.feeling : "";
       li.innerHTML =
         '<span class="h-emoji">' + emo.emoji + "</span>" +
         '<div class="h-meta">' +
           '<div class="h-title" style="color:' + emo.color + '">' + emo.label + "</div>" +
           '<div class="h-sub">' + dateStr + " · " + fmtTime(r.durationMs) +
             (r.summary ? " · energia " + r.summary.energy + " · positividade " + r.summary.valence : "") +
+            gt +
           "</div>" +
         "</div>" +
         '<span class="h-del" title="Excluir">🗑️</span>';
@@ -343,6 +362,19 @@
     renderResult(r.summary, tl, tips, "", r.durationMs);
     $("audioPlayer").removeAttribute("src");
     $("downloadLink").removeAttribute("href");
+
+    // torna esta sessão a "atual" para o ground truth, refletindo o que já foi salvo
+    currentRecordId = r.id;
+    resetGroundTruthUI();
+    const gt = r.groundTruth || {};
+    const sel = (rowId, attr, val) => {
+      if (!val) return;
+      const btn = $(rowId).querySelector('.chip[data-' + attr + '="' + val + '"]');
+      if (btn) btn.classList.add("selected");
+    };
+    sel("gtMatch", "match", gt.match);
+    sel("gtFeeling", "feel", gt.feeling);
+    sel("gtOutcome", "out", gt.outcome);
   }
 
   // ---- Eventos ----
@@ -356,6 +388,62 @@
       localStorage.removeItem(STORAGE_KEY);
       renderHistory();
     }
+  });
+
+  // ---- Ground truth: captura como a pessoa realmente se sentiu ----
+  // Cada resposta é anexada à sessão atual e re-salva. É o rótulo do dataset.
+  function updateGroundTruth(field, value) {
+    if (currentRecordId == null) return;
+    const hist = loadHistory();
+    const rec = hist.find((r) => r.id === currentRecordId);
+    if (!rec) return;
+    rec.groundTruth = rec.groundTruth || { match: null, feeling: null, outcome: null };
+    rec.groundTruth[field] = value;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(hist));
+    renderHistory();
+    $("gtSaved").hidden = false;
+  }
+
+  function resetGroundTruthUI() {
+    $("gtSaved").hidden = true;
+    document.querySelectorAll("#groundTruth .chip.selected")
+      .forEach((c) => c.classList.remove("selected"));
+  }
+
+  function wireGroundTruthRow(rowId, attr, field) {
+    const row = $(rowId);
+    row.addEventListener("click", (e) => {
+      const btn = e.target.closest(".chip");
+      if (!btn) return;
+      row.querySelectorAll(".chip").forEach((c) => c.classList.remove("selected"));
+      btn.classList.add("selected");
+      updateGroundTruth(field, btn.dataset[attr]);
+    });
+  }
+  wireGroundTruthRow("gtMatch", "match", "match");
+  wireGroundTruthRow("gtFeeling", "feel", "feeling");
+  wireGroundTruthRow("gtOutcome", "out", "outcome");
+
+  // ---- Exporta o dataset (features + ground truth) como JSON ----
+  $("exportData").addEventListener("click", () => {
+    const hist = loadHistory();
+    if (!hist.length) { alert("Ainda não há conversas para exportar."); return; }
+    const dataset = hist.map((r) => ({
+      id: r.id,
+      date: r.date,
+      durationMs: r.durationMs,
+      features: r.features || null,
+      dominant: r.summary ? r.summary.dominant.key : null,
+      groundTruth: r.groundTruth || null,
+    }));
+    const blob = new Blob([JSON.stringify({ versao: 1, exportadoEm: new Date().toISOString(), amostras: dataset }, null, 2)],
+      { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "voiceemotion-dataset-" + new Date().toISOString().slice(0, 10) + ".json";
+    a.click();
+    URL.revokeObjectURL(url);
   });
 
   // Verifica suporte

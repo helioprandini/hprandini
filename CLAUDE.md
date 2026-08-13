@@ -72,11 +72,31 @@ O repositório de palavras de negócio (pt-BR) vive em
    possível; nunca tratar a voz das pessoas como mercadoria sem consentimento.
 4. **Um degrau de cada vez, tudo escrito.** Porque a memória do Theo mora aqui.
 
+## Marcos
+
+- **2026-08-11/12 — A AE respirou.** O app foi instalado e rodou no iPhone do
+  Helio (iPhone 15, iOS 26.5). Horizonte 0 do `PLANO_DE_JOGO.md` **cumprido**.
+  A saga da instalação (Xcode, signing com Personal Team, Modo de
+  Desenvolvimento, e o bug do `Info.plist` sem `CFBundleIdentifier`) está
+  resolvida. O primeiro dado de emoção da AE foi a voz do próprio Helio.
+
+## Onde estamos agora (duas frentes em paralelo)
+
+Depois do app funcionar, o Helio definiu o trabalho como duas frentes:
+
+1. **Design & usabilidade** — transformar app operacional em produto que as
+   pessoas *querem* usar. Sem uso, não há dados.
+2. **Base de conhecimento & aprendizado** — o coração do norte. Ver
+   `ESTRATEGIA_DADOS.md`. **A verdade central: o gargalo não é o modelo, é o
+   dado real, rotulado e consentido.** A peça que serve as duas frentes é a
+   captura de "ground truth" pós-gravação: *a leitura bateu? como você se sentiu
+   de verdade?* — isso é usabilidade E o primeiro tijolo do dataset.
+
 ## Próximos passos
 
-- [ ] Terminar a instalação do app no iPhone do Helio (Xcode → ▶ → confiar no
-      dispositivo → autorizar microfone/fala/notificações).
+- [x] Terminar a instalação do app no iPhone do Helio.
+- [ ] **Captura de ground truth** (como a pessoa se sentiu) após cada gravação —
+      começa na web (`js/`), depois porta pro iOS. É o tijolo zero do dataset.
 - [ ] Renomear o produto de "VozEmoção" para **Voice&Emotion** no app e docs.
-- [ ] Validar na prática: a leitura emocional bate com o que o Helio sente?
+- [ ] Frente de design: identidade visual, fluxo, primeira impressão.
 - [ ] Reativar a Siri (resolver o `AppIntentsSSUTraining`) quando der.
-- [ ] Definir como coletar dados reais e consentidos para evoluir o algoritmo.

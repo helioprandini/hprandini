@@ -98,13 +98,43 @@
         <h3>Observações de coaching</h3>
         <ul id="insightsList"></ul>
       </div>
+
+      <!-- Ground truth: como a pessoa realmente se sentiu (tijolo zero do dataset) -->
+      <div class="groundtruth" id="groundTruth">
+        <h3>Me ajuda a aprender</h3>
+        <p class="gt-q">A leitura acima bateu com o que você sentiu?</p>
+        <div class="gt-row" id="gtMatch">
+          <button class="chip" data-match="sim">👍 Bateu</button>
+          <button class="chip" data-match="mais_ou_menos">🤏 Mais ou menos</button>
+          <button class="chip" data-match="nao">👎 Não bateu</button>
+        </div>
+        <p class="gt-q">Como você se sentiu de verdade nessa conversa?</p>
+        <div class="gt-row" id="gtFeeling">
+          <button class="chip" data-feel="confiante">😎 Confiante</button>
+          <button class="chip" data-feel="animado">😃 Animado</button>
+          <button class="chip" data-feel="calmo">🙂 Calmo</button>
+          <button class="chip" data-feel="neutro">😐 Neutro</button>
+          <button class="chip" data-feel="ansioso">😧 Ansioso</button>
+          <button class="chip" data-feel="cansado">😔 Cansado</button>
+        </div>
+        <p class="gt-q">Como a conversa terminou? (opcional)</p>
+        <div class="gt-row" id="gtOutcome">
+          <button class="chip" data-out="avancou">📈 Avançou</button>
+          <button class="chip" data-out="neutro">➖ Neutra</button>
+          <button class="chip" data-out="travou">📉 Travou</button>
+        </div>
+        <div class="gt-saved" id="gtSaved" hidden>✅ Guardado. Cada resposta dessas é um tijolo do dataset da AE. Obrigado.</div>
+      </div>
     </section>
 
     <!-- Histórico -->
     <section class="card history">
       <div class="history-head">
         <h2>Histórico de conversas</h2>
-        <button id="clearHistory" class="btn ghost sm">Limpar</button>
+        <div class="history-actions">
+          <button id="exportData" class="btn ghost sm">⬇️ Exportar dataset</button>
+          <button id="clearHistory" class="btn ghost sm">Limpar</button>
+        </div>
       </div>
       <ul id="historyList" class="history-list">
         <li class="empty">Nenhuma conversa gravada ainda.</li>
