@@ -120,6 +120,148 @@ const EmotionEngine = (() => {
     return { key: "assertivo", label: "Assertivo / Confiante", emoji: "😎", color: "#b085ff" };
   }
 
+  /* ==================================================================
+   * CAMADA DIMENSIONAL (framework Helio / ESTRATEGIA_DADOS.md)
+   *
+   * Saída primária = VETOR + CONFIANÇA. A etiqueta é secundária e provisória.
+   * O sistema pode — e deve — dizer "inconclusivo".
+   * Estrutura multicanal: canais ausentes não viram zero, viram indisponíveis,
+   * os pesos são renormalizados e a confiança cai.
+   * ================================================================== */
+
+  // Canais previstos pela AE. Hoje o V&E cobre só voz + autorrelato.
+  const CHANNELS = {
+    autorrelato:     { peso: 0.30, disponivel: false }, // vem do "Me ensina"
+    paralinguistico: { peso: 0.25, disponivel: true  }, // V&E hoje
+    verbal:          { peso: 0.20, disponivel: false }, // requer transcrição
+    facial:          { peso: 0.10, disponivel: false }, // futuro
+    corporal:        { peso: 0.10, disponivel: false }, // futuro
+    interacional:    { peso: 0.05, disponivel: false }, // futuro
+  };
+
+  // Cobertura = fração do peso total efetivamente coletada.
+  function channelCoverage(channels) {
+    const ch = channels || CHANNELS;
+    let total = 0, have = 0;
+    for (const k in ch) {
+      total += ch[k].peso;
+      if (ch[k].disponivel) have += ch[k].peso;
+    }
+    return total ? have / total : 0;
+  }
+
+  // Converte as escalas internas (0-100) para as dimensões do framework.
+  //   valência  -2..+2   |  ativação 0..3  |  dominância/congruência 0..1
+  function toDimensions(s) {
+    return {
+      valencia: +(((s.valence - 50) / 25)).toFixed(2),      // -2 … +2
+      ativacao: +((s.energy / 100) * 3).toFixed(2),          // 0 … 3
+      // Dominância (proxy): voz firme = energia sustentada + fala fluente,
+      // sem o brilho excessivo que sinaliza tensão.
+      dominancia: +clamp((0.5 * s.energy + 0.5 * s.flow) / 100, 0, 1).toFixed(2),
+      // Congruência entre canais só existe com 2+ canais. Com um só, é nula
+      // por construção — e isso é honesto, não uma falha.
+      congruencia: null,
+      // Reatividade e estabilidade são preenchidas a partir da linha do tempo.
+      reatividade: null,
+      estabilidade: null,
+    };
+  }
+
+  /**
+   * Confiança da inferência (0..1). Deriva do que REALMENTE temos:
+   * cobertura de canais, quantidade de fala e consistência do sinal.
+   * Nunca inflar — falsa precisão é um dos riscos listados na estratégia.
+   */
+  function confidence({ coverage, voicedFrames, silenceRatio, pitchStd }) {
+    const sample = clamp(voicedFrames / 120, 0, 1);
+    // Muito silêncio = pouco sinal para ler.
+    const signal = clamp(1 - silenceRatio / 100, 0, 1);
+    // Pitch instável demais costuma ser ruído/microfone, não expressividade.
+    const stability = pitchStd > 110 ? 0.5 : 1;
+    const raw = coverage * 0.45 + sample * 0.30 + signal * 0.25;
+    // Porta de suficiência: pouca fala derruba a confiança inteira, não só a
+    // parcela dela. Sem isso, 0,3s de áudio limpo passava como leitura válida —
+    // exatamente a "falsa precisão" que a estratégia proíbe.
+    const sufficiency = clamp(voicedFrames / 60, 0, 1);
+    const gate = 0.4 + 0.6 * sufficiency;
+    return +clamp(raw * stability * gate, 0, 1).toFixed(2);
+  }
+
+  // Abaixo disto, o sistema declara INCONCLUSIVO em vez de arriscar um rótulo.
+  const CONFIDENCE_FLOOR = 0.35;
+
+  const INCONCLUSIVE = {
+    key: "inconclusivo",
+    label: "Inconclusivo",
+    emoji: "🤔",
+    color: "#6b7590",
+  };
+
+  /**
+   * Leitura completa de uma sessão, nas quatro camadas do framework.
+   * Retorna { observado, inferido, inconclusivo, confianca, canais }.
+   */
+  function assess(frames) {
+    const s = summarize(frames);
+    if (!s) {
+      return {
+        inconclusivo: true,
+        motivo: "Fala insuficiente para leitura.",
+        confianca: 0,
+        observado: null,
+        inferido: null,
+        canais: CHANNELS,
+      };
+    }
+
+    const voicedFrames = frames.filter((f) => f.voiced).length;
+    const coverage = channelCoverage();
+    const conf = confidence({
+      coverage,
+      voicedFrames,
+      silenceRatio: s.silenceRatio,
+      pitchStd: s.pitchStd,
+    });
+
+    const dims = toDimensions(s);
+    const tl = timeline(frames);
+    // Reatividade: o quanto a valência oscila ao longo da conversa.
+    // Estabilidade: o inverso disso.
+    if (tl.length >= 3) {
+      const vals = tl.filter((x) => x.emotion.key !== "silencio").map((x) => x.valence);
+      if (vals.length >= 3) {
+        const m = vals.reduce((a, b) => a + b, 0) / vals.length;
+        const sd = Math.sqrt(vals.reduce((a, v) => a + (v - m) ** 2, 0) / vals.length);
+        dims.reatividade = +clamp(sd / 30, 0, 1).toFixed(2);
+        dims.estabilidade = +(1 - dims.reatividade).toFixed(2);
+      }
+    }
+
+    return {
+      inconclusivo: conf < CONFIDENCE_FLOOR,
+      motivo: conf < CONFIDENCE_FLOOR
+        ? "Evidência insuficiente: poucos canais disponíveis ou pouca fala captada."
+        : null,
+      confianca: conf,
+      // CAMADA "OBSERVADO": comportamento medido, sem julgamento.
+      observado: {
+        energiaMedia: s.energy,
+        alturaMediaHz: s.meanPitch,
+        variacaoPitchHz: s.pitchStd,
+        pausasPct: s.silenceRatio,
+        quadrosComVoz: voicedFrames,
+      },
+      // CAMADA "INFERIDO": hipótese dimensional + etiqueta secundária.
+      inferido: {
+        dimensoes: dims,
+        categoriaProvisoria: conf < CONFIDENCE_FLOOR ? INCONCLUSIVE : s.dominant,
+      },
+      canais: CHANNELS,
+      coberturaCanais: +coverage.toFixed(2),
+    };
+  }
+
   // ---- Agregação de uma sessão inteira ----
   // frames: [{energy, pitch, centroid, voiced, t}]
   function summarize(frames) {
@@ -262,5 +404,10 @@ const EmotionEngine = (() => {
     return tips;
   }
 
-  return { analyzeFrame, summarize, timeline, insights, classify };
+  return {
+    analyzeFrame, summarize, timeline, insights, classify,
+    // camada dimensional
+    assess, toDimensions, confidence, channelCoverage,
+    CHANNELS, CONFIDENCE_FLOOR, INCONCLUSIVE,
+  };
 })();

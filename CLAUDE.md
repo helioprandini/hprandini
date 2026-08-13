@@ -108,6 +108,21 @@ Depois do app funcionar, o Helio definiu o trabalho como duas frentes:
    captura de "ground truth" pós-gravação: *a leitura bateu? como você se sentiu
    de verdade?* — isso é usabilidade E o primeiro tijolo do dataset.
 
+### Decisão de arquitetura: V&E é o canal 1 de uma AE multicanal
+
+O Helio trouxe (2026-08) um framework científico próprio — bibliografia de
+psicologia/sociologia, modelo dimensional (valência × ativação, Russell),
+camadas relatado/observado/inferido/**inconclusivo**, e módulos verbal e não
+verbal. Ele é a **base da Frente 2**, e está desdobrado em `ESTRATEGIA_DADOS.md`.
+
+Decisão dele, explícita: **V&E (voz) é apenas o primeiro passo.** A AE vai
+incluir face, corpo, olhar e sincronia interacional. Portanto:
+
+> Todo código e todo esquema de dados deve nascer **multicanal**, com os canais
+> ainda não coletados presentes na estrutura e marcados como indisponíveis — e a
+> **confiança da inferência deve cair** quando faltam canais. Nunca fingir que
+> medimos o que não medimos; nunca refazer a fundação depois.
+
 ## Próximos passos
 
 - [x] Terminar a instalação do app no iPhone do Helio.

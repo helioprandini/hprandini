@@ -169,9 +169,11 @@
     const summary = EmotionEngine.summarize(frames);
     const tl = EmotionEngine.timeline(frames);
     const tips = EmotionEngine.insights(summary);
+    const assessment = EmotionEngine.assess(frames);
     const durationMs = frames.length ? frames[frames.length - 1].t : 0;
 
     renderResult(summary, tl, tips, url, durationMs);
+    renderReading(assessment);
 
     // salvar no histórico (sem o áudio — localStorage não guarda blobs grandes)
     // features = o vetor acústico medido; groundTruth = a verdade dada pelo humano.
@@ -192,7 +194,18 @@
             silenceRatio: summary.silenceRatio,
           }
         : null,
-      groundTruth: { match: null, feeling: null, outcome: null },
+      // Camadas do framework: o que foi medido, o que foi inferido, e a
+      // verdade que só o humano tem (relatado).
+      assessment: assessment
+        ? {
+            confianca: assessment.confianca,
+            inconclusivo: assessment.inconclusivo,
+            coberturaCanais: assessment.coberturaCanais,
+            observado: assessment.observado,
+            dimensoes: assessment.inferido ? assessment.inferido.dimensoes : null,
+          }
+        : null,
+      groundTruth: { match: null, affect: null, feeling: null, outcome: null },
       timeline: tl.map((x) => ({ e: x.energy, v: x.valence, x: x.expressiveness, k: x.emotion.key })),
     };
     currentRecordId = record.id;
@@ -376,6 +389,23 @@
     sel("gtMatch", "match", gt.match);
     sel("gtFeeling", "feel", gt.feeling);
     sel("gtOutcome", "out", gt.outcome);
+
+    if (gt.affect) {
+      gridPoint = { x: (gt.affect.valencia + 2) / 4, y: 1 - gt.affect.ativacao / 3 };
+      drawAffectGrid();
+      $("gridReadout").innerHTML = "<strong>" + describeGrid(gt.affect) + "</strong> · valência " +
+        (gt.affect.valencia > 0 ? "+" : "") + gt.affect.valencia + " · ativação " + gt.affect.ativacao;
+    }
+    if (r.assessment) {
+      renderReading({
+        confianca: r.assessment.confianca,
+        inconclusivo: r.assessment.inconclusivo,
+        coberturaCanais: r.assessment.coberturaCanais,
+        observado: r.assessment.observado,
+        inferido: { dimensoes: r.assessment.dimensoes },
+        motivo: null,
+      });
+    }
   }
 
   // ---- Eventos ----
@@ -391,6 +421,140 @@
     }
   });
 
+  /* ---- Affect Grid (Russell, Weiss & Mendelsohn) ----
+   * Captura valência × ativação num toque. É a forma mais eficiente de obter
+   * ground truth dimensional — e permite comparar com escalas validadas.
+   *   eixo X: -2 (desagradável) … +2 (agradável)
+   *   eixo Y:  0 (quieto)       …  3 (agitado)
+   */
+  let gridPoint = null; // {x: 0..1, y: 0..1} em coordenadas normalizadas
+
+  function drawAffectGrid() {
+    const cv = $("affectGrid");
+    const ctx = cv.getContext("2d");
+    const w = cv.width, h = cv.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // Fundo: quadrantes coloridos pelo significado (Russell)
+    const quads = [
+      { x: 0,     y: 0,     c: "rgba(255,84,112,0.10)" },  // desagradável+agitado
+      { x: w / 2, y: 0,     c: "rgba(255,196,107,0.10)" }, // agradável+agitado
+      { x: 0,     y: h / 2, c: "rgba(108,139,255,0.10)" }, // desagradável+quieto
+      { x: w / 2, y: h / 2, c: "rgba(94,214,160,0.10)" },  // agradável+quieto
+    ];
+    quads.forEach((q) => { ctx.fillStyle = q.c; ctx.fillRect(q.x, q.y, w / 2, h / 2); });
+
+    // Grade
+    ctx.strokeStyle = "rgba(255,255,255,0.07)";
+    ctx.lineWidth = 1;
+    for (let i = 1; i < 8; i++) {
+      const p = (i / 8) * w;
+      ctx.beginPath(); ctx.moveTo(p, 0); ctx.lineTo(p, h); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, p); ctx.lineTo(w, p); ctx.stroke();
+    }
+    // Eixos centrais
+    ctx.strokeStyle = "rgba(255,255,255,0.2)";
+    ctx.beginPath(); ctx.moveTo(w / 2, 0); ctx.lineTo(w / 2, h); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2); ctx.stroke();
+
+    // Ponto escolhido
+    if (gridPoint) {
+      const px = gridPoint.x * w, py = gridPoint.y * h;
+      ctx.beginPath();
+      ctx.arc(px, py, 16, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,138,91,0.25)";
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(px, py, 8, 0, Math.PI * 2);
+      ctx.fillStyle = "#ff8a5b";
+      ctx.fill();
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  }
+
+  // Converte o ponto normalizado para as dimensões do framework.
+  function gridToDims(p) {
+    return {
+      valencia: +((p.x * 4 - 2)).toFixed(2), // -2 … +2
+      ativacao: +(((1 - p.y) * 3)).toFixed(2), // 0 … 3
+    };
+  }
+
+  function describeGrid(d) {
+    const v = d.valencia >= 0.5 ? "agradável" : d.valencia <= -0.5 ? "desagradável" : "neutro";
+    const a = d.ativacao >= 2 ? "agitado" : d.ativacao <= 1 ? "quieto" : "moderado";
+    return v + " · " + a;
+  }
+
+  function setGridPoint(clientX, clientY) {
+    const cv = $("affectGrid");
+    const r = cv.getBoundingClientRect();
+    const x = Math.min(1, Math.max(0, (clientX - r.left) / r.width));
+    const y = Math.min(1, Math.max(0, (clientY - r.top) / r.height));
+    gridPoint = { x, y };
+    drawAffectGrid();
+    const dims = gridToDims(gridPoint);
+    $("gridReadout").innerHTML =
+      "<strong>" + describeGrid(dims) + "</strong> · valência " +
+      (dims.valencia > 0 ? "+" : "") + dims.valencia + " · ativação " + dims.ativacao;
+    updateGroundTruth("affect", dims);
+  }
+
+  $("affectGrid").addEventListener("click", (e) => setGridPoint(e.clientX, e.clientY));
+  $("affectGrid").addEventListener("keydown", (e) => {
+    // acessibilidade: setas movem o ponto a partir do centro
+    if (!e.key.startsWith("Arrow")) return;
+    e.preventDefault();
+    const p = gridPoint || { x: 0.5, y: 0.5 };
+    const step = 0.0625;
+    if (e.key === "ArrowLeft") p.x -= step;
+    if (e.key === "ArrowRight") p.x += step;
+    if (e.key === "ArrowUp") p.y -= step;
+    if (e.key === "ArrowDown") p.y += step;
+    const cv = $("affectGrid").getBoundingClientRect();
+    setGridPoint(cv.left + Math.min(1, Math.max(0, p.x)) * cv.width,
+                 cv.top + Math.min(1, Math.max(0, p.y)) * cv.height);
+  });
+
+  // ---- Leitura dimensional (vetor + confiança + inconclusivo) ----
+  function renderReading(assessment) {
+    const card = $("readingCard");
+    const pct = Math.round(assessment.confianca * 100);
+    $("confFill").style.width = pct + "%";
+    $("confVal").textContent = assessment.confianca.toFixed(2);
+    card.classList.toggle("inconclusive", !!assessment.inconclusivo);
+
+    const vec = $("vecList");
+    vec.innerHTML = "";
+    const d = assessment.inferido ? assessment.inferido.dimensoes : null;
+    const items = [
+      ["Valência", d && d.valencia, "−2 a +2"],
+      ["Ativação", d && d.ativacao, "0 a 3"],
+      ["Dominância", d && d.dominancia, "0 a 1"],
+      ["Congruência", d && d.congruencia, "precisa de 2+ canais"],
+      ["Reatividade", d && d.reatividade, "0 a 1"],
+      ["Estabilidade", d && d.estabilidade, "0 a 1"],
+    ];
+    items.forEach(([nome, val, faixa]) => {
+      const el = document.createElement("div");
+      const na = val === null || val === undefined;
+      el.className = "vec-item" + (na ? " na" : "");
+      el.innerHTML = "<span>" + nome + "</span><b>" +
+        (na ? "—" : (val > 0 && nome === "Valência" ? "+" : "") + val) +
+        "</b><span>" + (na ? "não disponível" : faixa) + "</span>";
+      vec.appendChild(el);
+    });
+
+    const cobertura = Math.round((assessment.coberturaCanais || 0) * 100);
+    $("readingNote").textContent = assessment.inconclusivo
+      ? "⚠️ " + (assessment.motivo || "Evidência insuficiente para uma leitura confiável.") +
+        " Prefiro dizer que não sei a arriscar um palpite."
+      : "Leitura baseada em " + cobertura + "% dos canais previstos (só voz por enquanto; " +
+        "face, corpo e olhar entram nas próximas etapas da AE). Congruência exige mais de um canal.";
+  }
+
   // ---- Ground truth: captura como a pessoa realmente se sentiu ----
   // Cada resposta é anexada à sessão atual e re-salva. É o rótulo do dataset.
   function updateGroundTruth(field, value) {
@@ -398,7 +562,7 @@
     const hist = loadHistory();
     const rec = hist.find((r) => r.id === currentRecordId);
     if (!rec) return;
-    rec.groundTruth = rec.groundTruth || { match: null, feeling: null, outcome: null };
+    rec.groundTruth = rec.groundTruth || { match: null, affect: null, feeling: null, outcome: null };
     rec.groundTruth[field] = value;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(hist));
     renderHistory();
@@ -409,6 +573,9 @@
     $("gtSaved").hidden = true;
     document.querySelectorAll("#groundTruth .chip.selected")
       .forEach((c) => c.classList.remove("selected"));
+    gridPoint = null;
+    drawAffectGrid();
+    $("gridReadout").textContent = "Nenhum ponto marcado ainda";
   }
 
   function wireGroundTruthRow(rowId, attr, field) {
@@ -429,16 +596,28 @@
   $("exportData").addEventListener("click", () => {
     const hist = loadHistory();
     if (!hist.length) { alert("Ainda não há conversas para exportar."); return; }
+    // Formato multicanal: cada amostra carrega as camadas separadas
+    // (observado / inferido / relatado), como manda a ESTRATEGIA_DADOS.md.
     const dataset = hist.map((r) => ({
       id: r.id,
-      date: r.date,
-      durationMs: r.durationMs,
-      features: r.features || null,
-      dominant: r.summary ? r.summary.dominant.key : null,
-      groundTruth: r.groundTruth || null,
+      data: r.date,
+      duracaoMs: r.durationMs,
+      canais: { autorrelato: !!(r.groundTruth && r.groundTruth.affect), paralinguistico: true,
+                verbal: false, facial: false, corporal: false, interacional: false },
+      observado: r.assessment ? r.assessment.observado : (r.features || null),
+      inferido: r.assessment
+        ? { dimensoes: r.assessment.dimensoes, confianca: r.assessment.confianca,
+            inconclusivo: r.assessment.inconclusivo, categoriaProvisoria: r.summary ? r.summary.dominant.key : null }
+        : null,
+      relatado: r.groundTruth || null,
     }));
-    const blob = new Blob([JSON.stringify({ versao: 1, exportadoEm: new Date().toISOString(), amostras: dataset }, null, 2)],
-      { type: "application/json" });
+    const blob = new Blob([JSON.stringify({
+      versao: 2,
+      projeto: "AE — Artificial Emotion / Voice&Emotion",
+      exportadoEm: new Date().toISOString(),
+      nota: "Camadas separadas: observado (medido), inferido (hipótese + confiança), relatado (verdade humana). Canais não coletados aparecem como false.",
+      amostras: dataset,
+    }, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -454,4 +633,5 @@
   }
 
   renderHistory();
+  drawAffectGrid();
 })();
