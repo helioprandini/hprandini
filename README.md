@@ -1,21 +1,34 @@
-# 🎙️ VozEmoção
+# 🎙️ Voice&Emotion
 
-Grave suas conversas e leia as **variações emocionais do tom de voz** — uma ferramenta
-simples de treino para quem vende, apresenta ou negocia e sabe que *como* você fala
-importa tanto quanto *o que* você fala.
+**Ouça como você soa para os outros.**
 
-Tudo roda **no navegador**: nada de servidor, instalação, chave de API ou upload de áudio.
+A sua voz carrega mais do que palavras. O Voice&Emotion escuta os sinais que
+revelam emoção na fala e devolve, em segundos, como você soou de verdade.
+
+É para **qualquer pessoa cuja vida depende de como ela fala**: quem vende,
+negocia, lidera, ensina, apresenta, atende, entrevista ou defende uma ideia.
+Emoção na voz é humano — não é nicho.
+
+Tudo roda **no seu aparelho**: nada de servidor, instalação, chave de API ou upload de áudio.
+
+> Este é o produto-base de um projeto maior: a **AE (Artificial Emotion)** — a
+> busca por um algoritmo capaz de traduzir a emoção humana em dados.
+> Ver [`CLAUDE.md`](CLAUDE.md), [`PLANO_DE_JOGO.md`](PLANO_DE_JOGO.md) e
+> [`ESTRATEGIA_DADOS.md`](ESTRATEGIA_DADOS.md).
 
 ## Para que serve
 
-Sua venda depende do tom de voz e da reação emocional de quem ouve. O VozEmoção captura
-os sinais acústicos que carregam emoção na fala e mostra, em linguagem simples, como sua
-voz variou ao longo da conversa:
+O Voice&Emotion captura os sinais acústicos que carregam emoção na fala e mostra,
+em linguagem simples, como sua voz variou ao longo da conversa:
 
-- **Energia / excitação** — o quanto você projetou a voz
-- **Positividade / tom** — quão caloroso vs. neutro você soou
-- **Expressividade** — variação de entonação (envolvente vs. monótono)
-- **Fluência** — pausas e hesitações
+- **Energia** — o quanto você projetou a voz
+- **Calor** — quão acolhedor vs. contido você soou
+- **Expressividade** — variação de entonação (envolvente vs. plano)
+- **Fluência** — ritmo e pausas
+
+E, depois de cada gravação, ele te pergunta **como você realmente se sentiu** —
+porque só você sabe. Essa resposta ensina o sistema a ler melhor, e é o primeiro
+tijolo do dataset da AE.
 
 A partir disso, ele classifica trechos em variantes emocionais (Entusiasmado, Amigável,
 Assertivo, Tenso, Monótono, Calmo…) e monta uma **linha do tempo emocional** da conversa,

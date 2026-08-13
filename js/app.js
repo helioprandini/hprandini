@@ -74,9 +74,10 @@
 
     recordBtn.classList.add("recording");
     liveMeters.hidden = false;
+    $("welcomeNote").hidden = true;
     waveform.hidden = false;
     resultCard.hidden = true;
-    hintEl.textContent = "Gravando… clique novamente para parar";
+    hintEl.textContent = "Ouvindo… toque de novo quando terminar";
     setStatus("Gravando", "rec");
 
     timerId = setInterval(() => { timerEl.textContent = fmtTime(performance.now() - startTime); }, 250);
@@ -200,7 +201,7 @@
     resetGroundTruthUI();
 
     setStatus("Pronto");
-    hintEl.textContent = "Clique para gravar outra conversa";
+    hintEl.textContent = "Toque para gravar outra conversa";
     // Reset base
     if (audioCtx) audioCtx.close();
   }

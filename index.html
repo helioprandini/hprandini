@@ -3,42 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VozEmoção — Gravação e Análise Emocional de Conversas</title>
+  <title>Voice&amp;Emotion — leia a emoção na sua voz</title>
+  <meta name="description" content="Grave uma conversa e veja como sua voz soou: energia, calor, expressividade e ritmo. Uma ferramenta para quem depende de como fala." />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
   <header class="topbar">
     <div class="brand">
-      <span class="logo">🎙️</span>
+      <div class="mark" aria-hidden="true">
+        <!-- onda de voz: começa contida, ganha amplitude — como uma fala que se abre -->
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <g stroke="#fff" stroke-width="2" stroke-linecap="round">
+            <line x1="3"  y1="9.5" x2="3"  y2="12.5" opacity=".75"/>
+            <line x1="7.5" y1="6.5" x2="7.5" y2="15.5" opacity=".9"/>
+            <line x1="12" y1="3"   x2="12" y2="19"/>
+            <line x1="16.5" y1="6"  x2="16.5" y2="16" opacity=".9"/>
+            <line x1="21" y1="9"   x2="21" y2="13" opacity=".75"/>
+          </g>
+        </svg>
+      </div>
       <div>
-        <h1>VozEmoção</h1>
-        <p class="tagline">Grave suas conversas e leia as variações emocionais do tom de voz</p>
+        <h1>Voice<span class="amp">&amp;</span>Emotion</h1>
+        <p class="tagline">Ouça como você soa para os outros</p>
       </div>
     </div>
     <div class="status" id="statusBadge">Pronto</div>
   </header>
 
   <main>
-    <!-- Painel de gravação -->
+    <!-- Gravação -->
     <section class="card recorder">
-      <div class="recorder-main">
-        <button id="recordBtn" class="record-btn" aria-label="Gravar">
-          <span class="record-icon"></span>
-        </button>
-        <div class="recorder-info">
-          <div class="timer" id="timer">00:00</div>
-          <div class="hint" id="recorderHint">Clique para começar a gravar a conversa</div>
-        </div>
+      <button id="recordBtn" class="record-btn" aria-label="Começar a gravar">
+        <span class="record-icon"></span>
+      </button>
+
+      <div class="timer" id="timer">00:00</div>
+      <div class="hint" id="recorderHint">Toque para gravar uma conversa</div>
+
+      <div class="welcome" id="welcomeNote">
+        A sua voz carrega mais do que palavras. O <strong>Voice&amp;Emotion</strong>
+        escuta os sinais que revelam emoção — <strong>energia, calor,
+        expressividade e ritmo</strong> — e devolve, em segundos, como você soou
+        de verdade. Fale como você fala no dia a dia. O resto é com a gente.
       </div>
 
       <!-- Medidores ao vivo -->
       <div class="live-meters" id="liveMeters" hidden>
         <div class="meter">
-          <label>Energia / Volume</label>
+          <label>Energia</label>
           <div class="bar"><div class="fill energy" id="energyFill"></div></div>
         </div>
         <div class="meter">
-          <label>Altura da voz (pitch)</label>
+          <label>Altura da voz</label>
           <div class="bar"><div class="fill pitch" id="pitchFill"></div></div>
         </div>
         <div class="meter">
@@ -48,67 +64,70 @@
         <div class="live-emotion" id="liveEmotion">—</div>
       </div>
 
-      <!-- Onda ao vivo -->
       <canvas id="waveform" class="waveform" hidden></canvas>
     </section>
 
-    <!-- Resultado da última análise -->
+    <!-- Resultado -->
     <section class="card result" id="resultCard" hidden>
-      <h2>Resumo emocional da conversa</h2>
+      <h2>Como você soou</h2>
 
       <div class="summary-grid">
         <div class="dominant" id="dominantEmotion">
           <div class="emoji" id="domEmoji">🙂</div>
           <div class="dom-label" id="domLabel">—</div>
-          <div class="dom-sub" id="domSub">emoção predominante</div>
+          <div class="dom-sub" id="domSub">tom predominante</div>
         </div>
 
         <div class="dims">
           <div class="dim">
-            <span class="dim-label">Energia (excitação)</span>
+            <span class="dim-label">Energia — o quanto você projetou</span>
             <div class="bar sm"><div class="fill energy" id="dimEnergy"></div></div>
           </div>
           <div class="dim">
-            <span class="dim-label">Positividade (tom)</span>
+            <span class="dim-label">Calor — quão acolhedor foi o tom</span>
             <div class="bar sm"><div class="fill valence" id="dimValence"></div></div>
           </div>
           <div class="dim">
-            <span class="dim-label">Expressividade (variação)</span>
+            <span class="dim-label">Expressividade — variação da entonação</span>
             <div class="bar sm"><div class="fill expr" id="dimExpr"></div></div>
           </div>
           <div class="dim">
-            <span class="dim-label">Fluência (poucas pausas)</span>
+            <span class="dim-label">Fluência — ritmo e pausas</span>
             <div class="bar sm"><div class="fill flow" id="dimFlow"></div></div>
           </div>
         </div>
       </div>
 
-      <!-- Linha do tempo emocional -->
-      <h3>Linha do tempo emocional</h3>
+      <h3>Ao longo da conversa</h3>
       <canvas id="timeline" class="timeline"></canvas>
       <div class="timeline-legend" id="timelineLegend"></div>
 
-      <!-- Áudio + insights -->
       <div class="playback">
         <audio id="audioPlayer" controls></audio>
-        <a id="downloadLink" class="btn ghost" download>⬇️ Baixar gravação</a>
+        <a id="downloadLink" class="btn ghost" download>⬇️ Baixar áudio</a>
       </div>
 
       <div class="insights">
-        <h3>Observações de coaching</h3>
+        <h3>O que eu percebi</h3>
         <ul id="insightsList"></ul>
       </div>
 
-      <!-- Ground truth: como a pessoa realmente se sentiu (tijolo zero do dataset) -->
+      <!-- Ground truth: a verdade humana que ensina a AE -->
       <div class="groundtruth" id="groundTruth">
-        <h3>Me ajuda a aprender</h3>
+        <h3>Me ensina</h3>
+        <p class="gt-intro">
+          Eu meço sinais da sua voz — mas só você sabe o que sentiu. Me contando,
+          você me ensina a ler melhor. Fica tudo no seu aparelho.
+        </p>
+
         <p class="gt-q">A leitura acima bateu com o que você sentiu?</p>
         <div class="gt-row" id="gtMatch">
           <button class="chip" data-match="sim">👍 Bateu</button>
           <button class="chip" data-match="mais_ou_menos">🤏 Mais ou menos</button>
           <button class="chip" data-match="nao">👎 Não bateu</button>
         </div>
-        <p class="gt-q">Como você se sentiu de verdade nessa conversa?</p>
+
+        <p class="gt-q">Como você se sentiu de verdade?</p>
         <div class="gt-row" id="gtFeeling">
           <button class="chip" data-feel="confiante">😎 Confiante</button>
           <button class="chip" data-feel="animado">😃 Animado</button>
@@ -117,35 +136,41 @@
           <button class="chip" data-feel="ansioso">😧 Ansioso</button>
           <button class="chip" data-feel="cansado">😔 Cansado</button>
         </div>
-        <p class="gt-q">Como a conversa terminou? (opcional)</p>
+
+        <p class="gt-q">Como a conversa terminou? <span style="color:var(--text-faint);font-weight:400">(opcional)</span></p>
         <div class="gt-row" id="gtOutcome">
           <button class="chip" data-out="avancou">📈 Avançou</button>
-          <button class="chip" data-out="neutro">➖ Neutra</button>
+          <button class="chip" data-out="neutro">➖ Sem mudança</button>
           <button class="chip" data-out="travou">📉 Travou</button>
         </div>
-        <div class="gt-saved" id="gtSaved" hidden>✅ Guardado. Cada resposta dessas é um tijolo do dataset da AE. Obrigado.</div>
+
+        <div class="gt-saved" id="gtSaved" hidden>
+          ✅ Guardado. Cada resposta dessas me ensina a ler emoção com mais
+          precisão — é assim que a AE aprende. Obrigado.
+        </div>
       </div>
     </section>
 
     <!-- Histórico -->
     <section class="card history">
       <div class="history-head">
-        <h2>Histórico de conversas</h2>
+        <h2>Suas conversas</h2>
         <div class="history-actions">
-          <button id="exportData" class="btn ghost sm">⬇️ Exportar dataset</button>
+          <button id="exportData" class="btn ghost sm">⬇️ Exportar dados</button>
           <button id="clearHistory" class="btn ghost sm">Limpar</button>
         </div>
       </div>
       <ul id="historyList" class="history-list">
-        <li class="empty">Nenhuma conversa gravada ainda.</li>
+        <li class="empty">Nenhuma conversa ainda. Grave a primeira e comece a acompanhar sua evolução.</li>
       </ul>
     </section>
 
     <p class="disclaimer">
-      🔒 Tudo roda no seu navegador. Nenhum áudio é enviado para servidores.
-      A análise emocional é uma <strong>estimativa baseada em prosódia</strong>
-      (energia, altura e variação da voz, pausas) — uma ferramenta de treino de tom,
-      não um diagnóstico. Grave apenas conversas que você tem permissão para gravar.
+      🔒 <strong>Tudo acontece no seu aparelho.</strong> Nenhum áudio é enviado
+      para servidores. A leitura emocional é uma <strong>estimativa a partir da
+      prosódia</strong> (energia, altura e variação da voz, pausas) — feita para
+      treinar seu tom, não para diagnosticar ninguém. Grave apenas conversas que
+      você tem permissão para gravar.
     </p>
   </main>
 

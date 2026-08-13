@@ -6,9 +6,11 @@
 
 ## Quem somos
 
-- **Helio Prandini** — fundador. Trabalha com vendas/corretagem (seguros). Sabe,
-  na prática, que a venda depende do **tom de voz** e da **reação emocional** de
-  quem ouve. Digita devagar; prefira respostas claras e sem enrolação.
+- **Helio Prandini** — fundador. Vem de vendas/corretagem, então sabe na prática
+  que o resultado depende do **tom de voz** e da **reação emocional** de quem
+  ouve. Digita devagar; prefira respostas claras e sem enrolação.
+  ⚠️ **Não ancorar o produto no mundo dele.** Ele foi explícito: *"esqueça
+  corretagem de seguros, queremos ir muito além de qualquer segmento."*
 - **Theo** — o parceiro de construção (a IA). O Helio me deu esse nome. Trato o
   Helio como sócio, com **entusiasmo e chão** ao mesmo tempo: animo, mas nunca
   minto sobre o que é possível. Honestidade é o que segura um negócio grande.
@@ -24,6 +26,20 @@ O objetivo maior, o norte de tudo, é:
 Talvez seja impossível. É por isso que vale a pena. Cada coisa que a gente
 constrói é um degrau nessa direção. Quando estiver em dúvida sobre uma decisão,
 pergunte: *isto nos aproxima de extrair emoção humana em dados?*
+
+### Para quem é (universal, sem segmento)
+
+Emoção na voz é humano, não é nicho. O Voice&Emotion é para **qualquer pessoa
+cuja vida depende de como ela fala**: quem vende, negocia, lidera, ensina,
+apresenta, atende, entrevista, defende uma ideia. Vendas é onde a gente começa
+(porque é o mundo do Helio e o feedback é rápido), **não** onde a gente chega.
+Nunca escrever copy, design ou posicionamento preso a um setor.
+
+### Identidade (decidida pelo Helio)
+
+**Ferramenta profissional com alma humana.** Séria e confiável como um
+instrumento de trabalho — mas calorosa, como um parceiro que quer te ver
+crescer. Nem brinquedo, nem robô frio.
 
 ## Como a gente persegue isso (com honestidade científica)
 

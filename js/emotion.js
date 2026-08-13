@@ -226,36 +226,39 @@ const EmotionEngine = (() => {
   }
 
   // ---- Observações de coaching a partir do resumo ----
+  // Fala com a pessoa, não sobre ela: profissional no conteúdo, humano no tom.
+  // Sem vocabulário preso a um segmento — vale para quem vende, ensina, lidera
+  // ou defende uma ideia.
   function insights(s) {
     const tips = [];
-    if (!s) return ["Não houve fala suficiente para analisar. Tente falar mais perto do microfone."];
+    if (!s) return ["Não captei fala suficiente para ler. Tente falar um pouco mais perto do microfone."];
 
     if (s.expressiveness < 30) {
-      tips.push("🎵 Sua voz ficou bastante monótona. Varie mais a entonação para prender a atenção e transmitir emoção.");
+      tips.push("🎵 Sua entonação variou pouco — a fala soou mais plana. Deixar a voz subir e descer nos pontos que importam ajuda quem ouve a sentir o que você sente.");
     } else if (s.expressiveness > 70) {
-      tips.push("🎵 Ótima variação de entonação — sua fala soa expressiva e envolvente.");
+      tips.push("🎵 Sua entonação variou bastante, e isso é bom: a fala soou viva e fácil de acompanhar.");
     }
 
     if (s.energy < 30) {
-      tips.push("🔊 A energia da sua voz esteve baixa. Projete mais o som para passar confiança e entusiasmo.");
+      tips.push("🔊 A energia esteve baixa. Um pouco mais de projeção costuma ser lido como convicção — sem precisar falar mais alto o tempo todo.");
     } else if (s.energy > 80) {
-      tips.push("🔊 Energia bem alta. Cuidado para não soar agressivo ou cansar o ouvinte — alterne com momentos mais calmos.");
+      tips.push("🔊 A energia esteve bem alta o tempo todo. Intercalar momentos mais calmos dá contraste e evita cansar quem escuta.");
     }
 
     if (s.silenceRatio > 45) {
-      tips.push("⏸️ Muitas pausas/silêncios (" + s.silenceRatio + "%). Pausas são boas para ênfase, mas em excesso passam hesitação.");
+      tips.push("⏸️ Você fez muitas pausas (" + s.silenceRatio + "% do tempo). Pausa é uma ferramenta poderosa — em excesso, porém, pode soar como hesitação.");
     } else if (s.silenceRatio < 12) {
-      tips.push("⏸️ Você quase não fez pausas. Inserir pausas estratégicas ajuda o ouvinte a absorver os pontos-chave.");
+      tips.push("⏸️ Você quase não pausou. Um respiro depois de uma ideia importante dá tempo do outro absorver o que você disse.");
     }
 
     if (s.valence < 40) {
-      tips.push("💬 O tom soou mais neutro/sério. Se o objetivo é acolher o cliente, experimente um tom mais caloroso e sorrir ao falar.");
+      tips.push("💬 O tom soou mais sério e contido. Quando quiser aproximar alguém, um tom mais caloroso costuma abrir a porta.");
     } else if (s.valence > 65) {
-      tips.push("💬 Tom caloroso e positivo — excelente para criar conexão com o ouvinte.");
+      tips.push("💬 Seu tom soou caloroso — é o tipo de voz que cria proximidade.");
     }
 
-    tips.push("📊 Predominância emocional: " + s.dominant.label + " " + s.dominant.emoji +
-      " (energia " + s.energy + ", positividade " + s.valence + ", expressividade " + s.expressiveness + ").");
+    tips.push("📊 No conjunto: " + s.dominant.label + " " + s.dominant.emoji +
+      " · energia " + s.energy + " · calor " + s.valence + " · expressividade " + s.expressiveness + ".");
     return tips;
   }
 
