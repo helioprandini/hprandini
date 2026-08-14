@@ -123,6 +123,21 @@ incluir face, corpo, olhar e sincronia interacional. Portanto:
 > **confiança da inferência deve cair** quando faltam canais. Nunca fingir que
 > medimos o que não medimos; nunca refazer a fundação depois.
 
+### Música entra na equação (decisão do Helio, 2026-08)
+
+A **música é parte do modelo da AE**, não um enfeite. Fundamento: Juslin &
+Laukka — voz e música comunicam emoção por **canais diferentes com o mesmo
+código acústico** (andamento, intensidade, altura, variação, brilho,
+articulação), que são exatamente as variáveis que o V&E já mede.
+
+Papéis: espelho científico para validar o motor · fonte farta de dados
+rotulados em valência × ativação (ataca o gargalo do dado) · elicitação de
+estados para coletar ground truth · e, no futuro, produto.
+
+Ressalva: mesmo código ≠ transferência automática. Modelo treinado em música
+precisa ser revalidado em voz. Todo dado carrega `fonte: voz | musica`.
+Detalhes em `ESTRATEGIA_DADOS.md` (seção 7b).
+
 ## Próximos passos
 
 - [x] Terminar a instalação do app no iPhone do Helio.

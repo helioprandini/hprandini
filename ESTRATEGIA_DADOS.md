@@ -178,6 +178,42 @@ Também capturamos: **congruência percebida** (a leitura bateu?) e **desfecho**
 
 ---
 
+## 7b. Música na equação (decisão do Helio, 2026-08)
+
+**A música entra na AE.** Não como enfeite — como parte do modelo.
+
+**Por que é legítimo:** a ponte já estava na bibliografia. Juslin & Laukka
+mostraram que expressão vocal e performance musical comunicam emoção por
+**canais diferentes com o mesmo código acústico**: andamento, intensidade,
+altura, variação de altura, brilho de timbre, articulação. São as mesmas
+variáveis que o motor do V&E já extrai da voz.
+
+Quatro papéis possíveis, do mais concreto ao mais distante:
+
+1. **Espelho científico** — validar o motor contra um sinal onde a emoção é
+   deliberadamente codificada. Se ele lê bem a intenção emocional de um trecho
+   musical, é evidência de que os descritores acústicos funcionam.
+2. **Fonte de dados rotulados** — existem datasets públicos de *music emotion
+   recognition* anotados em **valência × ativação** (o mesmo eixo que adotamos).
+   Isso ataca direto o gargalo do projeto: dado rotulado é escasso; em música,
+   não é.
+3. **Elicitação de estado** — música induz humor de forma confiável. Serve para
+   provocar estados-alvo e coletar ground truth com rótulo forte, em vez de
+   depender só de conversas espontâneas.
+4. **Produto** — futuro; ainda não definido. Não decidir agora.
+
+**Ressalva honesta:** "mesmo código" não significa transferência automática.
+Música é composta e executada com intenção estética; fala é espontânea e
+situada. Um modelo treinado em música **precisa ser revalidado em voz** antes de
+qualquer afirmação. Registrar sempre a origem do dado (`voz` ou `musica`) para
+nunca misturar as duas coisas sem querer.
+
+**Consequência de arquitetura:** o esquema de dados ganha um campo de origem
+(`fonte: voz | musica`) e a música é tratada como **canal próprio**, não como
+substituta do canal de voz.
+
+---
+
 ## 8. Validação (como saber se funciona)
 
 1. Definir o construto: humor momentâneo ≠ emoção ≠ traço de personalidade.
