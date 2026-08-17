@@ -39,6 +39,12 @@ enum EmotionEngine {
         var dominant: Emotion
     }
 
+    /// Limiares de detecção de voz — espelham `js/emotion.js`.
+    /// Calibrados para alguém falando sentado, a distância normal do aparelho,
+    /// não colado no microfone.
+    static let voiceEnergyFloor: Float = 0.003
+    static let voicingThreshold: Float = 0.25
+
     // MARK: - Features de um quadro
 
     static func rms(_ samples: [Float]) -> Float {
@@ -59,7 +65,7 @@ enum EmotionEngine {
     /// `research/benchmark/engine-validation.js`.)
     static func detectPitch(_ samples: [Float], sampleRate: Float) -> Float {
         let energy = rms(samples)
-        if energy < 0.008 { return -1 }
+        if energy < voiceEnergyFloor { return -1 }
 
         let power = energy * energy      // = autocorrelação em offset 0
         guard power > 0 else { return -1 }
@@ -86,7 +92,6 @@ enum EmotionEngine {
         }
 
         // Abaixo disto o sinal não é periódico o bastante para ser voz.
-        let voicingThreshold: Float = 0.3
         guard peak >= voicingThreshold else { return -1 }
 
         // Primeiro pico próximo do máximo (não o máximo global): r(2T) é quase

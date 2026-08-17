@@ -152,6 +152,34 @@
   transition: width 0.3s ease;
 }
 
+/* Medidor de entrada — diagnóstico sempre visível */
+.mon-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 8px;
+  font-size: 10px;
+  color: var(--text-faint);
+}
+.mon-input-label { white-space: nowrap; }
+.mon-inputbar {
+  width: 110px;
+  height: 6px;
+  background: var(--bg-inset);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.mon-inputfill {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: var(--pitch);
+  transition: width 0.08s linear;
+}
+.mon-inputfill.silent { background: var(--danger); }
+.mon-input-val { font-variant-numeric: tabular-nums; min-width: 42px; text-align: left; }
+
 /* Mapa valência × ativação */
 .mon-grid-wrap { position: relative; align-self: center; width: 100%; max-width: 300px; }
 .mon-grid {

@@ -117,6 +117,13 @@
     frames.push({ ...f, t: now });
     if (f.energy > maxEnergySeen) maxEnergySeen = f.energy;
 
+    // Medidor de entrada: escala até 0.10 de RMS, que já é fala forte.
+    const lvl = Math.min(1, f.energy / 0.10);
+    const fill = $("inputFill");
+    fill.style.width = (lvl * 100).toFixed(0) + "%";
+    fill.classList.toggle("silent", f.energy < 0.002);
+    $("inputVal").textContent = f.energy.toFixed(4);
+
     // Descarta o que saiu da janela — o monitor não guarda histórico.
     const cut = now - WINDOW_MS;
     while (frames.length && frames[0].t < cut) frames.shift();

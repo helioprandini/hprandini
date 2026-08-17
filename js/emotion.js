@@ -15,6 +15,20 @@
 const EmotionEngine = (() => {
   "use strict";
 
+  /* Limiares de detecção de voz.
+   *
+   * Calibrados para alguém falando sentado, a distância normal de um notebook
+   * ou celular — não colado no microfone. Valores mais altos faziam o motor
+   * ignorar fala em volume de conversa.
+   *   VOICE_ENERGY_FLOOR — piso de RMS; abaixo disso é silêncio/ruído de sala
+   *                        (ruído ambiente típico fica perto de 0.001)
+   *   VOICING_THRESHOLD  — periodicidade mínima (autocorrelação normalizada)
+   *                        para o sinal ser considerado voz. Fala limpa fica
+   *                        entre 0.6 e 0.9; com ruído de sala, cai bastante.
+   */
+  const VOICE_ENERGY_FLOOR = 0.003;
+  const VOICING_THRESHOLD = 0.25;
+
   // ---- Extração de features de um frame de áudio ----
 
   // RMS (energia) do sinal no domínio do tempo. Entrada: Float32Array [-1,1].
@@ -36,7 +50,7 @@ const EmotionEngine = (() => {
   function detectPitch(timeData, sampleRate) {
     const SIZE = timeData.length;
     const energy = rms(timeData);
-    if (energy < 0.008) return -1; // silêncio / muito baixo
+    if (energy < VOICE_ENERGY_FLOOR) return -1; // silêncio / ruído de sala
 
     const power = energy * energy; // = autocorrelação em offset 0
     if (power <= 0) return -1;
@@ -59,7 +73,6 @@ const EmotionEngine = (() => {
     }
 
     // Abaixo disto o sinal não é periódico o bastante para ser voz.
-    const VOICING_THRESHOLD = 0.3;
     if (peak < VOICING_THRESHOLD) return -1;
 
     // Escolhe o PRIMEIRO pico próximo do máximo, não o máximo global: r(2T) é
@@ -104,7 +117,7 @@ const EmotionEngine = (() => {
     const energy = rms(timeData);
     const pitch = detectPitch(timeData, sampleRate);
     const centroid = spectralCentroid(freqData, sampleRate, fftSize);
-    const voiced = pitch > 0 && energy > 0.008;
+    const voiced = pitch > 0 && energy > VOICE_ENERGY_FLOOR;
     return { energy, pitch, centroid, voiced };
   }
 

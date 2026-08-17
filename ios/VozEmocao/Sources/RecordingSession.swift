@@ -47,7 +47,7 @@ final class RecordingSession: @unchecked Sendable {
             energy: energy,
             pitch: pitch,
             centroid: centroid,
-            voiced: pitch > 0 && energy > 0.008,
+            voiced: pitch > 0 && energy > EmotionEngine.voiceEnergyFloor,
             t: Date().timeIntervalSince(startTime) * 1000
         )
 
