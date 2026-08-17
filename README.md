@@ -34,6 +34,25 @@ A partir disso, ele classifica trechos em variantes emocionais (Entusiasmado, Am
 Assertivo, Tenso, Monótono, Calmo…) e monta uma **linha do tempo emocional** da conversa,
 com observações de coaching para melhorar.
 
+## 📡 Monitor ao vivo (`monitor.html`)
+
+Uma segunda tela, pensada para acompanhar **a pessoa com quem você está
+falando** em tempo real. No Mac abre como janela pop-up estreita (fica num canto
+durante a conversa); no iPhone, em tela cheia pelo navegador.
+
+Mostra, quadro a quadro: o tom predominante, a posição em **valência × ativação**
+com rastro dos últimos segundos, a **confiança** da leitura, e três sinais
+observáveis — **engajamento**, **hesitação** e **tensão vocal** — mais a
+tendência dos últimos 60 segundos.
+
+**Nada é gravado.** Os quadros vivem numa janela de segundos em memória e são
+descartados. E ele pede consentimento antes de começar: use com as pessoas
+sabendo.
+
+> 🚫 **O monitor não detecta mentira e não diagnostica ninguém.** Não existe
+> sinal acústico confiável de engano — o que se mede é tensão, e tensão tem
+> muitas causas. Ver "usos vedados" em [`ESTRATEGIA_DADOS.md`](ESTRATEGIA_DADOS.md).
+
 ## Como usar
 
 1. Abra o `index.html` num navegador moderno (Chrome, Edge ou Firefox).

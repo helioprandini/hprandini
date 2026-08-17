@@ -79,6 +79,25 @@ O repositório de palavras de negócio (pt-BR) vive em
 `android/app/src/main/assets/business_keywords.json` e em
 `ios/VozEmocao/Sources/BusinessKeywords.swift`.
 
+### Detecção de mentira: pedida e recusada (2026-08)
+
+O Helio pediu um algoritmo para detectar se interlocutores estão mentindo.
+**Recusado, e a razão é do próprio framework dele** (`ESTRATEGIA_DADOS.md`,
+"usos vedados"). Se o pedido voltar, a resposta continua a mesma:
+
+1. **Não funciona.** Não há sinal acústico ou comportamental confiável de
+   engano; acurácia fica perto do acaso. O que se mede é *estresse*, que tem
+   dezenas de causas (cansaço, pressa, timidez, sotaque, doença, o jeito da
+   pessoa).
+2. **Faria mal a ele.** Decisão de negócio tomada sobre ruído com aparência de
+   certeza — desconfiar de quem é honesto, confiar em quem não é.
+3. **Mataria a AE.** "Detector de mentira" é o rótulo que faz o produto ser
+   barrado e desacreditado. Confiança é o maior ativo do projeto.
+
+**O que se entrega no lugar:** sinais observáveis e defensáveis — hesitação,
+tensão vocal, engajamento e **incongruência** entre canais. Mais útil na prática
+e honesto: descreve comportamento, não intenção.
+
 ## Princípios
 
 1. **Funcionar na mão de uma pessoa antes de mudar o mundo.** A prova da AE é o

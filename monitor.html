@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Monitor ao vivo — Voice&amp;Emotion</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/monitor.css" />
+</head>
+<body class="monitor-body">
+
+  <header class="mon-top">
+    <div class="mon-brand">
+      <span class="mon-dot" id="liveDot"></span>
+      <span>Monitor ao vivo</span>
+    </div>
+    <button id="toggleBtn" class="mon-toggle">Iniciar</button>
+  </header>
+
+  <!-- Consentimento: aparece antes de qualquer captura -->
+  <div class="mon-consent" id="consentCard">
+    <h2>Antes de começar</h2>
+    <p>
+      Este monitor lê <strong>sinais acústicos da voz</strong> de quem está falando
+      e mostra estimativas em tempo real. Nada é gravado nem enviado — a leitura
+      acontece e desaparece.
+    </p>
+    <p class="mon-warn">
+      ⚖️ <strong>Você precisa do consentimento de quem está sendo ouvido.</strong>
+      Use com as pessoas sabendo. É o que mantém a relação — e a lei — do seu lado.
+    </p>
+    <p class="mon-warn">
+      🚫 Isto <strong>não</strong> detecta mentira e <strong>não</strong> diagnostica
+      ninguém. Mostra hesitação, tensão e energia — que têm muitas causas possíveis.
+    </p>
+    <button id="acceptBtn" class="mon-accept">Entendi, começar</button>
+  </div>
+
+  <main class="mon-main" id="monMain" hidden>
+
+    <!-- Leitura principal -->
+    <section class="mon-hero">
+      <div class="mon-emoji" id="monEmoji">🎧</div>
+      <div class="mon-label" id="monLabel">Aguardando voz…</div>
+      <div class="mon-conf">
+        <span id="monConfText">confiança —</span>
+        <div class="mon-confbar"><div class="mon-conffill" id="monConfFill"></div></div>
+      </div>
+    </section>
+
+    <!-- Mapa valência × ativação com rastro -->
+    <section class="mon-grid-wrap">
+      <canvas id="monGrid" class="mon-grid" width="300" height="300"></canvas>
+      <div class="mon-grid-labels">
+        <span class="gl-top">agitado</span>
+        <span class="gl-bottom">quieto</span>
+        <span class="gl-left">desagradável</span>
+        <span class="gl-right">agradável</span>
+      </div>
+    </section>
+
+    <!-- Sinais observáveis (o que dá para medir de verdade) -->
+    <section class="mon-signals">
+      <div class="sig" id="sigEngage">
+        <span class="sig-name">Engajamento</span>
+        <div class="bar sm"><div class="fill flow" id="fillEngage"></div></div>
+        <span class="sig-hint" id="hintEngage">—</span>
+      </div>
+      <div class="sig" id="sigHesit">
+        <span class="sig-name">Hesitação</span>
+        <div class="bar sm"><div class="fill valence" id="fillHesit"></div></div>
+        <span class="sig-hint" id="hintHesit">—</span>
+      </div>
+      <div class="sig" id="sigTension">
+        <span class="sig-name">Tensão vocal</span>
+        <div class="bar sm"><div class="fill energy" id="fillTension"></div></div>
+        <span class="sig-hint" id="hintTension">—</span>
+      </div>
+    </section>
+
+    <!-- Linha do tempo curta (últimos ~60s) -->
+    <section>
+      <div class="mon-section-label">Últimos 60 segundos</div>
+      <canvas id="monTrend" class="mon-trend" height="70"></canvas>
+    </section>
+
+    <p class="mon-foot">
+      Estimativa de prosódia · não é diagnóstico, não detecta mentira ·
+      muitas causas produzem os mesmos sinais
+    </p>
+  </main>
+
+  <script src="js/emotion.js"></script>
+  <script src="js/monitor.js"></script>
+</body>
+</html>

@@ -626,6 +626,15 @@
     URL.revokeObjectURL(url);
   });
 
+  // Monitor ao vivo: no Mac abre como janela pop-up estreita (fica num canto da
+  // tela durante a conversa); no iPhone, o navegador ignora o tamanho e abre em
+  // tela cheia, o que também serve.
+  $("openMonitor").addEventListener("click", () => {
+    const win = window.open("monitor.html", "vem-monitor",
+      "width=420,height=780,menubar=no,toolbar=no,location=no,status=no");
+    if (!win) window.location.href = "monitor.html"; // pop-up bloqueado
+  });
+
   // Verifica suporte
   if (!navigator.mediaDevices || !window.MediaRecorder) {
     hintEl.textContent = "Seu navegador não suporta gravação de áudio. Use Chrome, Edge ou Firefox recentes.";
