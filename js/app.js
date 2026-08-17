@@ -43,6 +43,10 @@
 
   // ---- Início / fim da gravação ----
   async function startRecording() {
+    if (monitorWin && !monitorWin.closed) {
+      hintEl.textContent = "Feche o monitor ao vivo antes de gravar — os dois usam o microfone.";
+      return;
+    }
     try {
       mediaStream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: false },
@@ -629,10 +633,18 @@
   // Monitor ao vivo: no Mac abre como janela pop-up estreita (fica num canto da
   // tela durante a conversa); no iPhone, o navegador ignora o tamanho e abre em
   // tela cheia, o que também serve.
+  let monitorWin = null;
+
   $("openMonitor").addEventListener("click", () => {
-    const win = window.open("monitor.html", "vem-monitor",
+    // Gravar e monitorar ao mesmo tempo faz as duas janelas disputarem o
+    // microfone — uma delas recebe silêncio. Melhor parar antes.
+    if (recording) {
+      alert("Pare a gravação antes de abrir o monitor: os dois disputam o microfone.");
+      return;
+    }
+    monitorWin = window.open("monitor.html", "vem-monitor",
       "width=420,height=780,menubar=no,toolbar=no,location=no,status=no");
-    if (!win) window.location.href = "monitor.html"; // pop-up bloqueado
+    if (!monitorWin) window.location.href = "monitor.html"; // pop-up bloqueado
   });
 
   // Verifica suporte

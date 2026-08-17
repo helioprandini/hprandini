@@ -26,6 +26,7 @@
   let running = false;
   let t0 = 0;
 
+  let maxEnergySeen = 0;    // para detectar stream mudo (mic tomado por outra aba)
   let frames = [];          // janela deslizante (descartada continuamente)
   let trend = [];           // {t, valence, energy, color} a cada ~1s
   let lastTrendAt = 0;
@@ -82,6 +83,7 @@
     sourceNode.connect(analyser);
 
     frames = []; trend = []; gridTrail = [];
+    maxEnergySeen = 0;
     t0 = performance.now();
     lastTrendAt = 0;
     running = true;
@@ -113,6 +115,7 @@
     const now = performance.now() - t0;
     const f = EmotionEngine.analyzeFrame(timeData, freqData, audioCtx.sampleRate, FFT_SIZE);
     frames.push({ ...f, t: now });
+    if (f.energy > maxEnergySeen) maxEnergySeen = f.energy;
 
     // Descarta o que saiu da janela — o monitor não guarda histórico.
     const cut = now - WINDOW_MS;
@@ -123,6 +126,17 @@
   }
 
   function render(now) {
+    // Stream aberto mas totalmente mudo: quase sempre é outra aba/app segurando
+    // o microfone. Sem este aviso o monitor fica eternamente "aguardando voz".
+    if (now > 3000 && maxEnergySeen < 0.001) {
+      $("monEmoji").textContent = "🔇";
+      $("monLabel").textContent = "Não estou recebendo áudio";
+      $("monLabel").style.color = "var(--valence)";
+      $("monConfText").textContent =
+        "Outra aba ou app pode estar usando o microfone — pare a gravação lá e reinicie aqui.";
+      return;
+    }
+
     const s = EmotionEngine.summarize(frames);
     const assessment = EmotionEngine.assess(frames);
 
