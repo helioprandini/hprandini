@@ -24,47 +24,65 @@ const EmotionEngine = (() => {
     return Math.sqrt(sum / timeData.length);
   }
 
-  // Detecção de pitch por autocorrelação (F0 em Hz). Retorna -1 se não houver
-  // voz clara (silêncio ou ruído).
+  /**
+   * Detecção de pitch por autocorrelação **normalizada** (F0 em Hz).
+   * Retorna -1 quando não há voz clara.
+   *
+   * A normalização por potência é essencial: a autocorrelação bruta escala com
+   * o quadrado da amplitude, então um limiar fixo sobre ela só aceitaria voz
+   * alta/perto do microfone. Normalizada, a medida fica em 0..1 e o limiar
+   * passa a significar "quão periódico é o sinal", independente do volume.
+   */
   function detectPitch(timeData, sampleRate) {
     const SIZE = timeData.length;
     const energy = rms(timeData);
     if (energy < 0.008) return -1; // silêncio / muito baixo
 
-    // Autocorrelação
-    let bestOffset = -1;
-    let bestCorr = 0;
-    let lastCorr = 1;
-    let foundGoodCorr = false;
+    const power = energy * energy; // = autocorrelação em offset 0
+    if (power <= 0) return -1;
 
     // Faixa útil da voz humana: ~70 Hz a ~500 Hz
     const minOffset = Math.floor(sampleRate / 500);
-    const maxOffset = Math.floor(sampleRate / 70);
+    const maxOffset = Math.min(Math.floor(sampleRate / 70), SIZE - 1);
+    if (maxOffset <= minOffset) return -1;
 
+    // Autocorrelação normalizada em toda a faixa
+    const corr = new Float32Array(maxOffset + 1);
+    let peak = 0;
     for (let offset = minOffset; offset <= maxOffset; offset++) {
-      let corr = 0;
-      for (let i = 0; i < SIZE - offset; i++) {
-        corr += timeData[i] * timeData[i + offset];
-      }
-      corr /= SIZE - offset;
+      let sum = 0;
+      const n = SIZE - offset;
+      for (let i = 0; i < n; i++) sum += timeData[i] * timeData[i + offset];
+      const c = sum / n / power;
+      corr[offset] = c;
+      if (c > peak) peak = c;
+    }
 
-      if (corr > 0.9 * bestCorr && corr > lastCorr) {
-        foundGoodCorr = true;
-        if (corr > bestCorr) {
-          bestCorr = corr;
-          bestOffset = offset;
-        }
-      } else if (foundGoodCorr && corr < lastCorr) {
-        // passou do primeiro pico -> encerra
+    // Abaixo disto o sinal não é periódico o bastante para ser voz.
+    const VOICING_THRESHOLD = 0.3;
+    if (peak < VOICING_THRESHOLD) return -1;
+
+    // Escolhe o PRIMEIRO pico próximo do máximo, não o máximo global: r(2T) é
+    // quase tão alto quanto r(T), e pegar o global erraria uma oitava abaixo.
+    let bestOffset = -1;
+    for (let offset = minOffset + 1; offset < maxOffset; offset++) {
+      if (corr[offset] >= 0.85 * peak &&
+          corr[offset] > corr[offset - 1] &&
+          corr[offset] >= corr[offset + 1]) {
+        bestOffset = offset;
         break;
       }
-      lastCorr = corr;
     }
+    if (bestOffset < 0) return -1;
 
-    if (bestOffset > 0 && bestCorr > 0.01) {
-      return sampleRate / bestOffset;
-    }
-    return -1;
+    // Interpolação parabólica: o período verdadeiro raramente cai exatamente
+    // sobre uma amostra. Isto reduz bastante o erro de F0.
+    const y0 = corr[bestOffset - 1], y1 = corr[bestOffset], y2 = corr[bestOffset + 1];
+    const denom = 2 * (2 * y1 - y0 - y2);
+    const shift = denom !== 0 ? (y2 - y0) / denom : 0;
+    const period = bestOffset + (Math.abs(shift) < 1 ? shift : 0);
+
+    return period > 0 ? sampleRate / period : -1;
   }
 
   // Centroide espectral (brilho) a partir do espectro de magnitude (Uint8Array 0-255).
@@ -409,5 +427,8 @@ const EmotionEngine = (() => {
     // camada dimensional
     assess, toDimensions, confidence, channelCoverage,
     CHANNELS, CONFIDENCE_FLOOR, INCONCLUSIVE,
+    // medição bruta — exposta para validação
+    // (research/benchmark/engine-validation.js)
+    rms, detectPitch, spectralCentroid,
   };
 })();

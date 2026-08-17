@@ -48,42 +48,68 @@ enum EmotionEngine {
         return result
     }
 
-    /// Detecção de pitch por autocorrelação. Retorna F0 em Hz, ou -1.
+    /// Detecção de pitch por autocorrelação **normalizada**. Retorna F0 em Hz,
+    /// ou -1 quando não há voz clara.
+    ///
+    /// A normalização por potência é essencial: a autocorrelação bruta escala
+    /// com o quadrado da amplitude, então um limiar fixo sobre ela só aceitaria
+    /// voz alta ou muito perto do microfone. Normalizada, a medida fica em 0..1
+    /// e o limiar passa a significar "quão periódico é o sinal", independente
+    /// do volume. (Espelha `js/emotion.js`; validado em
+    /// `research/benchmark/engine-validation.js`.)
     static func detectPitch(_ samples: [Float], sampleRate: Float) -> Float {
         let energy = rms(samples)
         if energy < 0.008 { return -1 }
 
+        let power = energy * energy      // = autocorrelação em offset 0
+        guard power > 0 else { return -1 }
+
         let size = samples.count
-        let minOffset = Int(sampleRate / 500)   // 500 Hz
-        let maxOffset = min(Int(sampleRate / 70), size - 1) // 70 Hz
-        guard maxOffset > minOffset else { return -1 }
+        let minOffset = Int(sampleRate / 500)                // 500 Hz
+        let maxOffset = min(Int(sampleRate / 70), size - 1)  // 70 Hz
+        guard maxOffset > minOffset + 1 else { return -1 }
 
-        var bestOffset = -1
-        var bestCorr: Float = 0
-        var lastCorr: Float = 1
-        var foundGood = false
-
-        var offset = minOffset
-        while offset <= maxOffset {
-            var corr: Float = 0
+        // Autocorrelação normalizada em toda a faixa
+        var corr = [Float](repeating: 0, count: maxOffset + 1)
+        var peak: Float = 0
+        for offset in minOffset...maxOffset {
+            var sum: Float = 0
             let n = size - offset
-            vDSP_dotpr(samples, 1, Array(samples[offset...]), 1, &corr, vDSP_Length(n))
-            corr /= Float(n)
+            samples.withUnsafeBufferPointer { buf in
+                vDSP_dotpr(buf.baseAddress!, 1,
+                           buf.baseAddress! + offset, 1,
+                           &sum, vDSP_Length(n))
+            }
+            let c = sum / Float(n) / power
+            corr[offset] = c
+            if c > peak { peak = c }
+        }
 
-            if corr > 0.9 * bestCorr && corr > lastCorr {
-                foundGood = true
-                if corr > bestCorr { bestCorr = corr; bestOffset = offset }
-            } else if foundGood && corr < lastCorr {
+        // Abaixo disto o sinal não é periódico o bastante para ser voz.
+        let voicingThreshold: Float = 0.3
+        guard peak >= voicingThreshold else { return -1 }
+
+        // Primeiro pico próximo do máximo (não o máximo global): r(2T) é quase
+        // tão alto quanto r(T), e pegar o global erraria uma oitava abaixo.
+        var bestOffset = -1
+        for offset in (minOffset + 1)..<maxOffset {
+            if corr[offset] >= 0.85 * peak,
+               corr[offset] > corr[offset - 1],
+               corr[offset] >= corr[offset + 1] {
+                bestOffset = offset
                 break
             }
-            lastCorr = corr
-            offset += 1
         }
+        guard bestOffset > 0 else { return -1 }
 
-        if bestOffset > 0 && bestCorr > 0.01 {
-            return sampleRate / Float(bestOffset)
-        }
-        return -1
+        // Interpolação parabólica: o período verdadeiro raramente cai exatamente
+        // sobre uma amostra. Reduz bastante o erro de F0.
+        let y0 = corr[bestOffset - 1], y1 = corr[bestOffset], y2 = corr[bestOffset + 1]
+        let denom = 2 * (2 * y1 - y0 - y2)
+        let shift = denom != 0 ? (y2 - y0) / denom : 0
+        let period = Float(bestOffset) + (abs(shift) < 1 ? shift : 0)
+
+        return period > 0 ? sampleRate / period : -1
     }
 
     /// Centroide espectral (brilho) a partir das magnitudes do espectro.
