@@ -109,44 +109,76 @@
   }
 
   // ---- Laço de leitura ----
+  //
+  // Blindado de propósito: uma exceção aqui congelaria a tela inteira, e o
+  // usuário só veria "nada acontece". O medidor de entrada é o que menos pode
+  // falhar — é o diagnóstico básico —, então ele vem antes de tudo e o resto
+  // roda protegido.
   function loop() {
     if (!running) return;
-    analyser.getFloatTimeDomainData(timeData);
-    analyser.getByteFrequencyData(freqData);
+    try {
+      analyser.getFloatTimeDomainData(timeData);
+      analyser.getByteFrequencyData(freqData);
 
-    const now = performance.now() - t0;
-    const f = EmotionEngine.analyzeFrame(timeData, freqData, audioCtx.sampleRate, FFT_SIZE);
-    frames.push({ ...f, t: now });
-    if (f.energy > maxEnergySeen) maxEnergySeen = f.energy;
+      const now = performance.now() - t0;
 
-    // Medidor de entrada: escala até 0.10 de RMS, que já é fala forte.
-    const lvl = Math.min(1, f.energy / 0.10);
-    const fill = $("inputFill");
-    fill.style.width = (lvl * 100).toFixed(0) + "%";
-    fill.classList.toggle("silent", f.energy < 0.002);
-    $("inputVal").textContent = f.energy.toFixed(4);
+      // 1) Medidor de entrada — nível bruto, sem depender do motor.
+      let energy = 0;
+      for (let i = 0; i < timeData.length; i++) energy += timeData[i] * timeData[i];
+      energy = Math.sqrt(energy / timeData.length);
+      if (energy > maxEnergySeen) maxEnergySeen = energy;
 
-    // Diagnóstico: mostra QUAL porta está barrando a detecção de voz. Sem isto
-    // só sabemos que "não detectou", e a calibração vira adivinhação.
-    diagFrames++;
-    if (f.voiced) diagVoiced++;
-    if (now - lastDiagAt > 400) {
-      lastDiagAt = now;
-      const det = EmotionEngine.pitchDetail(timeData, audioCtx.sampleRate);
-      const taxa = diagFrames ? Math.round((diagVoiced / diagFrames) * 100) : 0;
-      $("monDiag").textContent =
-        `periodicidade ${det.peak.toFixed(2)} (mín. 0,25) · ` +
-        (det.pitch > 0 ? `F0 ${det.pitch.toFixed(0)} Hz` : `sem F0: ${det.motivo}`) +
-        ` · voz em ${taxa}% dos quadros`;
-      diagFrames = 0; diagVoiced = 0;
+      const fill = $("inputFill");
+      fill.style.width = (Math.min(1, energy / 0.10) * 100).toFixed(0) + "%";
+      fill.classList.toggle("silent", energy < 0.002);
+      $("inputVal").textContent = energy.toFixed(4);
+
+      // 2) Análise — protegida: se o motor falhar, o medidor continua vivo.
+      try {
+        const f = EmotionEngine.analyzeFrame(timeData, freqData, audioCtx.sampleRate, FFT_SIZE);
+        frames.push({ ...f, t: now });
+
+        diagFrames++;
+        if (f.voiced) diagVoiced++;
+        if (now - lastDiagAt > 400) {
+          lastDiagAt = now;
+          const taxa = diagFrames ? Math.round((diagVoiced / diagFrames) * 100) : 0;
+          const det = typeof EmotionEngine.pitchDetail === "function"
+            ? EmotionEngine.pitchDetail(timeData, audioCtx.sampleRate)
+            : null;
+          $("monDiag").textContent = det
+            ? `periodicidade ${det.peak.toFixed(2)} (mín. 0,25) · ` +
+              (det.pitch > 0 ? `F0 ${det.pitch.toFixed(0)} Hz` : `sem F0: ${det.motivo}`) +
+              ` · voz em ${taxa}% dos quadros`
+            : `F0 ${f.pitch > 0 ? f.pitch.toFixed(0) + " Hz" : "não detectado"} · ` +
+              `voz em ${taxa}% dos quadros · (recarregue com ⌘+Shift+R para o diagnóstico completo)`;
+          diagFrames = 0; diagVoiced = 0;
+        }
+
+        const cut = now - WINDOW_MS;
+        while (frames.length && frames[0].t < cut) frames.shift();
+
+        render(now);
+      } catch (err) {
+        showError("Falha na análise", err);
+      }
+    } catch (err) {
+      showError("Falha na captura", err);
     }
-
-    // Descarta o que saiu da janela — o monitor não guarda histórico.
-    const cut = now - WINDOW_MS;
-    while (frames.length && frames[0].t < cut) frames.shift();
-
-    render(now);
     rafId = requestAnimationFrame(loop);
+  }
+
+  // Erro visível em vez de tela congelada. Só reporta o primeiro, para não
+  // sobrescrever a mensagem 60 vezes por segundo.
+  let errorShown = false;
+  function showError(contexto, err) {
+    console.error(contexto, err);
+    if (errorShown) return;
+    errorShown = true;
+    $("monDiag").textContent =
+      `⚠️ ${contexto}: ${err && err.message ? err.message : err}. ` +
+      `Tente recarregar com ⌘+Shift+R.`;
+    $("monDiag").style.color = "var(--danger)";
   }
 
   function render(now) {
