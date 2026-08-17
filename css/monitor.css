@@ -237,3 +237,13 @@
   .mon-label { font-size: 18px; }
   .mon-main { padding: 13px; gap: 14px; }
 }
+
+/* Diagnóstico de detecção — mostra qual porta barra o sinal */
+.mon-diag {
+  margin-top: 6px;
+  font-size: 9.5px;
+  color: var(--text-faint);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+}

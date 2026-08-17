@@ -48,54 +48,100 @@ const EmotionEngine = (() => {
    * passa a significar "quão periódico é o sinal", independente do volume.
    */
   function detectPitch(timeData, sampleRate) {
+    return pitchDetail(timeData, sampleRate).pitch;
+  }
+
+  /**
+   * Igual a `detectPitch`, mas devolve também os valores intermediários — usado
+   * pelo diagnóstico do monitor para mostrar QUAL porta barrou o sinal, em vez
+   * de apenas "não detectado".
+   */
+  function pitchDetail(timeData, sampleRate) {
     const SIZE = timeData.length;
-    const energy = rms(timeData);
-    if (energy < VOICE_ENERGY_FLOOR) return -1; // silêncio / ruído de sala
+
+    // Remove o componente contínuo (DC). Microfone real quase sempre tem um
+    // desvio de linha de base; sem retirá-lo, ele infla a correlação em TODOS os
+    // atrasos e apaga o pico do período — a fala fica indetectável mesmo com
+    // sinal forte. Sinais sintéticos não têm esse desvio, por isso o problema só
+    // aparecia com áudio de verdade.
+    let mean = 0;
+    for (let i = 0; i < SIZE; i++) mean += timeData[i];
+    mean /= SIZE;
+
+    const x = new Float32Array(SIZE);
+    let sumSq = 0;
+    for (let i = 0; i < SIZE; i++) {
+      const v = timeData[i] - mean;
+      x[i] = v;
+      sumSq += v * v;
+    }
+    const energy = Math.sqrt(sumSq / SIZE);
+    if (energy < VOICE_ENERGY_FLOOR) {
+      return { pitch: -1, energy, peak: 0, motivo: "energia abaixo do piso" };
+    }
 
     const power = energy * energy; // = autocorrelação em offset 0
-    if (power <= 0) return -1;
+    if (power <= 0) return { pitch: -1, energy, peak: 0, motivo: "sem potência" };
 
     // Faixa útil da voz humana: ~70 Hz a ~500 Hz
     const minOffset = Math.floor(sampleRate / 500);
     const maxOffset = Math.min(Math.floor(sampleRate / 70), SIZE - 1);
-    if (maxOffset <= minOffset) return -1;
+    if (maxOffset <= minOffset + 1) {
+      return { pitch: -1, energy, peak: 0, motivo: "janela curta demais" };
+    }
 
     // Autocorrelação normalizada em toda a faixa
-    const corr = new Float32Array(maxOffset + 1);
+    const corr = new Float32Array(maxOffset + 2);
     let peak = 0;
     for (let offset = minOffset; offset <= maxOffset; offset++) {
       let sum = 0;
       const n = SIZE - offset;
-      for (let i = 0; i < n; i++) sum += timeData[i] * timeData[i + offset];
+      for (let i = 0; i < n; i++) sum += x[i] * x[i + offset];
       const c = sum / n / power;
       corr[offset] = c;
       if (c > peak) peak = c;
     }
 
-    // Abaixo disto o sinal não é periódico o bastante para ser voz.
-    if (peak < VOICING_THRESHOLD) return -1;
+    if (peak < VOICING_THRESHOLD) {
+      return { pitch: -1, energy, peak, motivo: "pouco periódico (não é voz)" };
+    }
 
     // Escolhe o PRIMEIRO pico próximo do máximo, não o máximo global: r(2T) é
     // quase tão alto quanto r(T), e pegar o global erraria uma oitava abaixo.
+    // A busca inclui minOffset — em voz aguda o período verdadeiro pode cair
+    // justamente na borda da faixa.
     let bestOffset = -1;
-    for (let offset = minOffset + 1; offset < maxOffset; offset++) {
+    for (let offset = minOffset; offset < maxOffset; offset++) {
+      const prev = offset > minOffset ? corr[offset - 1] : -Infinity;
       if (corr[offset] >= 0.85 * peak &&
-          corr[offset] > corr[offset - 1] &&
+          corr[offset] > prev &&
           corr[offset] >= corr[offset + 1]) {
         bestOffset = offset;
         break;
       }
     }
-    if (bestOffset < 0) return -1;
+    // Se nenhum pico local se destacou, usa o máximo global em vez de desistir.
+    if (bestOffset < 0) {
+      for (let offset = minOffset; offset <= maxOffset; offset++) {
+        if (corr[offset] === peak) { bestOffset = offset; break; }
+      }
+    }
+    if (bestOffset < 0) {
+      return { pitch: -1, energy, peak, motivo: "sem pico utilizável" };
+    }
 
     // Interpolação parabólica: o período verdadeiro raramente cai exatamente
     // sobre uma amostra. Isto reduz bastante o erro de F0.
-    const y0 = corr[bestOffset - 1], y1 = corr[bestOffset], y2 = corr[bestOffset + 1];
+    const y0 = bestOffset > minOffset ? corr[bestOffset - 1] : corr[bestOffset];
+    const y1 = corr[bestOffset];
+    const y2 = corr[bestOffset + 1];
     const denom = 2 * (2 * y1 - y0 - y2);
     const shift = denom !== 0 ? (y2 - y0) / denom : 0;
     const period = bestOffset + (Math.abs(shift) < 1 ? shift : 0);
 
-    return period > 0 ? sampleRate / period : -1;
+    return period > 0
+      ? { pitch: sampleRate / period, energy, peak, motivo: null }
+      : { pitch: -1, energy, peak, motivo: "período inválido" };
   }
 
   // Centroide espectral (brilho) a partir do espectro de magnitude (Uint8Array 0-255).
@@ -442,6 +488,6 @@ const EmotionEngine = (() => {
     CHANNELS, CONFIDENCE_FLOOR, INCONCLUSIVE,
     // medição bruta — exposta para validação
     // (research/benchmark/engine-validation.js)
-    rms, detectPitch, spectralCentroid,
+    rms, detectPitch, pitchDetail, spectralCentroid,
   };
 })();

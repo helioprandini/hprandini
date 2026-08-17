@@ -27,6 +27,7 @@
   let t0 = 0;
 
   let maxEnergySeen = 0;    // para detectar stream mudo (mic tomado por outra aba)
+  let diagFrames = 0, diagVoiced = 0, lastDiagAt = 0; // diagnóstico de detecção
   let frames = [];          // janela deslizante (descartada continuamente)
   let trend = [];           // {t, valence, energy, color} a cada ~1s
   let lastTrendAt = 0;
@@ -84,6 +85,7 @@
 
     frames = []; trend = []; gridTrail = [];
     maxEnergySeen = 0;
+    diagFrames = 0; diagVoiced = 0; lastDiagAt = 0;
     t0 = performance.now();
     lastTrendAt = 0;
     running = true;
@@ -123,6 +125,21 @@
     fill.style.width = (lvl * 100).toFixed(0) + "%";
     fill.classList.toggle("silent", f.energy < 0.002);
     $("inputVal").textContent = f.energy.toFixed(4);
+
+    // Diagnóstico: mostra QUAL porta está barrando a detecção de voz. Sem isto
+    // só sabemos que "não detectou", e a calibração vira adivinhação.
+    diagFrames++;
+    if (f.voiced) diagVoiced++;
+    if (now - lastDiagAt > 400) {
+      lastDiagAt = now;
+      const det = EmotionEngine.pitchDetail(timeData, audioCtx.sampleRate);
+      const taxa = diagFrames ? Math.round((diagVoiced / diagFrames) * 100) : 0;
+      $("monDiag").textContent =
+        `periodicidade ${det.peak.toFixed(2)} (mín. 0,25) · ` +
+        (det.pitch > 0 ? `F0 ${det.pitch.toFixed(0)} Hz` : `sem F0: ${det.motivo}`) +
+        ` · voz em ${taxa}% dos quadros`;
+      diagFrames = 0; diagVoiced = 0;
+    }
 
     // Descarta o que saiu da janela — o monitor não guarda histórico.
     const cut = now - WINDOW_MS;

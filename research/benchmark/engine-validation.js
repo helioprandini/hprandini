@@ -117,6 +117,47 @@ record("reject", "ruído branco não produz F0 na faixa vocal",
   `retornou ${noisePitch > 0 ? noisePitch.toFixed(1) + " Hz" : "-1"}`);
 
 // =====================================================================
+console.log("\n\x1b[1m2b. Condições de microfone real\x1b[0m");
+console.log("  \x1b[90mmicrofone sempre traz desvio de linha de base e ruído de sala\x1b[0m\n");
+
+// Desvio DC: some um valor constante ao sinal (linha de base deslocada).
+function withDC(signal, dc) {
+  const out = new Float32Array(signal.length);
+  for (let i = 0; i < signal.length; i++) out[i] = signal[i] + dc;
+  return out;
+}
+
+// Ruído aditivo: simula sala com ar-condicionado, tráfego, etc.
+function withNoise(signal, level) {
+  const n = noise(level, signal.length);
+  const out = new Float32Array(signal.length);
+  for (let i = 0; i < signal.length; i++) out[i] = signal[i] + n[i];
+  return out;
+}
+
+for (const dc of [0.01, 0.05, 0.15]) {
+  const sig = withDC(vowel(150), dc);
+  const measured = E.detectPitch(Array.from(sig), SR);
+  const err = measured > 0 ? Math.abs(measured - 150) / 150 * 100 : 100;
+  record("real", `desvio DC de ${dc}`, err < 5,
+    `medido ${measured > 0 ? measured.toFixed(1) + " Hz" : "não detectado"} · erro ${err.toFixed(1)}%`);
+}
+
+for (const nl of [0.02, 0.05]) {
+  const sig = withNoise(vowel(150), nl);
+  const measured = E.detectPitch(Array.from(sig), SR);
+  const err = measured > 0 ? Math.abs(measured - 150) / 150 * 100 : 100;
+  record("real", `ruído de sala ${nl}`, err < 8,
+    `medido ${measured > 0 ? measured.toFixed(1) + " Hz" : "não detectado"} · erro ${err.toFixed(1)}%`);
+}
+
+// Voz distante: sinal fraco mas ainda audível
+const distante = vowel(150, { amp: 0.02 });
+const mDist = E.detectPitch(Array.from(distante), SR);
+record("real", "voz a distância (amplitude 0.02)", mDist > 0 && Math.abs(mDist - 150) / 150 < 0.05,
+  `medido ${mDist > 0 ? mDist.toFixed(1) + " Hz" : "não detectado"}`);
+
+// =====================================================================
 console.log("\n\x1b[1m3. Energia (RMS)\x1b[0m\n");
 
 for (const amp of [0.05, 0.10, 0.20]) {
