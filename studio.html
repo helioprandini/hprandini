@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estúdio de anotação — Voice&amp;Emotion</title>
+  <link rel="stylesheet" href="css/styles.css?v=20260817b" />
+  <link rel="stylesheet" href="css/studio.css?v=20260817b" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <g stroke="#fff" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="9.5" x2="3" y2="12.5" opacity=".75"/>
+            <line x1="7.5" y1="6.5" x2="7.5" y2="15.5" opacity=".9"/>
+            <line x1="12" y1="3" x2="12" y2="19"/>
+            <line x1="16.5" y1="6" x2="16.5" y2="16" opacity=".9"/>
+            <line x1="21" y1="9" x2="21" y2="13" opacity=".75"/>
+          </g>
+        </svg>
+      </div>
+      <div>
+        <h1>Estúdio de anotação</h1>
+        <p class="tagline">Ensine a AE com as suas gravações</p>
+      </div>
+    </div>
+    <a href="index.html" class="btn ghost sm">← Voltar</a>
+  </header>
+
+  <main>
+    <!-- 1. Carregar -->
+    <section class="card" id="loadCard">
+      <h2>1 · Carregue suas gravações</h2>
+      <p class="std-note">
+        Arquivos de áudio do seu gravador (Plaud, celular, o que for) — MP3, WAV,
+        M4A. <strong>Tudo é processado aqui no seu computador</strong>: o áudio
+        não sobe para lugar nenhum.
+      </p>
+
+      <div class="std-drop" id="dropZone">
+        <input type="file" id="fileInput" accept="audio/*" multiple hidden />
+        <div class="std-drop-inner">
+          <div class="std-drop-icon">🎧</div>
+          <div><strong>Arraste os áudios aqui</strong> ou clique para escolher</div>
+          <div class="std-drop-sub">Pode carregar vários de uma vez</div>
+        </div>
+      </div>
+
+      <div class="std-warn">
+        ⚖️ Reuniões têm a voz de outras pessoas. Use gravações que você tem
+        permissão para guardar, e rotule <strong>o que você sentiu</strong> —
+        nunca o que você imagina que os outros sentiram.
+      </div>
+
+      <div class="std-progress" id="progressBox" hidden>
+        <div class="std-progress-label" id="progressLabel">Analisando…</div>
+        <div class="bar"><div class="fill energy" id="progressFill"></div></div>
+      </div>
+    </section>
+
+    <!-- 2. Anotar -->
+    <section class="card" id="annotateCard" hidden>
+      <div class="std-head">
+        <h2>2 · Como você se sentiu aqui?</h2>
+        <div class="std-counter" id="segCounter">—</div>
+      </div>
+
+      <div class="std-blind">
+        🙈 <strong>Rotulação às cegas.</strong> Você marca primeiro; o palpite do
+        motor aparece só depois. Se você visse antes, sua resposta ficaria
+        contaminada — e o dataset não serviria para validar nada.
+      </div>
+
+      <div class="std-player">
+        <button id="playBtn" class="std-play">▶︎ Ouvir trecho</button>
+        <div class="std-timecode" id="timecode">—</div>
+        <canvas id="segWave" class="std-wave" height="54"></canvas>
+      </div>
+
+      <p class="gt-q">Quem está falando neste trecho?</p>
+      <div class="gt-row" id="speakerRow">
+        <button class="chip" data-spk="eu">🙋 Sou eu</button>
+        <button class="chip" data-spk="outro">👤 Outra pessoa</button>
+        <button class="chip" data-spk="mistura">👥 Os dois</button>
+        <button class="chip" data-spk="ninguem">🔇 Ninguém / ruído</button>
+      </div>
+
+      <p class="gt-q">Marque o ponto que representa o que você sentiu neste trecho</p>
+      <div class="grid-wrap">
+        <div class="grid-axis-y"><span>agitado</span><span>quieto</span></div>
+        <div class="grid-main">
+          <canvas id="stdGrid" class="affect-grid" width="440" height="440"
+                  role="button" tabindex="0"
+                  aria-label="Grade de afeto: valência no eixo horizontal, ativação no vertical"></canvas>
+          <div class="grid-axis-x"><span>desagradável</span><span>agradável</span></div>
+        </div>
+      </div>
+      <div class="grid-readout" id="stdReadout">Nenhum ponto marcado ainda</div>
+
+      <p class="gt-q">Um nome para isso <span class="std-optional">(opcional)</span></p>
+      <div class="gt-row" id="feelRow">
+        <button class="chip" data-feel="confiante">😎 Confiante</button>
+        <button class="chip" data-feel="animado">😃 Animado</button>
+        <button class="chip" data-feel="calmo">🙂 Calmo</button>
+        <button class="chip" data-feel="neutro">😐 Neutro</button>
+        <button class="chip" data-feel="tenso">😧 Tenso</button>
+        <button class="chip" data-feel="irritado">😠 Irritado</button>
+        <button class="chip" data-feel="desanimado">😔 Desanimado</button>
+        <button class="chip" data-feel="cansado">🥱 Cansado</button>
+      </div>
+
+      <div class="std-actions">
+        <button id="skipBtn" class="btn ghost">Pular trecho</button>
+        <button id="saveBtn" class="btn primary" disabled>Salvar e revelar →</button>
+      </div>
+
+      <!-- Revelação: só depois do rótulo -->
+      <div class="std-reveal" id="revealBox" hidden>
+        <h3>O que o motor achou</h3>
+        <div class="std-compare">
+          <div class="std-side">
+            <div class="std-side-label">Você sentiu</div>
+            <div class="std-side-val" id="revealYou">—</div>
+          </div>
+          <div class="std-vs" id="revealVerdict">—</div>
+          <div class="std-side">
+            <div class="std-side-label">O motor leu</div>
+            <div class="std-side-val" id="revealEngine">—</div>
+          </div>
+        </div>
+        <div class="std-reveal-detail" id="revealDetail"></div>
+        <button id="nextBtn" class="btn primary">Próximo trecho →</button>
+      </div>
+    </section>
+
+    <!-- 3. Resultado -->
+    <section class="card" id="statsCard" hidden>
+      <h2>3 · O que já temos</h2>
+      <div class="std-stats" id="statsGrid"></div>
+      <div class="std-actions">
+        <button id="exportBtn" class="btn primary">⬇️ Exportar dataset</button>
+        <button id="clearBtn" class="btn ghost">Limpar anotações</button>
+      </div>
+      <p class="std-note" id="accuracyNote"></p>
+    </section>
+
+    <p class="disclaimer">
+      🔒 Áudio e anotações ficam no seu computador. O dataset exportado contém
+      apenas <strong>números e rótulos</strong> — nunca o áudio.
+    </p>
+  </main>
+
+  <audio id="audioEl" hidden></audio>
+  <script src="js/emotion.js?v=20260817b"></script>
+  <script src="js/fft.js?v=20260817b"></script>
+  <script src="js/studio.js?v=20260817b"></script>
+</body>
+</html>
