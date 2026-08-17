@@ -35,23 +35,42 @@
   const freqData = new Uint8Array(FFT_SIZE / 2);
 
   // ---- Consentimento ----
+  let consented = false;
+
   $("acceptBtn").addEventListener("click", () => {
+    consented = true;
     $("consentCard").hidden = true;
     $("monMain").hidden = false;
+    $("toggleBtn").disabled = false;
     drawGrid();
     drawTrend();
+    start(); // já começa: o usuário acabou de dizer que quer começar
   });
 
   // ---- Liga / desliga ----
-  $("toggleBtn").addEventListener("click", () => (running ? stop() : start()));
+  $("toggleBtn").addEventListener("click", () => {
+    if (!consented) return;
+    running ? stop() : start();
+  });
 
   async function start() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      fail("Microfone indisponível",
+           "Abra por http://localhost (não por arquivo) e use Chrome, Edge, Safari ou Firefox.");
+      return;
+    }
+    $("monEmoji").textContent = "⏳";
+    $("monLabel").textContent = "Pedindo acesso ao microfone…";
+
     try {
       stream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: false },
       });
     } catch (err) {
-      $("monLabel").textContent = "Sem acesso ao microfone";
+      fail("Sem acesso ao microfone",
+           err && err.name === "NotAllowedError"
+             ? "Permissão negada. Libere o microfone para este site e clique em Iniciar."
+             : "Não foi possível abrir o microfone: " + (err && err.name ? err.name : "erro"));
       console.error(err);
       return;
     }
@@ -194,6 +213,18 @@
 
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
+  /** Falhas precisam aparecer na tela, não só no console. */
+  function fail(title, detail) {
+    running = false;
+    $("monEmoji").textContent = "⚠️";
+    $("monLabel").textContent = title;
+    $("monLabel").style.color = "var(--danger)";
+    $("monConfText").textContent = detail;
+    $("toggleBtn").textContent = "Iniciar";
+    $("toggleBtn").classList.remove("on");
+    $("liveDot").classList.remove("live");
+  }
+
   // ---- Mapa valência × ativação, com rastro ----
   function drawGrid() {
     const cv = $("monGrid");
@@ -241,8 +272,16 @@
   function drawTrend() {
     const cv = $("monTrend");
     const ctx = cv.getContext("2d");
-    const w = (cv.width = cv.clientWidth * devicePixelRatio);
-    const h = (cv.height = cv.clientHeight * devicePixelRatio);
+    // Só redimensiona quando muda: atribuir width/height limpa o canvas e é
+    // caro para fazer a cada quadro.
+    const wantW = Math.round(cv.clientWidth * devicePixelRatio);
+    const wantH = Math.round(cv.clientHeight * devicePixelRatio);
+    if (wantW > 0 && (cv.width !== wantW || cv.height !== wantH)) {
+      cv.width = wantW;
+      cv.height = wantH;
+    }
+    const w = cv.width, h = cv.height;
+    if (!w || !h) return;
     ctx.clearRect(0, 0, w, h);
     if (trend.length < 2) return;
 

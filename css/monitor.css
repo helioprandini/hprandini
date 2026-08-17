@@ -63,8 +63,13 @@
   cursor: pointer;
   transition: all 0.14s ease;
 }
-.mon-toggle:hover { filter: brightness(1.08); }
+.mon-toggle:hover:not(:disabled) { filter: brightness(1.08); }
 .mon-toggle.on { background: var(--bg-inset); color: var(--text); }
+.mon-toggle:disabled {
+  background: var(--bg-inset);
+  color: var(--text-faint);
+  cursor: not-allowed;
+}
 
 /* Consentimento */
 .mon-consent {

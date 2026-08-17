@@ -14,7 +14,10 @@
       <span class="mon-dot" id="liveDot"></span>
       <span>Monitor ao vivo</span>
     </div>
-    <button id="toggleBtn" class="mon-toggle">Iniciar</button>
+    <!-- Fica desabilitado até o consentimento ser aceito: sem isso o usuário
+         clica em Iniciar com o painel de leitura ainda oculto e o monitor
+         parece morto. -->
+    <button id="toggleBtn" class="mon-toggle" disabled>Iniciar</button>
   </header>
 
   <!-- Consentimento: aparece antes de qualquer captura -->
