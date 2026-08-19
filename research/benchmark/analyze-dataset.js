@@ -18,8 +18,19 @@ if (!file) {
 }
 
 const data = JSON.parse(fs.readFileSync(file, "utf8"));
-const amostras = (data.amostras || []).filter(
+const todas = data.amostras || [];
+
+// A precisão só é honesta sobre trechos em que a voz MEDIDA é a de quem
+// rotulou. Se outra pessoa fala, o motor lê a voz dela enquanto o rótulo
+// descreve o sentimento de quem ouve — o par sinal↔rótulo não existe.
+const comRotulo = todas.filter(
   (a) => a.relatado && a.relatado.affect && a.inferido && a.inferido.dimensoes
+);
+const amostras = comRotulo.filter(
+  (a) => a.qualidade === "limpa" || (!a.qualidade && a.relatado.speaker === "eu")
+);
+const misturadas = comRotulo.filter(
+  (a) => a.qualidade === "misturada" || (!a.qualidade && a.relatado.speaker === "mistura")
 );
 
 if (!amostras.length) {
@@ -45,7 +56,12 @@ function pearson(x, y) {
 }
 
 console.log(`\n\x1b[1mDATASET:\x1b[0m ${file}`);
-console.log(`${amostras.length} amostras rotuladas por humano\n`);
+console.log(`${todas.length} trechos registrados · ${amostras.length} com a voz de quem rotulou` +
+  (misturadas.length ? ` · \x1b[33m${misturadas.length} com vozes misturadas (fora da conta)\x1b[0m` : "") +
+  `\n`);
+if (misturadas.length) {
+  console.log(`\x1b[90mTrechos com mais de uma voz ficam de fora: o sinal acústico não é só de\nquem rotulou, então o par sinal↔rótulo não é limpo.\x1b[0m\n`);
+}
 
 // ---------- Tabela ----------
 console.log("\x1b[1m  #  quem      sentiu       VOCÊ val/ativ   MOTOR val/ativ   erro val  erro ativ\x1b[0m");

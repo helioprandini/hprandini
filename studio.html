@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Estúdio de anotação — Voice&amp;Emotion</title>
-  <link rel="stylesheet" href="css/styles.css?v=20260819d" />
-  <link rel="stylesheet" href="css/studio.css?v=20260819d" />
+  <link rel="stylesheet" href="css/styles.css?v=20260819e" />
+  <link rel="stylesheet" href="css/studio.css?v=20260819e" />
 </head>
 <body>
   <header class="topbar">
@@ -94,6 +94,11 @@
       </div>
 
       <p class="gt-q">Quem está falando neste trecho? <span class="std-optional">(obrigatório)</span></p>
+      <p class="std-speaker-note">
+        Se for outra pessoa, não peço o rótulo emocional: o motor estaria medindo
+        a voz dela enquanto você descreveria o seu sentimento — dois fenômenos
+        diferentes no mesmo registro. O trecho é só marcado e seguimos.
+      </p>
       <div class="gt-row" id="speakerRow">
         <button class="chip" data-spk="eu">🙋 Sou eu</button>
         <button class="chip" data-spk="outro">👤 Outra pessoa</button>
@@ -101,6 +106,8 @@
         <button class="chip" data-spk="ninguem">🔇 Ninguém / ruído</button>
       </div>
 
+      <!-- Só faz sentido quando a voz medida é a de quem rotula. -->
+      <div id="gridBlock">
       <p class="gt-q">👆 Clique <strong>dentro do quadrado</strong> abaixo, no ponto que representa o que você sentiu <span class="std-optional">(obrigatório)</span></p>
 
       <details class="std-guide">
@@ -182,6 +189,7 @@
         <button class="chip" data-feel="desanimado">😔 Desanimado</button>
         <button class="chip" data-feel="cansado">🥱 Cansado</button>
       </div>
+      </div><!-- /gridBlock -->
 
       <div class="std-actions">
         <button id="skipBtn" class="btn ghost">Pular trecho</button>
@@ -226,9 +234,9 @@
   </main>
 
   <audio id="audioEl" hidden></audio>
-  <script src="js/affectgrid.js?v=20260819d"></script>
-  <script src="js/emotion.js?v=20260819d"></script>
-  <script src="js/fft.js?v=20260819d"></script>
-  <script src="js/studio.js?v=20260819d"></script>
+  <script src="js/affectgrid.js?v=20260819e"></script>
+  <script src="js/emotion.js?v=20260819e"></script>
+  <script src="js/fft.js?v=20260819e"></script>
+  <script src="js/studio.js?v=20260819e"></script>
 </body>
 </html>

@@ -258,20 +258,38 @@
   wireRow("speakerRow", "spk", "speaker");
   wireRow("feelRow", "feel", "feeling");
 
+  /**
+   * O rótulo emocional só faz sentido quando a voz medida é a de quem rotula.
+   *
+   * Se quem fala é outra pessoa, o motor mede a voz DELA enquanto o rótulo seria
+   * o sentimento de quem ouve — dois fenômenos diferentes colados no mesmo
+   * registro. Treinar com isso ensina o motor a associar a voz de alguém ao
+   * estado de outro. Por isso esses trechos são registrados sem rótulo
+   * emocional: continuam úteis (marcam onde NÃO é a voz do usuário, o que serve
+   * à futura separação de falantes), mas não entram na conta de precisão.
+   */
+  const PRECISA_ROTULO = (spk) => spk === "eu" || spk === "mistura";
+
   function updateSaveState() {
-    // Exige quem fala + o ponto na grade: são os dois campos que dão valor
-    // científico ao rótulo. O nome da emoção é complemento.
-    //
-    // E DIZ o que falta: um botão desabilitado sem explicação trava o usuário
-    // sem ele entender por quê — foi exatamente o que aconteceu no primeiro uso.
     const falta = [];
     if (!label.speaker) falta.push("marcar <strong>quem está falando</strong>");
-    if (!label.affect) falta.push("<strong>clicar dentro do quadrado colorido</strong> (a grade acima)");
+    if (label.speaker && PRECISA_ROTULO(label.speaker) && !label.affect) {
+      falta.push("<strong>clicar dentro do quadrado colorido</strong> (a grade acima)");
+    }
 
+    const soRegistrar = label.speaker && !PRECISA_ROTULO(label.speaker);
     $("saveBtn").disabled = falta.length > 0;
+    $("saveBtn").textContent = soRegistrar ? "Registrar e seguir →" : "Salvar e revelar →";
+
+    // A grade some quando não é a voz do usuário: pedir o rótulo ali seria pedir
+    // que ele adivinhe o que outra pessoa sentiu.
+    $("gridBlock").hidden = soRegistrar;
+
     $("missingHint").innerHTML = falta.length
       ? "Para salvar, falta: " + falta.join(" e ") + "."
-      : "✓ Pronto para salvar.";
+      : soRegistrar
+        ? "✓ Trecho de outra voz — vou registrar sem rótulo emocional, como deve ser."
+        : "✓ Pronto para salvar.";
     $("missingHint").classList.toggle("ready", falta.length === 0);
   }
 
@@ -325,6 +343,16 @@
     const a = seg.assessment;
     const eng = a.inferido.dimensoes;
 
+    const temRotulo = PRECISA_ROTULO(label.speaker) && !!label.affect;
+
+    // Qualidade da amostra — decide o que entra na conta de precisão:
+    //   limpa      → só a voz de quem rotulou; par sinal↔rótulo é válido
+    //   misturada  → duas vozes no mesmo trecho; o sinal não é só dele
+    //   sem_rotulo → outra pessoa ou ruído; serve para separar falantes depois
+    const qualidade = label.speaker === "eu" ? "limpa"
+                    : label.speaker === "mistura" ? "misturada"
+                    : "sem_rotulo";
+
     const registro = {
       id: seg.id,
       arquivo: seg.arquivo,
@@ -332,17 +360,24 @@
       fimMs: seg.fimMs,
       fonte: "voz",
       origem_rotulo: "humano",     // nunca misturar com rótulo de IA
-      canais: { autorrelato: true, paralinguistico: true,
+      qualidade,
+      canais: { autorrelato: temRotulo, paralinguistico: true,
                 verbal: false, facial: false, corporal: false, interacional: false },
-      relatado: { ...label },
+      relatado: temRotulo
+        ? { ...label }
+        : { speaker: label.speaker, affect: null, feeling: null,
+            nota: "Voz de outra pessoa ou ruído — sem rótulo emocional, por construção." },
       observado: a.observado,
       inferido: { dimensoes: eng, confianca: a.confianca, inconclusivo: a.inconclusivo,
                   categoria: seg.resumo ? seg.resumo.dominant.key : null },
       anotadoEm: new Date().toISOString(),
     };
     saveRecord(registro);
-    reveal(registro);
     renderStats();
+
+    // Sem rótulo não há o que comparar: segue direto para o próximo trecho.
+    if (!temRotulo) { current++; showSegment(); return; }
+    reveal(registro);
   });
 
   function reveal(reg) {
@@ -402,8 +437,13 @@
 
   function renderStats() {
     const all = loadAll();
-    const meus = all.filter((r) => r.relatado.speaker === "eu");
-    const validos = all.filter((r) => !r.inferido.inconclusivo && r.relatado.affect);
+    // A precisão só é honesta sobre trechos em que a voz medida é a de quem
+    // rotulou. Trechos de outra voz ou com vozes misturadas ficam guardados,
+    // mas fora da conta — senão o número mediria outra coisa.
+    const limpas = all.filter((r) => r.qualidade === "limpa" ||
+                                     (!r.qualidade && r.relatado && r.relatado.speaker === "eu"));
+    const validos = limpas.filter((r) => r.relatado && r.relatado.affect &&
+                                         r.inferido && !r.inferido.inconclusivo);
 
     let acertos = 0, somaErro = 0;
     validos.forEach((r) => {
@@ -417,8 +457,8 @@
     const taxa = validos.length ? Math.round((acertos / validos.length) * 100) : null;
 
     $("statsGrid").innerHTML = [
-      [all.length, "trechos anotados"],
-      [meus.length, "com a sua voz"],
+      [all.length, "trechos registrados"],
+      [limpas.length, "só com a sua voz"],
       [taxa === null ? "—" : taxa + "%", "leituras que bateram"],
       [erroMedio === null ? "—" : erroMedio.toFixed(2), "erro médio (0 = perfeito)"],
     ].map(([v, l]) =>
@@ -426,8 +466,8 @@
     ).join("");
 
     $("accuracyNote").textContent = validos.length < 20
-      ? `Com ${validos.length} trechos ainda é cedo para tirar conclusões — a partir de ~50 o número começa a significar alguma coisa.`
-      : `Baseado em ${validos.length} trechos rotulados por você. Este é o número real da precisão do motor hoje.`;
+      ? `A precisão é calculada só sobre os ${validos.length} trecho(s) com a sua voz e rótulo — trechos de outras vozes ficam guardados, mas fora da conta. Abaixo de ~50 o número ainda não significa muito.`
+      : `Baseado em ${validos.length} trechos da sua própria voz, rotulados por você. Este é o número real da precisão do motor hoje.`;
   }
 
   // ---------- Exportar / limpar ----------
