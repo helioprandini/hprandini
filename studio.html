@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Estúdio de anotação — Voice&amp;Emotion</title>
-  <link rel="stylesheet" href="css/styles.css?v=20260819c" />
-  <link rel="stylesheet" href="css/studio.css?v=20260819c" />
+  <link rel="stylesheet" href="css/styles.css?v=20260819d" />
+  <link rel="stylesheet" href="css/studio.css?v=20260819d" />
 </head>
 <body>
   <header class="topbar">
@@ -102,6 +102,68 @@
       </div>
 
       <p class="gt-q">👆 Clique <strong>dentro do quadrado</strong> abaixo, no ponto que representa o que você sentiu <span class="std-optional">(obrigatório)</span></p>
+
+      <details class="std-guide">
+        <summary>Como marcar? — guia rápido dos dois eixos</summary>
+        <div class="std-guide-body">
+          <p>
+            São <strong>duas perguntas independentes</strong>. Responda uma de
+            cada vez, e não pense em "que emoção é essa" — pense nas duas.
+          </p>
+
+          <div class="std-axis">
+            <div class="std-axis-name">↔️ Horizontal — <strong>era agradável estar ali?</strong></div>
+            <p>
+              Não é se a reunião foi produtiva, nem se você se saiu bem. É se
+              <em>a sensação</em> era boa ou ruim.
+            </p>
+            <ul>
+              <li><strong>Bem à direita</strong> — ótimo, prazeroso, queria mais daquilo</li>
+              <li><strong>Direita</strong> — confortável, tranquilo</li>
+              <li><strong>Centro</strong> — indiferente, nem bom nem ruim</li>
+              <li><strong>Esquerda</strong> — incômodo, desagradável</li>
+              <li><strong>Bem à esquerda</strong> — péssimo, angustiante</li>
+            </ul>
+          </div>
+
+          <div class="std-axis">
+            <div class="std-axis-name">↕️ Vertical — <strong>quanta energia no corpo?</strong></div>
+            <p>
+              Não é o quanto você falou. É o quanto seu corpo estava ligado —
+              coração, respiração, prontidão.
+            </p>
+            <ul>
+              <li><strong>Bem em cima</strong> — acelerado, adrenalina, muito ligado</li>
+              <li><strong>Em cima</strong> — alerta, energizado</li>
+              <li><strong>Meio</strong> — normal</li>
+              <li><strong>Embaixo</strong> — tranquilo, desacelerado</li>
+              <li><strong>Bem embaixo</strong> — sem energia, apático, sonolento</li>
+            </ul>
+          </div>
+
+          <div class="std-axis">
+            <div class="std-axis-name">🗺️ Onde as emoções costumam cair</div>
+            <table class="std-map">
+              <tr><th>Se você sentiu…</th><th>horizontal</th><th>vertical</th></tr>
+              <tr><td>Entusiasmado, empolgado</td><td>bem à direita</td><td>bem em cima</td></tr>
+              <tr><td>Confiante, no controle</td><td>direita</td><td>meio/alto</td></tr>
+              <tr><td>Calmo, sereno</td><td>direita</td><td>embaixo</td></tr>
+              <tr><td>Neutro, indiferente</td><td>centro</td><td>meio</td></tr>
+              <tr><td><strong>Tenso, apreensivo</strong></td><td><strong>esquerda</strong></td><td><strong>em cima</strong></td></tr>
+              <tr><td>Irritado, contrariado</td><td>bem à esquerda</td><td>bem em cima</td></tr>
+              <tr><td>Desanimado, frustrado</td><td>esquerda</td><td>embaixo</td></tr>
+              <tr><td>Cansado, esgotado</td><td>centro/esquerda</td><td>bem embaixo</td></tr>
+            </table>
+          </div>
+
+          <p class="std-guide-warn">
+            ⚠️ <strong>Use os extremos.</strong> Se você marcar tudo perto do
+            centro, o dataset fica sem contraste e não há o que aprender. Foi
+            ótimo? Vai pra ponta direita. Foi ruim? Vai pra ponta esquerda. A
+            grade só ensina se você usar a régua inteira.
+          </p>
+        </div>
+      </details>
       <div class="grid-main">
         <canvas id="stdGrid" class="affect-grid" width="440" height="440"
                 role="button" tabindex="0"
@@ -164,9 +226,9 @@
   </main>
 
   <audio id="audioEl" hidden></audio>
-  <script src="js/affectgrid.js?v=20260819c"></script>
-  <script src="js/emotion.js?v=20260819c"></script>
-  <script src="js/fft.js?v=20260819c"></script>
-  <script src="js/studio.js?v=20260819c"></script>
+  <script src="js/affectgrid.js?v=20260819d"></script>
+  <script src="js/emotion.js?v=20260819d"></script>
+  <script src="js/fft.js?v=20260819d"></script>
+  <script src="js/studio.js?v=20260819d"></script>
 </body>
 </html>

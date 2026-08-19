@@ -357,7 +357,20 @@ const EmotionEngine = (() => {
     const std = (a, m) => Math.sqrt(mean(a.map((v) => (v - m) ** 2)));
 
     const meanPitch = mean(pitches);
-    const pitchStd = std(pitches, meanPitch);
+    const pitchStd = std(pitches, meanPitch); // em Hz, para o relatório
+
+    // Variação de altura em SEMITONS, não em Hz.
+    //
+    // A percepção de altura é logarítmica: 50 Hz de oscilação sobre uma voz de
+    // 100 Hz é enorme; sobre uma de 220 Hz é discreta. Medir em Hz também
+    // dependia demais do tamanho da janela — em trechos reais de 20s o desvio
+    // chegava a 124 Hz, muito acima do teto de 70 da escala antiga, então a
+    // expressividade saturava em 100 para quase toda fala real. Saturada, ela
+    // arrastava a valência junto e o motor respondia quase sempre a mesma
+    // coisa. Em semitons a medida é perceptualmente correta e comparável entre
+    // vozes graves e agudas.
+    const semitones = pitches.map((p) => 12 * Math.log2(p / meanPitch));
+    const pitchStdSemitones = std(semitones, mean(semitones));
     const meanEnergy = mean(energies);
     const meanCentroid = mean(centroids);
 
@@ -365,11 +378,21 @@ const EmotionEngine = (() => {
     const silenceRatio = 1 - voiced.length / total;
 
     // Eixos 0-100
-    // Energia/excitação: RMS típico de fala ~0.02 a 0.25
-    const energyDim = norm(meanEnergy, 0.02, 0.22);
+    //
+    // Energia/excitação. A faixa cobre CONVERSA, não grito: fala conversacional
+    // a ~1m fica tipicamente entre 0.03 e 0.12 de RMS, e 0.22 é praticamente
+    // voz gritada. Com o teto antigo em 0.22, toda conversa normal era espremida
+    // na metade de baixo da escala — no primeiro dataset real o motor leu o
+    // Helio como mais calmo do que ele estava nas SEIS amostras (erro médio de
+    // -0.60 em 3, desvio 0.26).
+    // PROVISÓRIO: ajuste baseado em n=6 mais o intervalo acústico esperado.
+    // Revalidar quando o dataset passar de ~30 amostras.
+    const energyDim = norm(meanEnergy, 0.015, 0.15);
 
-    // Expressividade: desvio de pitch. Fala monótona ~<15 Hz, expressiva >60 Hz
-    const exprDim = norm(pitchStd, 8, 70);
+    // Expressividade em semitons: fala plana fica por volta de 1–2 semitons de
+    // desvio; fala bem expressiva passa de 6. A faixa cobre a fala real sem
+    // saturar.
+    const exprDim = norm(pitchStdSemitones, 1.5, 7);
 
     // Positividade (proxy): vozes positivas tendem a ter pitch mais alto e
     // variado, com brilho moderado (não estridente). Combinamos pitch médio,
@@ -392,6 +415,7 @@ const EmotionEngine = (() => {
       flow: Math.round(flowDim),
       meanPitch: Math.round(meanPitch),
       pitchStd: Math.round(pitchStd),
+      pitchStdSemitones: +pitchStdSemitones.toFixed(2),
       silenceRatio: Math.round(silenceRatio * 100),
       dominant,
     };
