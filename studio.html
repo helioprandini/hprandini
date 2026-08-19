@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Estúdio de anotação — Voice&amp;Emotion</title>
-  <link rel="stylesheet" href="css/styles.css?v=20260819a" />
-  <link rel="stylesheet" href="css/studio.css?v=20260819a" />
+  <link rel="stylesheet" href="css/styles.css?v=20260819b" />
+  <link rel="stylesheet" href="css/studio.css?v=20260819b" />
 </head>
 <body>
   <header class="topbar">
@@ -93,7 +93,7 @@
         <canvas id="segWave" class="std-wave" height="54"></canvas>
       </div>
 
-      <p class="gt-q">Quem está falando neste trecho?</p>
+      <p class="gt-q">Quem está falando neste trecho? <span class="std-optional">(obrigatório)</span></p>
       <div class="gt-row" id="speakerRow">
         <button class="chip" data-spk="eu">🙋 Sou eu</button>
         <button class="chip" data-spk="outro">👤 Outra pessoa</button>
@@ -101,7 +101,7 @@
         <button class="chip" data-spk="ninguem">🔇 Ninguém / ruído</button>
       </div>
 
-      <p class="gt-q">Marque o ponto que representa o que você sentiu neste trecho</p>
+      <p class="gt-q">👆 Clique <strong>dentro do quadrado</strong> abaixo, no ponto que representa o que você sentiu <span class="std-optional">(obrigatório)</span></p>
       <div class="grid-wrap">
         <div class="grid-axis-y"><span>agitado</span><span>quieto</span></div>
         <div class="grid-main">
@@ -111,7 +111,7 @@
           <div class="grid-axis-x"><span>desagradável</span><span>agradável</span></div>
         </div>
       </div>
-      <div class="grid-readout" id="stdReadout">Nenhum ponto marcado ainda</div>
+      <div class="grid-readout" id="stdReadout">👆 <strong>Clique dentro do quadrado acima</strong> — direita = agradável, esquerda = desagradável, em cima = agitado, embaixo = quieto.</div>
 
       <p class="gt-q">Um nome para isso <span class="std-optional">(opcional)</span></p>
       <div class="gt-row" id="feelRow">
@@ -168,8 +168,8 @@
   </main>
 
   <audio id="audioEl" hidden></audio>
-  <script src="js/emotion.js?v=20260819a"></script>
-  <script src="js/fft.js?v=20260819a"></script>
-  <script src="js/studio.js?v=20260819a"></script>
+  <script src="js/emotion.js?v=20260819b"></script>
+  <script src="js/fft.js?v=20260819b"></script>
+  <script src="js/studio.js?v=20260819b"></script>
 </body>
 </html>

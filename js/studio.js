@@ -181,7 +181,7 @@
     $("revealBox").hidden = true;
     document.querySelectorAll("#speakerRow .chip, #feelRow .chip")
       .forEach((c) => c.classList.remove("selected"));
-    $("stdReadout").textContent = "Nenhum ponto marcado ainda";
+    $("stdReadout").innerHTML = "👆 <strong>Clique dentro do quadrado acima</strong> — direita = agradável, esquerda = desagradável, em cima = agitado, embaixo = quieto.";
     $("stdGrid").classList.remove("marked");
     updateSaveState();
     drawGrid();
@@ -266,7 +266,7 @@
     // sem ele entender por quê — foi exatamente o que aconteceu no primeiro uso.
     const falta = [];
     if (!label.speaker) falta.push("marcar <strong>quem está falando</strong>");
-    if (!label.affect) falta.push("<strong>tocar na grade</strong> para dizer como se sentiu");
+    if (!label.affect) falta.push("<strong>clicar dentro do quadrado colorido</strong> (a grade acima)");
 
     $("saveBtn").disabled = falta.length > 0;
     $("missingHint").innerHTML = falta.length
@@ -338,7 +338,7 @@
     updateSaveState();
   }
 
-  $("stdGrid").addEventListener("click", (e) => setPoint(e.clientX, e.clientY));
+  $("stdGrid").addEventListener("pointerdown", (e) => { e.preventDefault(); setPoint(e.clientX, e.clientY); });
 
   // Acessibilidade e alternativa ao clique: setas movem o ponto a partir do centro.
   $("stdGrid").addEventListener("keydown", (e) => {
