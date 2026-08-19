@@ -157,6 +157,20 @@ Ressalva: mesmo código ≠ transferência automática. Modelo treinado em músi
 precisa ser revalidado em voz. Todo dado carrega `fonte: voz | musica`.
 Detalhes em `ESTRATEGIA_DADOS.md` (seção 7b).
 
+### Rotinas de coleta de rótulo (decisões do Helio, 2026-08)
+
+- **Rotina A (hoje):** após cada reunião gravada no Plaud, subir o áudio no
+  Estúdio de Anotação e rotular **trechos aleatórios no mesmo dia** — o
+  sentimento ainda fresco. Frescor e aleatoriedade não são detalhe: a memória
+  emocional decai e é reescrita pelo desfecho, e escolher só os momentos
+  marcantes enviesaria o dataset para os extremos.
+- **Rotina B (futuro, com usuários):** ao fim do uso, pedir que a pessoa marque
+  o que sentiu em 2–3 trechos aleatórios. **Não disfarçar de "avaliação de
+  uso"** — dizer que serve para o app aprender. Quem sabe que está ensinando
+  responde com cuidado; quem acha que é pesquisa clica qualquer coisa, e dado
+  ruim é pior que dado nenhum. Detalhes e cuidados em `ESTRATEGIA_DADOS.md`
+  (seção 7c).
+
 ## Próximos passos
 
 - [x] Terminar a instalação do app no iPhone do Helio.

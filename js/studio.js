@@ -27,11 +27,30 @@
 
   let segments = [];    // trechos pendentes de anotação
   let current = 0;
+  let sampleSize = 6;   // 0 = todos; padrão é a rotina curta pós-reunião
   let audioURL = null;
   let gridPoint = null;
   let label = { speaker: null, affect: null, feeling: null };
 
+  /** Embaralhamento de Fisher-Yates: cada trecho com a mesma chance. */
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
   // ---------- Carregamento ----------
+
+  $("modeRow").addEventListener("click", (e) => {
+    const btn = e.target.closest(".chip");
+    if (!btn) return;
+    $("modeRow").querySelectorAll(".chip").forEach((c) => c.classList.remove("selected"));
+    btn.classList.add("selected");
+    sampleSize = parseInt(btn.dataset.mode, 10);
+  });
 
   const drop = $("dropZone");
   const input = $("fileInput");
@@ -75,6 +94,16 @@
       alert("Não encontrei trechos com fala suficiente nesses arquivos.");
       return;
     }
+
+    // Amostragem aleatória. Rotular só os momentos marcantes enviesaria o
+    // dataset para os extremos — e é no meio da distribuição que o motor mais
+    // erra. O sorteio também deixa a rotina pós-reunião curta o bastante para
+    // ser feita no mesmo dia, com o sentimento ainda fresco.
+    if (sampleSize > 0 && segments.length > sampleSize) {
+      segments = shuffle(segments).slice(0, sampleSize)
+        .sort((a, b) => a.arquivo.localeCompare(b.arquivo) || a.inicioMs - b.inicioMs);
+    }
+
     current = 0;
     $("annotateCard").hidden = false;
     $("statsCard").hidden = false;

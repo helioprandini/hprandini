@@ -214,6 +214,56 @@ substituta do canal de voz.
 
 ---
 
+## 7c. Como o rótulo chega até nós (decisões do Helio, 2026-08)
+
+Duas rotinas de coleta, uma para hoje e uma para quando houver usuários.
+
+### Rotina A — pós-reunião do próprio Helio (ativa)
+
+Depois de cada reunião gravada no Plaud: subir o áudio no Estúdio de Anotação e
+rotular **alguns trechos aleatórios**, ainda no mesmo dia.
+
+Por que isso é metodologicamente forte:
+
+- **Frescor.** A memória de como a pessoa se sentiu decai rápido e é reescrita
+  pelo desfecho ("deu certo, então eu devia estar confiante"). Rotular no
+  mesmo dia captura o estado, não a reconstrução.
+- **Aleatoriedade.** Escolher os trechos ao acaso evita o viés de só rotular os
+  momentos marcantes — que são justamente os extremos. O dataset precisa do
+  meio da distribuição, que é onde o motor mais erra.
+- **Às cegas.** O palpite do motor só aparece depois do rótulo (ver
+  `studio.html`).
+
+### Rotina B — coleta com usuários (futuro, quando abrirmos a ferramenta)
+
+Ao final do uso, apresentar uma caixa curta pedindo que a pessoa marque, entre
+opções sugeridas, o que mais se parece com o que ela sentiu em alguns trechos.
+
+**Como fazer isso direito** (e por que a versão honesta é também a que funciona
+melhor):
+
+1. **Não disfarçar de "avaliação de uso".** Rótulo emocional é dado pessoal
+   sensível; coletá-lo sob outro pretexto quebra consentimento informado e nos
+   expõe. Dizer a verdade — *"me ajude a aprender a te ler melhor"* — é o que
+   nos protege e o que faz a pessoa responder com cuidado. Quem sabe que está
+   ensinando, ensina melhor; quem acha que está preenchendo pesquisa, clica
+   qualquer coisa. Dado ruim é pior que dado nenhum.
+2. **Devolver valor na hora.** Mostrar à pessoa a própria leitura depois que ela
+   responde. Isso transforma a coleta em recompensa, e sustenta a rotina.
+3. **Poucos trechos, sempre aleatórios.** Dois ou três por sessão. Mais que isso
+   cansa e a qualidade cai.
+4. **Cuidado com a lista de opções.** Uma lista fechada dá consistência, mas
+   ancora a resposta. Portanto: embaralhar a ordem, incluir sempre *"outro"* e
+   *"não sei dizer"*, e manter a grade de valência × ativação como registro
+   primário — a etiqueta é complemento.
+5. **Opt-in de verdade, e reversível.** A pessoa escolhe participar, vê o que é
+   guardado e pode apagar. Nada sai do aparelho sem "sim" explícito.
+
+> Regra que não muda: se um dia a coleta só funcionar escondendo o que ela é,
+> então ela não deve existir. Confiança é o maior ativo da AE.
+
+---
+
 ## 8. Validação (como saber se funciona)
 
 1. Definir o construto: humor momentâneo ≠ emoção ≠ traço de personalidade.
