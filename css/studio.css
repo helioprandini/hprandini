@@ -207,3 +207,21 @@
   line-height: 1.6;
   margin-top: 12px;
 }
+
+/* O que falta para salvar — evita botão desabilitado sem explicação */
+.std-missing {
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: var(--valence);
+  line-height: 1.6;
+}
+.std-missing.ready { color: var(--flow); }
+
+/* A grade precisa parecer um controle, não uma ilustração */
+#stdGrid {
+  outline: 2px dashed rgba(255, 138, 91, 0.35);
+  outline-offset: 3px;
+  transition: outline-color 0.2s ease;
+}
+#stdGrid:hover { outline-color: var(--warm); }
+#stdGrid.marked { outline-style: solid; outline-color: var(--flow); }

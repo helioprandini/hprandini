@@ -179,10 +179,11 @@
     label = { speaker: null, affect: null, feeling: null };
     gridPoint = null;
     $("revealBox").hidden = true;
-    $("saveBtn").disabled = true;
     document.querySelectorAll("#speakerRow .chip, #feelRow .chip")
       .forEach((c) => c.classList.remove("selected"));
     $("stdReadout").textContent = "Nenhum ponto marcado ainda";
+    $("stdGrid").classList.remove("marked");
+    updateSaveState();
     drawGrid();
     drawSegWave(seg);
 
@@ -260,7 +261,18 @@
   function updateSaveState() {
     // Exige quem fala + o ponto na grade: são os dois campos que dão valor
     // científico ao rótulo. O nome da emoção é complemento.
-    $("saveBtn").disabled = !(label.speaker && label.affect);
+    //
+    // E DIZ o que falta: um botão desabilitado sem explicação trava o usuário
+    // sem ele entender por quê — foi exatamente o que aconteceu no primeiro uso.
+    const falta = [];
+    if (!label.speaker) falta.push("marcar <strong>quem está falando</strong>");
+    if (!label.affect) falta.push("<strong>tocar na grade</strong> para dizer como se sentiu");
+
+    $("saveBtn").disabled = falta.length > 0;
+    $("missingHint").innerHTML = falta.length
+      ? "Para salvar, falta: " + falta.join(" e ") + "."
+      : "✓ Pronto para salvar.";
+    $("missingHint").classList.toggle("ready", falta.length === 0);
   }
 
   // ---------- Grade de afeto ----------
@@ -317,6 +329,7 @@
       y: Math.min(1, Math.max(0, (clientY - r.top) / r.height)),
     };
     drawGrid();
+    $("stdGrid").classList.add("marked");
     label.affect = toDims(gridPoint);
     $("stdReadout").innerHTML =
       `<strong>${describe(label.affect)}</strong> · valência ` +
@@ -326,6 +339,21 @@
   }
 
   $("stdGrid").addEventListener("click", (e) => setPoint(e.clientX, e.clientY));
+
+  // Acessibilidade e alternativa ao clique: setas movem o ponto a partir do centro.
+  $("stdGrid").addEventListener("keydown", (e) => {
+    if (!e.key.startsWith("Arrow")) return;
+    e.preventDefault();
+    const p = gridPoint || { x: 0.5, y: 0.5 };
+    const step = 0.0625;
+    if (e.key === "ArrowLeft") p.x -= step;
+    if (e.key === "ArrowRight") p.x += step;
+    if (e.key === "ArrowUp") p.y -= step;
+    if (e.key === "ArrowDown") p.y += step;
+    const r = $("stdGrid").getBoundingClientRect();
+    setPoint(r.left + Math.min(1, Math.max(0, p.x)) * r.width,
+             r.top + Math.min(1, Math.max(0, p.y)) * r.height);
+  });
 
   // ---------- Salvar e revelar ----------
 
@@ -443,7 +471,10 @@
 
   $("exportBtn").addEventListener("click", () => {
     const all = loadAll();
-    if (!all.length) { alert("Nada anotado ainda."); return; }
+    if (!all.length) {
+      alert("Nada anotado ainda.\n\nPara salvar um trecho é preciso marcar QUEM ESTÁ FALANDO e TOCAR NA GRADE indicando como você se sentiu. Só então o botão \"Salvar e revelar\" habilita.");
+      return;
+    }
     const blob = new Blob([JSON.stringify({
       versao: 1,
       projeto: "AE — Artificial Emotion / Voice&Emotion",
