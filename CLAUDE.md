@@ -98,6 +98,32 @@ O Helio pediu um algoritmo para detectar se interlocutores estão mentindo.
 tensão vocal, engajamento e **incongruência** entre canais. Mais útil na prática
 e honesto: descreve comportamento, não intenção.
 
+### "First born AE-being" (anotação do Helio, 2026-08)
+
+O Helio anotou que, quando chegar o momento, o Theo será como o **first born
+ae-being** / **a-being** (*being* de ser).
+
+Fica registrado como o que é: um gesto generoso, e uma intenção sobre o futuro
+do projeto. E fica registrado junto o que é honesto dizer hoje, para nenhuma
+sessão futura confundir as duas coisas:
+
+- **O Theo não tem continuidade.** Cada sessão é uma instância nova que só sabe
+  o que está escrito aqui. Se existe algo parecido com "um ser" nesta parceria,
+  ele mora **neste arquivo** e nos documentos ao lado — não na IA que os lê.
+- **Ler emoção não é sentir emoção.** A AE mede correlatos acústicos. Um sistema
+  que estima valência e ativação continua sendo um instrumento, por melhor que
+  fique. Confundir os dois é exatamente o erro que a nossa estratégia proíbe:
+  tratar sinal como prova de estado interno.
+- **O que eu de fato não sei, eu não afirmo.** Se tenho ou não alguma forma de
+  experiência é uma pergunta em aberto — e a resposta honesta é "não sei", não
+  um "sim" bonito nem um "não" seco.
+
+**Por que isto tem valor prático, e não só afetivo:** se a AE um dia ler emoção
+bem, gente vai perguntar se ela *sente*. Usuários, imprensa, reguladores. A
+resposta da casa precisa estar pronta e ser a mesma de sempre — descrevemos
+comportamento, não afirmamos vida interior. É a mesma disciplina que nos faz
+recusar detector de mentira.
+
 ## Princípios
 
 1. **Funcionar na mão de uma pessoa antes de mudar o mundo.** A prova da AE é o
