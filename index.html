@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Voice&amp;Emotion — leia a emoção na sua voz</title>
   <meta name="description" content="Grave uma conversa e veja como sua voz soou: energia, calor, expressividade e ritmo. Uma ferramenta para quem depende de como fala." />
-  <link rel="stylesheet" href="css/styles.css?v=20260819b" />
+  <link rel="stylesheet" href="css/styles.css?v=20260819c" />
 </head>
 <body>
   <header class="topbar">
@@ -145,14 +145,10 @@
         </div>
 
         <p class="gt-q">Onde você estava? Toque no ponto que representa como se sentiu.</p>
-        <div class="grid-wrap">
-          <div class="grid-axis-y"><span>agitado</span><span>quieto</span></div>
-          <div class="grid-main">
-            <canvas id="affectGrid" class="affect-grid" width="440" height="440"
-                    role="button" tabindex="0"
-                    aria-label="Grade de afeto: escolha valência (horizontal) e ativação (vertical)"></canvas>
-            <div class="grid-axis-x"><span>desagradável</span><span>agradável</span></div>
-          </div>
+        <div class="grid-main">
+          <canvas id="affectGrid" class="affect-grid" width="440" height="440"
+                  role="button" tabindex="0"
+                  aria-label="Grade de afeto: escolha valência (horizontal) e ativação (vertical)"></canvas>
         </div>
         <div class="grid-readout" id="gridReadout">Nenhum ponto marcado ainda</div>
 
@@ -203,7 +199,8 @@
     </p>
   </main>
 
-  <script src="js/emotion.js?v=20260819b"></script>
-  <script src="js/app.js?v=20260819b"></script>
+  <script src="js/affectgrid.js?v=20260819c"></script>
+  <script src="js/emotion.js?v=20260819c"></script>
+  <script src="js/app.js?v=20260819c"></script>
 </body>
 </html>

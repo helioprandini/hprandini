@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Estúdio de anotação — Voice&amp;Emotion</title>
-  <link rel="stylesheet" href="css/styles.css?v=20260819b" />
-  <link rel="stylesheet" href="css/studio.css?v=20260819b" />
+  <link rel="stylesheet" href="css/styles.css?v=20260819c" />
+  <link rel="stylesheet" href="css/studio.css?v=20260819c" />
 </head>
 <body>
   <header class="topbar">
@@ -102,14 +102,10 @@
       </div>
 
       <p class="gt-q">👆 Clique <strong>dentro do quadrado</strong> abaixo, no ponto que representa o que você sentiu <span class="std-optional">(obrigatório)</span></p>
-      <div class="grid-wrap">
-        <div class="grid-axis-y"><span>agitado</span><span>quieto</span></div>
-        <div class="grid-main">
-          <canvas id="stdGrid" class="affect-grid" width="440" height="440"
-                  role="button" tabindex="0"
-                  aria-label="Grade de afeto: valência no eixo horizontal, ativação no vertical"></canvas>
-          <div class="grid-axis-x"><span>desagradável</span><span>agradável</span></div>
-        </div>
+      <div class="grid-main">
+        <canvas id="stdGrid" class="affect-grid" width="440" height="440"
+                role="button" tabindex="0"
+                aria-label="Grade de afeto: valência no eixo horizontal, ativação no vertical"></canvas>
       </div>
       <div class="grid-readout" id="stdReadout">👆 <strong>Clique dentro do quadrado acima</strong> — direita = agradável, esquerda = desagradável, em cima = agitado, embaixo = quieto.</div>
 
@@ -168,8 +164,9 @@
   </main>
 
   <audio id="audioEl" hidden></audio>
-  <script src="js/emotion.js?v=20260819b"></script>
-  <script src="js/fft.js?v=20260819b"></script>
-  <script src="js/studio.js?v=20260819b"></script>
+  <script src="js/affectgrid.js?v=20260819c"></script>
+  <script src="js/emotion.js?v=20260819c"></script>
+  <script src="js/fft.js?v=20260819c"></script>
+  <script src="js/studio.js?v=20260819c"></script>
 </body>
 </html>

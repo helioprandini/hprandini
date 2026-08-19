@@ -327,9 +327,10 @@ audio { flex: 1; min-width: 220px; height: 38px; }
   font-weight: 650;
 }
 
-/* Affect Grid (Russell, Weiss & Mendelsohn): valência × ativação num toque */
-.grid-wrap { display: flex; gap: 10px; margin-top: 4px; }
-.grid-main { flex: 1; max-width: 340px; }
+/* Affect Grid (Russell, Weiss & Mendelsohn): valência × ativação num toque.
+   Os rótulos dos eixos são desenhados dentro do canvas (js/affectgrid.js) —
+   com <div>s ao redor eles saíam desalinhados conforme a largura da tela. */
+.grid-main { max-width: 380px; margin: 4px 0; }
 .affect-grid {
   width: 100%;
   height: auto;
@@ -342,30 +343,11 @@ audio { flex: 1; min-width: 220px; height: 38px; }
   touch-action: manipulation;
 }
 .affect-grid:focus-visible { outline: 2px solid var(--warm); outline-offset: 3px; }
-.grid-axis-y {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding: 4px 0;
-  font-size: 10.5px;
-  color: var(--text-faint);
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-}
-.grid-axis-x {
-  display: flex;
-  justify-content: space-between;
-  font-size: 10.5px;
-  color: var(--text-faint);
-  margin-top: 6px;
-  max-width: 340px;
-}
 .grid-readout {
-  margin-top: 10px;
-  font-size: 12.5px;
+  margin-top: 12px;
+  font-size: 13.5px;
   color: var(--text-dim);
-  min-height: 18px;
+  line-height: 1.6;
 }
 .grid-readout strong { color: var(--warm-soft); font-weight: 620; }
 

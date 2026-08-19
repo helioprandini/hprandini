@@ -434,63 +434,11 @@
   let gridPoint = null; // {x: 0..1, y: 0..1} em coordenadas normalizadas
 
   function drawAffectGrid() {
-    const cv = $("affectGrid");
-    const ctx = cv.getContext("2d");
-    const w = cv.width, h = cv.height;
-    ctx.clearRect(0, 0, w, h);
-
-    // Fundo: quadrantes coloridos pelo significado (Russell)
-    const quads = [
-      { x: 0,     y: 0,     c: "rgba(255,84,112,0.10)" },  // desagradável+agitado
-      { x: w / 2, y: 0,     c: "rgba(255,196,107,0.10)" }, // agradável+agitado
-      { x: 0,     y: h / 2, c: "rgba(108,139,255,0.10)" }, // desagradável+quieto
-      { x: w / 2, y: h / 2, c: "rgba(94,214,160,0.10)" },  // agradável+quieto
-    ];
-    quads.forEach((q) => { ctx.fillStyle = q.c; ctx.fillRect(q.x, q.y, w / 2, h / 2); });
-
-    // Grade
-    ctx.strokeStyle = "rgba(255,255,255,0.07)";
-    ctx.lineWidth = 1;
-    for (let i = 1; i < 8; i++) {
-      const p = (i / 8) * w;
-      ctx.beginPath(); ctx.moveTo(p, 0); ctx.lineTo(p, h); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(0, p); ctx.lineTo(w, p); ctx.stroke();
-    }
-    // Eixos centrais
-    ctx.strokeStyle = "rgba(255,255,255,0.2)";
-    ctx.beginPath(); ctx.moveTo(w / 2, 0); ctx.lineTo(w / 2, h); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2); ctx.stroke();
-
-    // Ponto escolhido
-    if (gridPoint) {
-      const px = gridPoint.x * w, py = gridPoint.y * h;
-      ctx.beginPath();
-      ctx.arc(px, py, 16, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(255,138,91,0.25)";
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(px, py, 8, 0, Math.PI * 2);
-      ctx.fillStyle = "#ff8a5b";
-      ctx.fill();
-      ctx.strokeStyle = "#fff";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    }
+    AffectGrid.draw($("affectGrid"), gridPoint);
   }
 
-  // Converte o ponto normalizado para as dimensões do framework.
-  function gridToDims(p) {
-    return {
-      valencia: +((p.x * 4 - 2)).toFixed(2), // -2 … +2
-      ativacao: +(((1 - p.y) * 3)).toFixed(2), // 0 … 3
-    };
-  }
-
-  function describeGrid(d) {
-    const v = d.valencia >= 0.5 ? "agradável" : d.valencia <= -0.5 ? "desagradável" : "neutro";
-    const a = d.ativacao >= 2 ? "agitado" : d.ativacao <= 1 ? "quieto" : "moderado";
-    return v + " · " + a;
-  }
+  const gridToDims = AffectGrid.toDims;
+  const describeGrid = AffectGrid.describe;
 
   function setGridPoint(clientX, clientY) {
     const cv = $("affectGrid");

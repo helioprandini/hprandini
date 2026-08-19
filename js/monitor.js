@@ -297,45 +297,8 @@
 
   // ---- Mapa valência × ativação, com rastro ----
   function drawGrid() {
-    const cv = $("monGrid");
-    const ctx = cv.getContext("2d");
-    const w = cv.width, h = cv.height;
-    ctx.clearRect(0, 0, w, h);
-
-    const quads = [
-      [0, 0, "rgba(255,84,112,0.10)"],      // desagradável + agitado
-      [w / 2, 0, "rgba(255,196,107,0.10)"], // agradável + agitado
-      [0, h / 2, "rgba(108,139,255,0.10)"], // desagradável + quieto
-      [w / 2, h / 2, "rgba(94,214,160,0.10)"],
-    ];
-    quads.forEach(([x, y, c]) => { ctx.fillStyle = c; ctx.fillRect(x, y, w / 2, h / 2); });
-
-    ctx.strokeStyle = "rgba(255,255,255,0.16)";
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(w / 2, 0); ctx.lineTo(w / 2, h); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2); ctx.stroke();
-
-    // Rastro: o passado desvanece, o agora é sólido
-    gridTrail.forEach((p, i) => {
-      const age = i / gridTrail.length;
-      ctx.beginPath();
-      ctx.arc(p.x * w, p.y * h, 2 + age * 3, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(255,138,91," + (0.06 + age * 0.35) + ")";
-      ctx.fill();
-    });
-
-    const last = gridTrail[gridTrail.length - 1];
-    if (last) {
-      ctx.beginPath();
-      ctx.arc(last.x * w, last.y * h, 13, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(255,138,91,0.22)";
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(last.x * w, last.y * h, 6, 0, Math.PI * 2);
-      ctx.fillStyle = "#ff8a5b";
-      ctx.fill();
-      ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.stroke();
-    }
+    AffectGrid.draw($("monGrid"), gridTrail[gridTrail.length - 1] || null,
+                    { trail: gridTrail });
   }
 
   // ---- Tendência dos últimos 60s ----
