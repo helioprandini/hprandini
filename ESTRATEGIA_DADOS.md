@@ -234,6 +234,47 @@ Por que isso é metodologicamente forte:
 - **Às cegas.** O palpite do motor só aparece depois do rótulo (ver
   `studio.html`).
 
+### Rotina A2 — Diário de Voz: amostragem do dia inteiro (decisão do Helio, 2026-08)
+
+**Por que a Rotina A não basta.** Gravação de reunião cobre uma faixa emocional
+estreita: registro profissional, pessoa se auto-monitorando, quase sempre entre
+"neutro" e "engajado". O primeiro dataset provou isso — nas 4 amostras limpas a
+valência do Helio foi de 0,00 a +1,43 e **nunca** entrou no lado negativo. Um
+modelo treinado só aí aprende "a pessoa em reunião", não a pessoa.
+
+Palavras dele: *"o que eu sou em reunião não é obrigatoriamente o que sou no
+resto da minha vida."*
+
+**Método.** Isto é **Experience Sampling Method** (Csikszentmihalyi & Larson,
+1987; revisto por Shiffman, Stone & Hufford, 2008) — padrão-ouro em pesquisa de
+afeto. Avisos em horários **aleatórios** ao longo do dia; a pessoa registra o
+estado **no momento**, não em retrospecto.
+
+**Sorteio de momentos, não gravação contínua.** A gravação passiva o dia todo
+perde nos três critérios que já são nossos:
+
+| | Gravação contínua | Aviso em horário sorteado |
+|---|---|---|
+| Viável no iOS | ❌ o sistema não permite | ✅ notificação local |
+| Consentimento | ❌ grava todos ao redor | ✅ só quando a pessoa aceita |
+| Frescor do rótulo | ❌ rotula horas depois | ✅ rotula no instante |
+
+O terceiro é decisivo e vem do próprio Helio: memória emocional decai e é
+reescrita pelo desfecho. Rotular no momento é o melhor dado possível.
+
+**Desenho:**
+1. Janela do dia e quantidade de avisos definidas pela pessoa (ex.: 8h–20h, 5×).
+2. Horários sorteados dentro da janela, com espaçamento mínimo.
+3. No aviso: gravar 20–30s dizendo em voz alta o que está acontecendo.
+4. Rotular **na hora**, às cegas (grade primeiro, motor depois).
+5. Registrar o **contexto** (trabalho, casa, trânsito, sozinho, com alguém).
+
+**Limitação honesta a registrar no dado:** fala sob demanda não é idêntica a
+fala espontânea — a pessoa sabe que está gravando. O estado emocional é real,
+mas a produção vocal é um pouco mais monitorada. Por isso todo registro carrega
+`contexto` e `origem` (`diario` ou `reuniao`), para nunca misturarmos as duas
+distribuições sem perceber.
+
 ### Rotina B — coleta com usuários (futuro, quando abrirmos a ferramenta)
 
 Ao final do uso, apresentar uma caixa curta pedindo que a pessoa marque, entre

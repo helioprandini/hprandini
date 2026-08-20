@@ -190,6 +190,17 @@ Detalhes em `ESTRATEGIA_DADOS.md` (seção 7b).
   sentimento ainda fresco. Frescor e aleatoriedade não são detalhe: a memória
   emocional decai e é reescrita pelo desfecho, e escolher só os momentos
   marcantes enviesaria o dataset para os extremos.
+- **Rotina A2 (nova, 2026-08):** reunião cobre uma faixa emocional estreita — o
+  primeiro dataset mostrou o Helio **nunca** entrando no lado negativo da
+  valência. Palavras dele: *"o que eu sou em reunião não é obrigatoriamente o
+  que sou no resto da minha vida."* Daí o **Diário de Voz** (`diario.html`):
+  avisos em horários **sorteados** ao longo do dia, gravação de 20–30s e rótulo
+  **no instante**. É Experience Sampling (Csikszentmihalyi & Larson) — padrão em
+  pesquisa de afeto. Decisão de desenho: **sorteio de momentos, não gravação
+  contínua** — passiva o dia todo é inviável no iOS, grava terceiros sem
+  consentimento e dá dado pior, porque o rótulo viria depois da memória decair.
+  Todo registro carrega `origem` (`diario`/`reuniao`) e `contexto`, para nunca
+  misturar as duas distribuições.
 - **Rotina B (futuro, com usuários):** ao fim do uso, pedir que a pessoa marque
   o que sentiu em 2–3 trechos aleatórios. **Não disfarçar de "avaliação de
   uso"** — dizer que serve para o app aprender. Quem sabe que está ensinando

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diário de Voz — Voice&amp;Emotion</title>
+  <link rel="stylesheet" href="css/styles.css?v=20260820a" />
+  <link rel="stylesheet" href="css/studio.css?v=20260820a" />
+  <link rel="stylesheet" href="css/diario.css?v=20260820a" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <g stroke="#fff" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="9.5" x2="3" y2="12.5" opacity=".75"/>
+            <line x1="7.5" y1="6.5" x2="7.5" y2="15.5" opacity=".9"/>
+            <line x1="12" y1="3" x2="12" y2="19"/>
+            <line x1="16.5" y1="6" x2="16.5" y2="16" opacity=".9"/>
+            <line x1="21" y1="9" x2="21" y2="13" opacity=".75"/>
+          </g>
+        </svg>
+      </div>
+      <div>
+        <h1>Diário de Voz</h1>
+        <p class="tagline">Momentos sorteados do seu dia, não só reuniões</p>
+      </div>
+    </div>
+    <a href="index.html" class="btn ghost sm">← Voltar</a>
+  </header>
+
+  <main>
+    <!-- Por quê -->
+    <section class="card">
+      <h2>Por que isto existe</h2>
+      <p class="std-note">
+        Reunião é uma faixa emocional estreita — registro profissional, você se
+        vigiando. <strong>O que você é em reunião não é o que você é no resto da
+        vida.</strong> Aqui o dia inteiro é sorteado: o aparelho te chama em
+        horários aleatórios, você fala 20 segundos sobre o momento e marca como
+        se sente <em>naquele instante</em> — no auge do frescor.
+      </p>
+      <p class="dia-method">
+        📚 O método tem nome: <strong>Experience Sampling</strong>
+        (Csikszentmihalyi &amp; Larson) — padrão em pesquisa de emoção. Sorteio
+        de horários evita o viés de lembrar só dos momentos marcantes.
+      </p>
+    </section>
+
+    <!-- Configuração -->
+    <section class="card" id="setupCard">
+      <h2>1 · Como quer ser chamado hoje</h2>
+
+      <div class="dia-row">
+        <label for="fromTime">Das</label>
+        <input type="time" id="fromTime" value="09:00" />
+        <label for="toTime">até</label>
+        <input type="time" id="toTime" value="21:00" />
+      </div>
+
+      <p class="gt-q">Quantas vezes no dia?</p>
+      <div class="gt-row" id="countRow">
+        <button class="chip" data-n="3">3 vezes</button>
+        <button class="chip selected" data-n="5">5 vezes</button>
+        <button class="chip" data-n="8">8 vezes</button>
+      </div>
+
+      <div class="dia-actions">
+        <button id="startBtn" class="btn primary">🔔 Sortear e começar o dia</button>
+        <button id="stopBtn" class="btn ghost" hidden>Parar os avisos</button>
+        <button id="nowBtn" class="btn ghost">Gravar agora (fora do sorteio)</button>
+      </div>
+
+      <div class="dia-schedule" id="scheduleBox" hidden>
+        <div class="dia-schedule-title">Horários sorteados de hoje</div>
+        <div class="dia-times" id="timesList"></div>
+        <p class="dia-note" id="permNote"></p>
+      </div>
+
+      <div class="std-warn">
+        ⚖️ Fale só você, e só o que você quiser registrar. Se houver outras
+        pessoas por perto, elas precisam saber. O áudio fica no seu aparelho e é
+        descartado depois da análise — o dataset guarda só números e rótulos.
+      </div>
+    </section>
+
+    <!-- Captura -->
+    <section class="card" id="captureCard" hidden>
+      <div class="std-head">
+        <h2 id="captureTitle">2 · Como você está agora?</h2>
+        <div class="std-counter" id="captureWhen">—</div>
+      </div>
+
+      <div class="dia-prompt" id="promptText">
+        Fale por <strong>20 a 30 segundos</strong> — o que está acontecendo,
+        o que você está fazendo, como está o momento. Não precisa ser bonito.
+        Fale como você fala.
+      </div>
+
+      <div class="dia-recorder">
+        <button id="recBtn" class="dia-rec" aria-label="Gravar">
+          <span class="dia-rec-icon"></span>
+        </button>
+        <div class="dia-timer" id="recTimer">00:00</div>
+        <div class="dia-hint" id="recHint">Toque para começar</div>
+        <div class="dia-level">
+          <div class="dia-level-bar"><div class="dia-level-fill" id="levelFill"></div></div>
+        </div>
+      </div>
+
+      <!-- Contexto: o que diferencia "reunião" do resto da vida -->
+      <div id="contextBlock" hidden>
+        <p class="gt-q">Onde você está? <span class="std-optional">(obrigatório)</span></p>
+        <div class="gt-row" id="ctxRow">
+          <button class="chip" data-ctx="trabalho">💼 Trabalhando</button>
+          <button class="chip" data-ctx="reuniao">👥 Em reunião</button>
+          <button class="chip" data-ctx="casa">🏠 Em casa</button>
+          <button class="chip" data-ctx="transito">🚗 No trânsito</button>
+          <button class="chip" data-ctx="lazer">🎯 Lazer</button>
+          <button class="chip" data-ctx="outro">📍 Outro</button>
+        </div>
+
+        <p class="gt-q">Com quem? <span class="std-optional">(obrigatório)</span></p>
+        <div class="gt-row" id="companyRow">
+          <button class="chip" data-comp="sozinho">🙋 Sozinho</button>
+          <button class="chip" data-comp="trabalho">👔 Pessoas de trabalho</button>
+          <button class="chip" data-comp="pessoal">❤️ Família / amigos</button>
+        </div>
+
+        <p class="gt-q">👆 Clique <strong>dentro do quadrado</strong>, no ponto que representa como você se sente <span class="std-optional">(obrigatório)</span></p>
+
+        <details class="std-guide">
+          <summary>Como marcar? — guia rápido dos dois eixos</summary>
+          <div class="std-guide-body">
+            <div class="std-axis">
+              <div class="std-axis-name">↔️ Horizontal — <strong>está sendo agradável?</strong></div>
+              <ul>
+                <li><strong>Bem à direita</strong> — ótimo, prazeroso</li>
+                <li><strong>Centro</strong> — indiferente</li>
+                <li><strong>Bem à esquerda</strong> — péssimo, angustiante</li>
+              </ul>
+            </div>
+            <div class="std-axis">
+              <div class="std-axis-name">↕️ Vertical — <strong>quanta energia no corpo?</strong></div>
+              <ul>
+                <li><strong>Bem em cima</strong> — acelerado, muito ligado</li>
+                <li><strong>Meio</strong> — normal</li>
+                <li><strong>Bem embaixo</strong> — sem energia, sonolento</li>
+              </ul>
+            </div>
+            <p class="std-guide-warn">
+              ⚠️ <strong>Use os extremos.</strong> O dia tem altos e baixos —
+              se tudo ficar no centro, não há o que aprender. E aqui, ao
+              contrário da reunião, o lado esquerdo existe.
+            </p>
+          </div>
+        </details>
+
+        <div class="grid-main">
+          <canvas id="diaGrid" class="affect-grid" width="440" height="440"
+                  role="button" tabindex="0"
+                  aria-label="Grade de afeto: valência no eixo horizontal, ativação no vertical"></canvas>
+        </div>
+        <div class="grid-readout" id="diaReadout">
+          👆 <strong>Clique dentro do quadrado acima</strong> — direita = agradável,
+          esquerda = desagradável, em cima = agitado, embaixo = quieto.
+        </div>
+
+        <p class="gt-q">Um nome para isso <span class="std-optional">(opcional)</span></p>
+        <div class="gt-row" id="diaFeelRow">
+          <button class="chip" data-feel="animado">😃 Animado</button>
+          <button class="chip" data-feel="confiante">😎 Confiante</button>
+          <button class="chip" data-feel="calmo">🙂 Calmo</button>
+          <button class="chip" data-feel="neutro">😐 Neutro</button>
+          <button class="chip" data-feel="tenso">😧 Tenso</button>
+          <button class="chip" data-feel="irritado">😠 Irritado</button>
+          <button class="chip" data-feel="desanimado">😔 Desanimado</button>
+          <button class="chip" data-feel="cansado">🥱 Cansado</button>
+        </div>
+
+        <div class="std-actions">
+          <button id="discardBtn" class="btn ghost">Descartar</button>
+          <button id="saveDiaBtn" class="btn primary" disabled>Salvar e revelar →</button>
+        </div>
+        <div class="std-missing" id="diaMissing"></div>
+      </div>
+
+      <div class="std-reveal" id="diaReveal" hidden>
+        <h3>O que o motor achou</h3>
+        <div class="std-compare">
+          <div class="std-side">
+            <div class="std-side-label">Você sentiu</div>
+            <div class="std-side-val" id="diaYou">—</div>
+          </div>
+          <div class="std-vs" id="diaVerdict">—</div>
+          <div class="std-side">
+            <div class="std-side-label">O motor leu</div>
+            <div class="std-side-val" id="diaEngine">—</div>
+          </div>
+        </div>
+        <div class="std-reveal-detail" id="diaDetail"></div>
+        <button id="diaDoneBtn" class="btn primary">Pronto</button>
+      </div>
+    </section>
+
+    <!-- Mapa do dia -->
+    <section class="card" id="dayCard" hidden>
+      <h2>Seu mapa emocional</h2>
+      <p class="std-note" id="dayNote"></p>
+      <div class="dia-map-wrap">
+        <canvas id="dayMap" class="affect-grid" width="440" height="440"></canvas>
+      </div>
+      <div class="dia-legend" id="dayLegend"></div>
+      <div class="std-stats" id="diaStats"></div>
+      <div class="std-actions">
+        <button id="diaExportBtn" class="btn primary">⬇️ Exportar dataset</button>
+        <button id="diaClearBtn" class="btn ghost">Limpar</button>
+      </div>
+    </section>
+
+    <p class="disclaimer">
+      🔒 O áudio é analisado e descartado — não fica guardado nem sai do
+      aparelho. O dataset leva apenas <strong>números e rótulos</strong>.
+    </p>
+  </main>
+
+  <script src="js/affectgrid.js?v=20260820a"></script>
+  <script src="js/emotion.js?v=20260820a"></script>
+  <script src="js/diario.js?v=20260820a"></script>
+</body>
+</html>

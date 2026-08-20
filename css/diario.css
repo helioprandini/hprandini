@@ -1,0 +1,136 @@
+/* Diário de Voz — captura rápida, no meio do dia. Precisa ser óbvio e curto. */
+
+.dia-method {
+  font-size: 12.5px;
+  color: var(--text-faint);
+  line-height: 1.65;
+  background: rgba(108, 139, 255, 0.07);
+  border: 1px solid rgba(108, 139, 255, 0.18);
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+  margin: 0;
+}
+
+/* Configuração */
+.dia-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 4px 0 18px;
+  font-size: 13.5px;
+  color: var(--text-dim);
+}
+.dia-row input[type="time"] {
+  background: var(--bg-inset);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  padding: 9px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.dia-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+
+.dia-schedule {
+  margin-top: 20px;
+  padding: 16px;
+  background: var(--bg-inset);
+  border-radius: var(--r-md);
+}
+.dia-schedule-title {
+  font-size: 11px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 650;
+  margin-bottom: 12px;
+}
+.dia-times { display: flex; flex-wrap: wrap; gap: 8px; }
+.dia-time {
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 7px 15px;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+.dia-time.done { opacity: 0.4; text-decoration: line-through; }
+.dia-time.next { border-color: var(--warm); color: var(--warm); font-weight: 650; }
+.dia-note { font-size: 12px; color: var(--text-faint); margin: 12px 0 0; line-height: 1.6; }
+
+/* Gravador */
+.dia-prompt {
+  background: var(--bg-inset);
+  border-radius: var(--r-md);
+  padding: 16px 18px;
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.65;
+  margin: 16px 0 22px;
+}
+.dia-prompt strong { color: var(--text); }
+
+.dia-recorder { text-align: center; margin-bottom: 26px; }
+.dia-rec {
+  width: 84px; height: 84px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(145deg, #ff9a72, #ff5f57);
+  cursor: pointer;
+  display: grid; place-items: center;
+  box-shadow: 0 10px 30px rgba(255, 95, 87, 0.4);
+  transition: transform 0.15s ease;
+  margin: 0 auto;
+}
+.dia-rec:hover { transform: scale(1.04); }
+.dia-rec-icon {
+  width: 27px; height: 27px;
+  border-radius: 50%;
+  background: #fff;
+  transition: all 0.22s ease;
+}
+.dia-rec.recording .dia-rec-icon { border-radius: 5px; width: 23px; height: 23px; }
+.dia-rec.recording { animation: diaPulse 1.6s ease-out infinite; }
+@keyframes diaPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255,95,87,0.5), 0 10px 30px rgba(255,95,87,0.4); }
+  70%  { box-shadow: 0 0 0 22px rgba(255,95,87,0), 0 10px 30px rgba(255,95,87,0.4); }
+  100% { box-shadow: 0 0 0 0 rgba(255,95,87,0), 0 10px 30px rgba(255,95,87,0.4); }
+}
+.dia-timer {
+  font-size: 30px;
+  font-weight: 680;
+  font-variant-numeric: tabular-nums;
+  margin-top: 14px;
+}
+.dia-hint { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
+.dia-level { max-width: 220px; margin: 14px auto 0; }
+.dia-level-bar {
+  height: 6px;
+  background: var(--bg-inset);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.dia-level-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: var(--pitch);
+  transition: width 0.08s linear;
+}
+
+/* Mapa do dia */
+.dia-map-wrap { max-width: 380px; margin: 16px 0; }
+.dia-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 18px;
+}
+.dia-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.dia-legend .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
