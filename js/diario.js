@@ -191,6 +191,54 @@
 
   $("nowBtn").addEventListener("click", () => abrirCaptura("fora do sorteio"));
 
+  /**
+   * Exporta os horários sorteados como eventos de calendário (.ics) com alarme.
+   *
+   * Por que isto existe: no iPhone o navegador congela abas em segundo plano,
+   * então `setTimeout` NÃO dispara com o telefone no bolso. O calendário do
+   * próprio aparelho, sim — o alerta é nativo e confiável. Importado uma vez,
+   * o dia inteiro fica agendado sem depender do navegador estar aberto.
+   */
+  $("icsBtn").addEventListener("click", () => {
+    if (!schedule.length) { alert("Sorteie os horários primeiro."); return; }
+
+    const pad = (n) => String(n).padStart(2, "0");
+    const utc = (ms) => {
+      const d = new Date(ms);
+      return `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}` +
+             `T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}00Z`;
+    };
+    const url = location.href.split("#")[0];
+
+    const linhas = [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Voice&Emotion//Diario de Voz//PT",
+      "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+    ];
+    schedule.forEach((s, i) => {
+      linhas.push(
+        "BEGIN:VEVENT",
+        `UID:vem-diario-${s.at}-${i}@voiceemotion`,
+        `DTSTAMP:${utc(Date.now())}`,
+        `DTSTART:${utc(s.at)}`,
+        `DTEND:${utc(s.at + 5 * 60000)}`,
+        "SUMMARY:🎙️ Como você está agora?",
+        `DESCRIPTION:20 segundos de voz + como você se sente. Abra: ${url}`,
+        `URL:${url}`,
+        "BEGIN:VALARM", "ACTION:DISPLAY",
+        "DESCRIPTION:Voice&Emotion — registre o momento",
+        "TRIGGER:PT0M", "END:VALARM",
+        "END:VEVENT"
+      );
+    });
+    linhas.push("END:VCALENDAR");
+
+    const blob = new Blob([linhas.join("\r\n")], { type: "text/calendar;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `diario-de-voz-${new Date().toISOString().slice(0, 10)}.ics`;
+    a.click();
+  });
+
   function armarTimers() {
     timers.forEach(clearTimeout);
     timers = [];

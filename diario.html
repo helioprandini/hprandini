@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Diário de Voz — Voice&amp;Emotion</title>
   <link rel="stylesheet" href="css/styles.css?v=20260820a" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0b0e14" />
   <link rel="stylesheet" href="css/studio.css?v=20260820a" />
   <link rel="stylesheet" href="css/diario.css?v=20260820a" />
 </head>
@@ -76,6 +81,17 @@
         <div class="dia-schedule-title">Horários sorteados de hoje</div>
         <div class="dia-times" id="timesList"></div>
         <p class="dia-note" id="permNote"></p>
+
+        <div class="dia-ics">
+          <button id="icsBtn" class="btn primary">📅 Baixar alarmes para o celular</button>
+          <p class="dia-note">
+            <strong>No iPhone isto é essencial.</strong> O navegador congela
+            abas em segundo plano, então a página não consegue te avisar com o
+            telefone no bolso. Baixe este arquivo, abra no iPhone e os horários
+            entram no <strong>Calendário</strong> com alarme nativo — que toca
+            sempre.
+          </p>
+        </div>
       </div>
 
       <div class="std-warn">

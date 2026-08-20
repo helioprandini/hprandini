@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Marca do Voice&Emotion: onda de voz que ganha amplitude,
+       em gradiente da confiança (azul) ao calor (coral). -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6C8BFF"/>
+      <stop offset="1" stop-color="#FF8A5B"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#g)"/>
+  <g stroke="#fff" stroke-width="34" stroke-linecap="round">
+    <line x1="128" y1="216" x2="128" y2="296" opacity=".75"/>
+    <line x1="192" y1="168" x2="192" y2="344" opacity=".9"/>
+    <line x1="256" y1="112" x2="256" y2="400"/>
+    <line x1="320" y1="168" x2="320" y2="344" opacity=".9"/>
+    <line x1="384" y1="216" x2="384" y2="296" opacity=".75"/>
+  </g>
+</svg>

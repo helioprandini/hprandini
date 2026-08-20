@@ -1,0 +1,19 @@
+{
+  "name": "Voice&Emotion",
+  "short_name": "V&E",
+  "description": "Ouça como você soa para os outros. Leitura emocional da voz, tudo no seu aparelho.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0e14",
+  "theme_color": "#0b0e14",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
