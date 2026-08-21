@@ -29,6 +29,7 @@
   let count = 5;
   let schedule = [];        // [{at: ms, done: bool}]
   let timers = [];
+  let chamadoAtual = "espontaneo";  // "sorteado" quando veio do alarme
   let gridPoint = null;
   let label = { contexto: null, companhia: null, affect: null, feeling: null };
   let lastAssessment = null;
@@ -248,13 +249,21 @@
       return `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}` +
              `T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}00Z`;
     };
-    const url = location.href.split("#")[0];
+    // Endereço explícito do Diário, não `location.href`.
+    //
+    // O alarme precisa cair EXATAMENTE nesta página, e cada evento carrega o
+    // seu horário em `?slot=` — é assim que a página sabe, ao abrir, que foi
+    // chamada pelo aviso das 14:03 e não que o usuário passou por acaso.
+    const base = new URL("diario.html", location.href);
 
     const linhas = [
       "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Voice&Emotion//Diario de Voz//PT",
       "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
     ];
     futuros.forEach((s, i) => {
+      const link = new URL(base);
+      link.searchParams.set("slot", s.at);
+      const url = link.toString();
       linhas.push(
         "BEGIN:VEVENT",
         `UID:vem-diario-${s.at}-${i}@voiceemotion`,
@@ -300,9 +309,9 @@
         body: "20 segundos de voz + como você se sente. Leva menos de um minuto.",
         tag: "vem-diario",
       });
-      n.onclick = () => { window.focus(); abrirCaptura("horário sorteado"); };
+      n.onclick = () => { window.focus(); abrirCaptura("horário sorteado", "sorteado"); };
     }
-    abrirCaptura("horário sorteado");
+    abrirCaptura("horário sorteado", "sorteado");
   }
 
   function renderSchedule() {
@@ -317,7 +326,41 @@
 
   // ---------- Captura ----------
 
-  function abrirCaptura(origem) {
+  /**
+   * Abre a gravação sozinho quando a pessoa chega pelo alarme do calendário.
+   *
+   * Sem isto, o alarme tocava, a pessoa abria o link — e caía numa tela de
+   * configuração, sem nada indicando o que fazer. O único botão óbvio era
+   * "Gravar agora (fora do sorteio)", que carimba a amostra com a origem
+   * ERRADA: vira "fora do sorteio" um momento que foi, sim, sorteado. Isso
+   * envenena a distribuição do dataset, que é a razão de o Diário existir.
+   *
+   * `?slot=` vem do evento do calendário. A janela de tolerância existe porque
+   * ninguém atende no segundo exato: quem abre 12 minutos depois ainda está
+   * respondendo àquele chamado.
+   */
+  const JANELA_ATENDIMENTO_MS = 25 * 60000;
+
+  function atenderChamado() {
+    const pedido = Number(new URLSearchParams(location.search).get("slot"));
+    const agora = Date.now();
+    const alvo = schedule.find((s) => {
+      if (pedido) return s.at === pedido;
+      return !s.done && agora >= s.at && agora - s.at < JANELA_ATENDIMENTO_MS;
+    });
+    if (!alvo) return;
+    if (agora - alvo.at > JANELA_ATENDIMENTO_MS) return;  // alarme velho demais
+
+    alvo.done = true;
+    localStorage.setItem(SCHEDULE_KEY, JSON.stringify(schedule));
+    renderSchedule();
+    const hhmm = new Date(alvo.at).toLocaleTimeString("pt-BR",
+      { hour: "2-digit", minute: "2-digit" });
+    abrirCaptura(`horário sorteado (${hhmm})`, "sorteado");
+  }
+
+  function abrirCaptura(origem, chamado = "espontaneo") {
+    chamadoAtual = chamado;
     label = { contexto: null, companhia: null, affect: null, feeling: null };
     gridPoint = null;
     lastFrames = [];
@@ -395,6 +438,11 @@
       id: "diario-" + Date.now(),
       data: new Date().toISOString(),
       origem: "diario",            // separa da distribuição de reunião
+      // Sorteado ou espontâneo? São distribuições diferentes: o momento que a
+      // pessoa escolhe registrar tende ao marcante — exatamente o viés que o
+      // Experience Sampling existe para evitar. Sem este campo, as duas se
+      // misturam no dataset sem deixar rastro.
+      chamado: chamadoAtual,
       fonte: "voz",
       origem_rotulo: "humano",
       qualidade: "limpa",          // só a voz de quem rotula, por construção
@@ -548,6 +596,7 @@
         armarTimers();
         $("scheduleBox").hidden = false;
         $("stopBtn").hidden = false;
+        atenderChamado();
       }
     }
   } catch { /* agenda antiga inválida: ignora */ }
