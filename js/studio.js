@@ -368,7 +368,7 @@
         : { speaker: label.speaker, affect: null, feeling: null,
             nota: "Voz de outra pessoa ou ruído — sem rótulo emocional, por construção." },
       observado: a.observado,
-      inferido: { dimensoes: eng, confianca: a.confianca, inconclusivo: a.inconclusivo,
+      inferido: { dimensoes: eng, confianca: a.confianca, inconclusivo: a.inconclusivo, motorVersao: a.motorVersao,
                   categoria: seg.resumo ? seg.resumo.dominant.key : null },
       anotadoEm: new Date().toISOString(),
     };

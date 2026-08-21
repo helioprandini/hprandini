@@ -29,6 +29,17 @@ const EmotionEngine = (() => {
   const VOICE_ENERGY_FLOOR = 0.003;
   const VOICING_THRESHOLD = 0.25;
 
+  /* Versão do motor. Toda leitura carimba isto.
+   *
+   * Sem o carimbo, um dataset acumulado ao longo de semanas mistura leituras de
+   * motores diferentes e a comparação vira ruído: não dá para saber se o erro
+   * mudou porque o motor melhorou ou porque a régua mudou.
+   *   1 — escalas originais
+   *   2 — expressividade em semitons (fim da saturação) + energia recalibrada
+   *       para faixa conversacional
+   */
+  const ENGINE_VERSION = 2;
+
   // ---- Extração de features de um frame de áudio ----
 
   // RMS (energia) do sinal no domínio do tempo. Entrada: Float32Array [-1,1].
@@ -283,6 +294,7 @@ const EmotionEngine = (() => {
     const s = summarize(frames);
     if (!s) {
       return {
+        motorVersao: ENGINE_VERSION,
         inconclusivo: true,
         motivo: "Fala insuficiente para leitura.",
         confianca: 0,
@@ -316,6 +328,7 @@ const EmotionEngine = (() => {
     }
 
     return {
+      motorVersao: ENGINE_VERSION,
       inconclusivo: conf < CONFIDENCE_FLOOR,
       motivo: conf < CONFIDENCE_FLOOR
         ? "Evidência insuficiente: poucos canais disponíveis ou pouca fala captada."
@@ -324,8 +337,12 @@ const EmotionEngine = (() => {
       // CAMADA "OBSERVADO": comportamento medido, sem julgamento.
       observado: {
         energiaMedia: s.energy,
+        energiaRms: s.meanEnergyRms,
         alturaMediaHz: s.meanPitch,
         variacaoPitchHz: s.pitchStd,
+        // A régua que o motor v2 realmente usa para expressividade. Guardar a
+        // versão em Hz também, só para comparar com o dataset antigo.
+        variacaoPitchSemitons: s.pitchStdSemitones,
         pausasPct: s.silenceRatio,
         quadrosComVoz: voicedFrames,
       },
@@ -416,6 +433,10 @@ const EmotionEngine = (() => {
       meanPitch: Math.round(meanPitch),
       pitchStd: Math.round(pitchStd),
       pitchStdSemitones: +pitchStdSemitones.toFixed(2),
+      // RMS cru, antes de virar escala 0-100. É o que permite revalidar a régua
+      // de energia depois, com dataset maior: a escala 0-100 já perdeu a
+      // informação de onde a fala real cai.
+      meanEnergyRms: +meanEnergy.toFixed(4),
       silenceRatio: Math.round(silenceRatio * 100),
       dominant,
     };
@@ -512,6 +533,6 @@ const EmotionEngine = (() => {
     CHANNELS, CONFIDENCE_FLOOR, INCONCLUSIVE,
     // medição bruta — exposta para validação
     // (research/benchmark/engine-validation.js)
-    rms, detectPitch, pitchDetail, spectralCentroid,
+    rms, detectPitch, pitchDetail, spectralCentroid, ENGINE_VERSION,
   };
 })();

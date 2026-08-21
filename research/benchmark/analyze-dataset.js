@@ -156,26 +156,55 @@ if (dominante > 0.6) {
 console.log("\n\x1b[1mFEATURES MEDIDAS\x1b[0m  (as escalas do motor cobrem o que a fala real produz?)\n");
 const obs = amostras.map((a) => a.observado).filter(Boolean);
 if (obs.length) {
+  // Só vale cobrar saturação da régua que o motor DE FATO usa. A variação em Hz
+  // continua sendo gravada, mas desde o motor 2 ela não alimenta escala nenhuma
+  // — cobrá-la produzia um alarme falso de saturação a cada rodada.
   const campos = [
-    ["energiaMedia", "energia (0-100)", null],
-    ["alturaMediaHz", "altura F0 (Hz)", [90, 260]],
-    ["variacaoPitchHz", "variação F0 (Hz)", [8, 70]],
-    ["pausasPct", "pausas (%)", null],
+    ["energiaMedia", "energia (0-100)", null, 0],
+    ["energiaRms", "energia (RMS cru)", [0.015, 0.15], 3],
+    ["alturaMediaHz", "altura F0 (Hz)", [90, 260], 0],
+    ["variacaoPitchSemitons", "expressividade (semitons)", [1.5, 7], 2],
+    ["variacaoPitchHz", "variação F0 (Hz) — só registro", null, 0],
+    ["pausasPct", "pausas (%)", null, 0],
   ];
-  campos.forEach(([k, nome, escala]) => {
+  campos.forEach(([k, nome, escala, casas]) => {
     const vals = obs.map((o) => o[k]).filter((v) => v != null);
     if (!vals.length) return;
     const mn = Math.min(...vals), mx = Math.max(...vals);
     let aviso = "";
     if (escala) {
       const acimaDoTeto = vals.filter((v) => v >= escala[1]).length;
+      const abaixoDoPiso = vals.filter((v) => v <= escala[0]).length;
       if (acimaDoTeto) {
-        aviso = `  \x1b[31m⚠ ${acimaDoTeto}/${vals.length} acima do teto da escala (${escala[1]}) — SATURA\x1b[0m`;
+        aviso += `  \x1b[31m⚠ ${acimaDoTeto}/${vals.length} no teto (${escala[1]}) — SATURA\x1b[0m`;
+      }
+      if (abaixoDoPiso) {
+        aviso += `  \x1b[31m⚠ ${abaixoDoPiso}/${vals.length} no piso (${escala[0]}) — SATURA\x1b[0m`;
       }
     }
-    console.log(`  ${nome.padEnd(20)} ${mn.toFixed(0)} … ${mx.toFixed(0)}` +
+    console.log(`  ${nome.padEnd(26)} ${mn.toFixed(casas)} … ${mx.toFixed(casas)}` +
       (escala ? `   escala do motor: ${escala[0]}–${escala[1]}` : "") + aviso);
   });
+}
+
+// ---------- Versão do motor ----------
+// Um dataset que mistura motores mistura réguas. Comparar erro entre versões
+// diferentes não diz se o motor melhorou — diz que a régua mudou.
+const versoes = {};
+amostras.forEach((a) => {
+  const v = (a.inferido && a.inferido.motorVersao) || "sem carimbo";
+  versoes[v] = (versoes[v] || 0) + 1;
+});
+const listaVersoes = Object.entries(versoes);
+const semCarimbo = versoes["sem carimbo"] || 0;
+if (listaVersoes.length > 1 || semCarimbo) {
+  console.log("\n\x1b[1mVERSÃO DO MOTOR\x1b[0m\n");
+  listaVersoes.forEach(([v, n]) => console.log(`  motor ${String(v).padEnd(12)} ${n} amostra(s)`));
+  if (listaVersoes.length > 1) {
+    console.log(`\n  \x1b[33m⚠ o dataset mistura versões do motor. Viés e correlação acima somam\n    leituras feitas com réguas diferentes — trate como orientação, não\n    como medida. Filtre por versão antes de concluir qualquer coisa.\x1b[0m`);
+  } else if (semCarimbo) {
+    console.log(`\n  \x1b[33m⚠ ${semCarimbo} amostra(s) sem carimbo de versão — foram gravadas antes do\n    motor passar a se identificar. Não dá para saber quais usaram qual\n    régua, então o viés acima pode estar somando motores diferentes.\x1b[0m`);
+  }
 }
 
 console.log("\n" + "─".repeat(82));

@@ -365,7 +365,7 @@
       relatado: { speaker: "eu", affect: label.affect, feeling: label.feeling },
       observado: a ? a.observado : null,
       inferido: eng
-        ? { dimensoes: eng, confianca: a.confianca, inconclusivo: a.inconclusivo,
+        ? { dimensoes: eng, confianca: a.confianca, inconclusivo: a.inconclusivo, motorVersao: a.motorVersao,
             categoria: resumo ? resumo.dominant.key : null }
         : null,
       nota: "Fala sob demanda (Experience Sampling) — estado real, produção vocal um pouco mais monitorada.",
