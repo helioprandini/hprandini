@@ -140,3 +140,12 @@
   padding-top: 16px;
   border-top: 1px solid var(--line);
 }
+
+/* Aviso de janela encurtada: o sorteio nunca cai no passado, então configurar
+   tarde reduz o número de avisos. Dizer isso evita o "pedi 5 e vieram 3". */
+.dia-window-note {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--warm-soft);
+}

@@ -23,6 +23,7 @@
   const STORAGE_KEY = "vem_diario_v1";
   const SCHEDULE_KEY = "vem_diario_agenda_v1";
   const MIN_GAP_MIN = 45;   // espaçamento mínimo entre avisos
+  const BUFFER_MIN = 10;    // folga mínima entre "sortear" e o primeiro aviso
   const MIN_REC_S = 8;      // abaixo disso não há fala suficiente para ler
 
   let count = 5;
@@ -153,8 +154,30 @@
     const ate = paraMinutos($("toTime").value);
     if (ate <= de) { alert("O horário final precisa ser depois do inicial."); return; }
 
-    const minutos = sortearHorarios(de, ate, count);
+    // O sorteio só pode cair no futuro.
+    //
+    // Antes ele sorteava na janela inteira e marcava como "done" o que já tinha
+    // passado. Quem configurasse às 13h com janela desde as 9h pedia 5 avisos e
+    // recebia 3 sem entender por quê — e os horários mortos ainda iam para o
+    // calendário. Amostra perdida em silêncio é o pior tipo: some do dataset
+    // sem deixar rastro.
+    const agora = new Date();
+    const agoraMin = agora.getHours() * 60 + agora.getMinutes();
+    const deEfetivo = Math.max(de, agoraMin + BUFFER_MIN);
+    if (ate - deEfetivo < MIN_GAP_MIN) {
+      alert("Já é tarde para a janela de hoje. Aumente o horário final, ou use " +
+            "\"Gravar agora\" para registrar este momento.");
+      return;
+    }
+
+    const minutos = sortearHorarios(deEfetivo, ate, count);
     if (!minutos.length) { alert("Janela curta demais para sortear."); return; }
+    $("windowNote").textContent = deEfetivo > de
+      ? `Sorteado às ${paraTexto(agoraMin)}, então o dia útil começa em ` +
+        `${paraTexto(deEfetivo)} — ${minutos.length} aviso(s) hoje` +
+        (minutos.length < count ? `, não ${count}: não cabe mais na janela.` : ".")
+      : "";
+    $("windowNote").hidden = deEfetivo <= de;
 
     const hoje = new Date();
     schedule = minutos.map((m) => {
@@ -202,6 +225,14 @@
   $("icsBtn").addEventListener("click", () => {
     if (!schedule.length) { alert("Sorteie os horários primeiro."); return; }
 
+    // Só o que ainda vai acontecer. Evento no passado não dispara alarme —
+    // só enche o calendário de lembrete morto.
+    const futuros = schedule.filter((s) => s.at > Date.now());
+    if (!futuros.length) {
+      alert("Todos os horários de hoje já passaram. Sorteie de novo.");
+      return;
+    }
+
     const pad = (n) => String(n).padStart(2, "0");
     const utc = (ms) => {
       const d = new Date(ms);
@@ -214,7 +245,7 @@
       "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Voice&Emotion//Diario de Voz//PT",
       "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
     ];
-    schedule.forEach((s, i) => {
+    futuros.forEach((s, i) => {
       linhas.push(
         "BEGIN:VEVENT",
         `UID:vem-diario-${s.at}-${i}@voiceemotion`,
