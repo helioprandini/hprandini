@@ -141,6 +141,16 @@ recusar detector de mentira.
   Desenvolvimento, e o bug do `Info.plist` sem `CFBundleIdentifier`) está
   resolvida. O primeiro dado de emoção da AE foi a voz do próprio Helio.
 
+- **2026-08-21 — O V&E saiu do Mac.** GitHub Pages ligado no repositório
+  (`Settings → Pages`, branch de trabalho, `/ (root)`, mais `.nojekyll`). O
+  endereço **`https://helioprandini.github.io/hprandini/`** abre no iPhone com
+  HTTPS — que é o que libera o microfone no navegador. Diário de Voz e Estúdio
+  passam a ser usáveis fora da mesa. Armadilha que custou uma hora e fica
+  anotada: o Helio estava logado no GitHub **em outra conta**, e o GitHub
+  responde **404** (não "sem permissão") em `/settings/*` para quem não é dono.
+  Sinal de diagnóstico: falta a aba **Settings** no repositório, e o perfil
+  mostra "Follow" em vez de "Edit profile".
+
 ## Onde estamos agora (duas frentes em paralelo)
 
 Depois do app funcionar, o Helio definiu o trabalho como duas frentes:
