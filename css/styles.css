@@ -8,6 +8,15 @@
  * (a voz, os dados sentidos) — assim o calor significa algo, não decora.
  */
 
+/* O atributo `hidden` tem que ganhar de qualquer `display` nosso.
+ *
+ * A regra do navegador para [hidden] vale menos que qualquer declaração de
+ * display escrita aqui, então `.btn { display: inline-flex }` fazia
+ * `<button hidden>` continuar aparecendo. O botão "Parar os avisos" do Diário
+ * seguia na tela depois de desligar os avisos — o estado da tela mentia sobre
+ * o estado do sistema, que é o pior tipo de bug de interface. */
+[hidden] { display: none !important; }
+
 :root {
   /* Base — profunda e neutra, para os dados emocionais brilharem em cima */
   --bg: #0b0e14;
