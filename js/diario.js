@@ -25,11 +25,13 @@
   const MIN_GAP_MIN = 45;   // espaçamento mínimo entre avisos
   const BUFFER_MIN = 10;    // folga mínima entre "sortear" e o primeiro aviso
   const MIN_REC_S = 8;      // abaixo disso não há fala suficiente para ler
+  const MAX_REC_S = 30;     // para sozinho: o alvo é 20-30s de fala
 
   let count = 5;
   let schedule = [];        // [{at: ms, done: bool}]
   let timers = [];
   let chamadoAtual = "espontaneo";  // "sorteado" quando veio do alarme
+  let contagemId = null;            // contagem regressiva antes de gravar
   let gridPoint = null;
   let label = { contexto: null, companhia: null, affect: null, feeling: null };
   let lastAssessment = null;
@@ -69,7 +71,37 @@
     const s = Math.floor((performance.now() - startedAt) / 1000);
     $("recTimer").textContent =
       `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
-    if (s >= MIN_REC_S) $("recHint").textContent = "Pode parar quando quiser — já tem material";
+    // Para sozinho no tempo alvo: um toque a menos, e o comprimento das
+    // amostras fica constante — o que também é melhor para o dataset.
+    if (s >= MAX_REC_S) { stopRec(); return; }
+    if (s >= MIN_REC_S) {
+      $("recHint").textContent =
+        `Pode parar quando quiser — para sozinho em ${MAX_REC_S - s}s`;
+    }
+  }
+
+  /**
+   * Começa a gravar sozinho, com contagem curta.
+   *
+   * Chegar pelo alarme já custa: notificação → Calendário → Abrir → Safari.
+   * Exigir mais um toque para gravar, e outro para parar, faz a rotina morrer
+   * — e rotina que morre não vira dataset. A contagem existe para a pessoa não
+   * ser pega no meio da frase.
+   */
+  function iniciarComContagem() {
+    let n = 3;
+    const mostrar = () => { $("recHint").textContent = `Gravando em ${n}…`; };
+    mostrar();
+    contagemId = setInterval(() => {
+      n -= 1;
+      if (n > 0) { mostrar(); return; }
+      cancelarContagem();
+      startRec();
+    }, 1000);
+  }
+
+  function cancelarContagem() {
+    if (contagemId) { clearInterval(contagemId); contagemId = null; }
   }
 
   function loop() {
@@ -105,7 +137,11 @@
     updateSaveState();
   }
 
-  $("recBtn").addEventListener("click", () => (recording ? stopRec() : startRec()));
+  $("recBtn").addEventListener("click", () => {
+    // Tocar durante a contagem começa na hora, em vez de esperar.
+    if (contagemId) { cancelarContagem(); startRec(); return; }
+    recording ? stopRec() : startRec();
+  });
 
   // ---------- Sorteio dos horários ----------
 
@@ -376,6 +412,7 @@
     const hhmm = new Date(alvo.at).toLocaleTimeString("pt-BR",
       { hour: "2-digit", minute: "2-digit" });
     abrirCaptura(`horário sorteado (${hhmm})`, "sorteado");
+    iniciarComContagem();
   }
 
   function abrirCaptura(origem, chamado = "espontaneo") {
