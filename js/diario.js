@@ -187,15 +187,24 @@
     });
     localStorage.setItem(SCHEDULE_KEY, JSON.stringify(schedule));
 
-    // Notificação: é o que faz o sorteio virar rotina de verdade.
+    // Notificação do navegador: ajuda no computador, e só.
+    //
+    // No iPhone o Safari só oferece notificação para site adicionado à Tela de
+    // Início, e mesmo assim a aba congela no bolso. Quem manda de verdade é o
+    // calendário do aparelho — por isso o texto abaixo nunca trata a falta de
+    // permissão como problema a resolver: aponta para o botão que resolve.
     let permOK = false;
     if ("Notification" in window) {
-      const p = await Notification.requestPermission();
-      permOK = p === "granted";
+      try {
+        const p = await Notification.requestPermission();
+        permOK = p === "granted";
+      } catch { /* Safari antigo rejeita a chamada; o calendário cobre. */ }
     }
     $("permNote").textContent = permOK
-      ? "🔔 Você será avisado nos horários acima — deixe esta aba aberta."
-      : "⚠️ Sem permissão de notificação: deixe esta aba visível e volte nos horários acima.";
+      ? "🔔 Aviso do navegador ligado — funciona com esta aba aberta. Com o " +
+        "telefone no bolso, quem avisa é o calendário: baixe os alarmes abaixo."
+      : "🔔 Este navegador não avisa sozinho — normal no iPhone. Baixe os " +
+        "alarmes abaixo e o calendário do aparelho faz o trabalho.";
 
     renderSchedule();
     armarTimers();
