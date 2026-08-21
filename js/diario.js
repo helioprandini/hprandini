@@ -341,6 +341,13 @@
    */
   const JANELA_ATENDIMENTO_MS = 25 * 60000;
 
+  function avisarChamado(texto) {
+    const el = $("callNote");
+    el.textContent = texto;
+    el.hidden = false;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
   function atenderChamado() {
     const pedido = Number(new URLSearchParams(location.search).get("slot"));
     const agora = Date.now();
@@ -348,8 +355,20 @@
       if (pedido) return s.at === pedido;
       return !s.done && agora >= s.at && agora - s.at < JANELA_ATENDIMENTO_MS;
     });
-    if (!alvo) return;
-    if (agora - alvo.at > JANELA_ATENDIMENTO_MS) return;  // alarme velho demais
+    // Chegou por um evento que não bate com o sorteio de agora — quase sempre
+    // um alarme de uma leva antiga que ficou no calendário. Antes isso não
+    // fazia nada, e "não fazer nada" é indistinguível de "está quebrado".
+    if (!alvo || agora - alvo.at > JANELA_ATENDIMENTO_MS) {
+      if (pedido) {
+        avisarChamado(
+          "⏰ Este alarme é de um sorteio antigo — por isso a gravação não abriu " +
+          "sozinha. Apague os eventos antigos no Calendário e baixe os alarmes " +
+          "novos aqui embaixo. Para registrar este momento mesmo assim, use " +
+          "\"Gravar agora\"."
+        );
+      }
+      return;
+    }
 
     alvo.done = true;
     localStorage.setItem(SCHEDULE_KEY, JSON.stringify(schedule));

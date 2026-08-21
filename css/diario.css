@@ -149,3 +149,16 @@
   line-height: 1.5;
   color: var(--warm-soft);
 }
+
+/* Aviso de alarme antigo. Amarelo de atenção, não vermelho de erro: nada
+   quebrou, só o evento do calendário está velho. */
+.dia-call-note {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: var(--r-sm);
+  background: rgba(255, 138, 91, 0.10);
+  border: 1px solid rgba(255, 138, 91, 0.30);
+  color: var(--warm-soft);
+  font-size: 13.5px;
+  line-height: 1.55;
+}

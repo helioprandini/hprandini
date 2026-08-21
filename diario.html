@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Diário de Voz — Voice&amp;Emotion</title>
-  <link rel="stylesheet" href="css/styles.css?v=20260821d" />
+  <link rel="stylesheet" href="css/styles.css?v=20260821e" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon.svg" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0b0e14" />
-  <link rel="stylesheet" href="css/studio.css?v=20260821d" />
-  <link rel="stylesheet" href="css/diario.css?v=20260821d" />
+  <link rel="stylesheet" href="css/studio.css?v=20260821e" />
+  <link rel="stylesheet" href="css/diario.css?v=20260821e" />
 </head>
 <body>
   <header class="topbar">
@@ -56,6 +56,10 @@
     <!-- Configuração -->
     <section class="card" id="setupCard">
       <h2>1 · Como quer ser chamado hoje</h2>
+
+      <!-- Explica quando a página é aberta por um alarme que não bate com o
+           sorteio atual. Silêncio, aqui, é indistinguível de bug. -->
+      <p class="dia-call-note" id="callNote" hidden></p>
 
       <div class="dia-row">
         <label for="fromTime">Das</label>
@@ -242,8 +246,8 @@
     </p>
   </main>
 
-  <script src="js/affectgrid.js?v=20260821d"></script>
-  <script src="js/emotion.js?v=20260821d"></script>
-  <script src="js/diario.js?v=20260821d"></script>
+  <script src="js/affectgrid.js?v=20260821e"></script>
+  <script src="js/emotion.js?v=20260821e"></script>
+  <script src="js/diario.js?v=20260821e"></script>
 </body>
 </html>
