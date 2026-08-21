@@ -153,6 +153,37 @@ Depois do app funcionar, o Helio definiu o trabalho como duas frentes:
    captura de "ground truth" pós-gravação: *a leitura bateu? como você se sentiu
    de verdade?* — isso é usabilidade E o primeiro tijolo do dataset.
 
+### O que os dois primeiros datasets mediram (2026-08)
+
+Números reais, não impressão. Rodar sempre com
+`node research/benchmark/analyze-dataset.js <dataset.json>`.
+
+| | 1º dataset (n=6) | 2º dataset (n=9 limpas de 16) |
+|---|---|---|
+| Viés de ativação | −0.60 (motor via o Helio mais calmo do que ele estava) | **−0.31** |
+| Amplitude de valência usada | 34% | **68%** |
+| Categoria dominante | "amigável" em 83% | 44% / 33% / 22% — colapso desfeito |
+| Correlação valência | — | r = 0.37 (muito fraca) |
+| Correlação ativação | — | r = 0.28 (muito fraca) |
+
+**O que isso quer dizer, sem enfeite:** a recalibração (semitons + faixa de
+energia conversacional) consertou a *saturação* — o motor voltou a variar. Mas
+ele ainda não **acompanha** a variação do Helio: correlação fraca nos dois
+eixos, e a valência **nunca desce de +0.64** enquanto o Helio marcou de −0.07 a
++1.17.
+
+O piso de valência não é bug de calibração, é estrutural: a fórmula de valência
+é feita de altura, expressividade e brilho — que são correlatos de **ativação**,
+não de valência. É exatamente o que a literatura diz (Scherer): prosódia prevê
+ativação bem e valência mal. **Somar mais constante arbitrária aqui é fingir
+precisão.** O ganho real vem de canal novo — o **verbal** (transcrição +
+sentimento do texto), que o framework multicanal já prevê.
+
+Regra que fica: **não recalibrar escala com n pequeno.** A faixa de energia atual
+é `PROVISÓRIO` e só se revalida acima de ~30 amostras limpas — por isso o motor
+passou a gravar o **RMS cru** e a expressividade em **semitons** no `observado`,
+e a carimbar `motorVersao` em toda leitura (dataset sem carimbo mistura réguas).
+
 ### Decisão de arquitetura: V&E é o canal 1 de uma AE multicanal
 
 O Helio trouxe (2026-08) um framework científico próprio — bibliografia de
