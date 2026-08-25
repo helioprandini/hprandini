@@ -84,6 +84,20 @@ enum NotificationScheduler {
     static let categoryId = "RECORD_PROMPT"
     static let actionRecord = "RECORD_NOW"
     static let actionDismiss = "DISMISS_PROMPT"
+    static let diarioCategoryId = "DIARIO_LABEL"
+
+    /// Chamado do Diário automático: um momento foi capturado, falta o rótulo.
+    static func presentDiario(titulo: String, corpo: String) {
+        let content = UNMutableNotificationContent()
+        content.title = titulo
+        content.body = corpo
+        content.sound = .default
+        content.categoryIdentifier = diarioCategoryId
+        content.interruptionLevel = .timeSensitive
+        UNUserNotificationCenter.current().add(UNNotificationRequest(
+            identifier: "diario-\(Int(Date().timeIntervalSince1970))",
+            content: content, trigger: nil))
+    }
 
     static func requestAuthorization() {
         UNUserNotificationCenter.current()
@@ -132,7 +146,11 @@ final class NotificationCoordinator: NSObject, UNUserNotificationCenterDelegate 
             intentIdentifiers: [],
             options: []
         )
-        center.setNotificationCategories([category])
+        // Diário: sem botões — o toque abre direto a folha de rótulo.
+        let diario = UNNotificationCategory(
+            identifier: NotificationScheduler.diarioCategoryId,
+            actions: [], intentIdentifiers: [], options: [])
+        center.setNotificationCategories([category, diario])
     }
 
     // Mostra a notificação mesmo com o app aberto.
@@ -147,7 +165,15 @@ final class NotificationCoordinator: NSObject, UNUserNotificationCenterDelegate 
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
         let action = response.actionIdentifier
+        let category = response.notification.request.content.categoryIdentifier
         Task { @MainActor in
+            if category == NotificationScheduler.diarioCategoryId {
+                // O toque no chamado do Diário leva direto à folha de rótulo.
+                DiarioModel.shared.querRotular = true
+                DiarioModel.shared.abrirPedido = true
+                completionHandler()
+                return
+            }
             switch action {
             case NotificationScheduler.actionRecord, UNNotificationDefaultActionIdentifier:
                 ConversationModel.shared.confirmRecording()

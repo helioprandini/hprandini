@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var model: ConversationModel
+    @ObservedObject private var diario = DiarioModel.shared
     @State private var showKeywords = false
 
     var body: some View {
@@ -9,6 +10,7 @@ struct ContentView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     header
+                    diarioLink
                     mainCard
                     if model.mode == .recording { liveCard }
                     if let s = model.lastSummary, model.mode != .recording { resultCard(s) }
@@ -32,6 +34,8 @@ struct ContentView: View {
                 }
             }
             .sheet(isPresented: $showKeywords) { KeywordsView() }
+            // Notificação do Diário tocada → navega sozinho até lá.
+            .navigationDestination(isPresented: $diario.abrirPedido) { DiarioView() }
             .alert("Gravar esta conversa?", isPresented: $model.showRecordPrompt) {
                 Button("Gravar") { model.confirmRecording() }
                 Button("Agora não", role: .cancel) { model.dismissPrompt() }
@@ -61,6 +65,46 @@ struct ContentView: View {
         }
         .padding(.top, 4)
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    // MARK: - Diário automático (a porta de entrada do dia)
+
+    private var diarioLink: some View {
+        NavigationLink { DiarioView() } label: {
+            HStack(spacing: 12) {
+                Text("📔").font(.system(size: 26))
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 6) {
+                        Text("Diário de Voz")
+                            .font(.system(size: 14.5, weight: .semibold))
+                        if diario.estado == .ouvindo {
+                            Text("● ouvindo")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(Theme.pitch)
+                        }
+                    }
+                    Text(diario.pendentesDeRotulo.isEmpty
+                         ? "Um toque de manhã — o resto do dia é automático"
+                         : "\(diario.pendentesDeRotulo.count) momento(s) esperando o seu rótulo")
+                        .font(.system(size: 12))
+                        .foregroundStyle(diario.pendentesDeRotulo.isEmpty
+                                         ? Theme.textDim : Theme.warm)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Theme.textFaint)
+            }
+            .foregroundStyle(Theme.text)
+            .padding(16)
+            .background(Theme.bgElev)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.rLg, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.rLg, style: .continuous)
+                    .stroke(diario.estado == .ouvindo ? Theme.pitch.opacity(0.5) : Theme.line,
+                            lineWidth: 1)
+            )
+        }
     }
 
     // MARK: - Cartão principal (escuta / gravação)

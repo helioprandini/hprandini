@@ -35,6 +35,8 @@ enum EmotionEngine {
         var flow: Int
         var meanPitch: Int
         var pitchStd: Int
+        var pitchStdSemitones: Float
+        var meanEnergyRms: Float
         var silenceRatio: Int
         var dominant: Emotion
     }
@@ -44,6 +46,13 @@ enum EmotionEngine {
     /// não colado no microfone.
     static let voiceEnergyFloor: Float = 0.003
     static let voicingThreshold: Float = 0.25
+
+    /// Versão do motor. Todo dado exportado carimba isto — dataset sem carimbo
+    /// mistura réguas e vira ruído com aparência de medida.
+    ///   1 — escalas originais
+    ///   2 — expressividade em semitons + energia recalibrada p/ conversa
+    /// (Espelha `ENGINE_VERSION` em `js/emotion.js`.)
+    static let engineVersion = 2
 
     // MARK: - Features de um quadro
 
@@ -185,8 +194,18 @@ enum EmotionEngine {
         let meanCentroid = mean(centroids)
         let silenceRatio = 1 - Float(voiced.count) / total
 
-        let energyDim = norm(meanEnergy, 0.02, 0.22)
-        let exprDim = norm(pitchStd, 8, 70)
+        // Variação de altura em SEMITONS, não em Hz (motor v2 — espelha
+        // js/emotion.js). A percepção de altura é logarítmica, e em Hz a
+        // expressividade saturava em fala real: no primeiro dataset, 5 de 6
+        // amostras passavam do teto da escala antiga.
+        let semitones = pitches.map { 12 * log2($0 / meanPitch) }
+        let semiMean = mean(semitones)
+        let pitchStdSemitones = std(semitones, semiMean)
+
+        // Faixa de CONVERSA, não de grito (PROVISÓRIO — revalidar >30 amostras;
+        // por isso o RMS cru também sai no Summary).
+        let energyDim = norm(meanEnergy, 0.015, 0.15)
+        let exprDim = norm(pitchStdSemitones, 1.5, 7)
         let pitchLevel = norm(meanPitch, 90, 260)
         let brightness = norm(meanCentroid, 900, 3200)
         let tensionPenalty = clamp(brightness - 60, 0, 40)
@@ -202,6 +221,8 @@ enum EmotionEngine {
             flow: Int(flowDim.rounded()),
             meanPitch: Int(meanPitch.rounded()),
             pitchStd: Int(pitchStd.rounded()),
+            pitchStdSemitones: (pitchStdSemitones * 100).rounded() / 100,
+            meanEnergyRms: (meanEnergy * 10000).rounded() / 10000,
             silenceRatio: Int((silenceRatio * 100).rounded()),
             dominant: dominant
         )

@@ -249,11 +249,40 @@ Detalhes em `ESTRATEGIA_DADOS.md` (seção 7b).
   ruim é pior que dado nenhum. Detalhes e cuidados em `ESTRATEGIA_DADOS.md`
   (seção 7c).
 
+### Diário automático no iOS (2026-08-21) — resposta ao "quero que me ouça sozinho"
+
+O Helio testou o fluxo web + alarmes de calendário e vetou: *"muito duro e
+pouco intuitivo… quero que meu celular me ouça o tempo inteiro, como a Siri."*
+
+Registro honesto que foi dado (e vale repetir se o tema voltar): a Siri não
+grava tudo — um chip de baixo consumo só reconhece a palavra de ativação e
+descarta o resto; o "Instagram me ouve" é lenda comprovadamente falsa (o
+acerto vem de comportamento, não de microfone). Mas o pedido em si é legítimo
+e possível **no app nativo**, que já tem `UIBackgroundModes: audio`.
+
+O que foi construído (`DiarioModel.swift`, `DiarioView.swift`):
+- **"Começar o dia"**: um toque de manhã. O app mantém o microfone aberto o
+  dia todo (indicador laranja visível — correto), sorteia os momentos com as
+  mesmas regras do web (futuro apenas, gap 45min) e captura 30s de **features**
+  em cada um — áudio nunca é escrito em disco (`RollingFrameBuffer`).
+- Notificação → toque → folha de rótulo (grade de afeto SwiftUI, cega por
+  construção) → dataset. Único passo humano: o rótulo, porque ele É o dado.
+- Registro carrega `chamado: "automatico"`, `qualidade: limpa|mista` (toggle
+  "só a minha voz"), `motorVersao: 2`. Motor Swift portado para v2 (semitons +
+  energia 0.015–0.15 + RMS cru no Summary) — coletar com régua velha
+  envenenaria o dataset.
+- Limites de plataforma ditos na UI: precisa reabrir após reiniciar o aparelho;
+  bateria; build de Personal Team expira em 7 dias (reinstalar via Xcode).
+
 ## Próximos passos
 
 - [x] Terminar a instalação do app no iPhone do Helio.
 - [ ] **Captura de ground truth** (como a pessoa se sentiu) após cada gravação —
       começa na web (`js/`), depois porta pro iOS. É o tijolo zero do dataset.
+- [ ] **Testar o Diário automático no iPhone** — `cd ios && xcodegen generate`,
+      abrir no Xcode, Team, build. (Novos arquivos exigem regenerar o projeto —
+      lição do bug do `Theme.swift`.)
+- [x] Portar motor v2 (semitons + energia) para o Swift.
 - [ ] Renomear o produto de "VozEmoção" para **Voice&Emotion** no app e docs.
 - [ ] Frente de design: identidade visual, fluxo, primeira impressão.
 - [ ] Reativar a Siri (resolver o `AppIntentsSSUTraining`) quando der.
