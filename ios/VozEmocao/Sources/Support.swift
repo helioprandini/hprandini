@@ -85,6 +85,26 @@ enum NotificationScheduler {
     static let actionRecord = "RECORD_NOW"
     static let actionDismiss = "DISMISS_PROMPT"
     static let diarioCategoryId = "DIARIO_LABEL"
+    static let diarioStartCategoryId = "DIARIO_START"
+
+    /// Bom-dia diário: o telefone lembra a pessoa, não o contrário. O toque
+    /// nesta notificação LIGA o dia (ver NotificationCoordinator) — o iOS não
+    /// permite que um app se inicie sozinho, então um toque é o piso; este
+    /// arranjo faz esse único toque ser na própria notificação.
+    static func agendarBomDia(hora: Int = 8, minuto: Int = 50) {
+        let content = UNMutableNotificationContent()
+        content.title = "Bom dia, Helio ☀️"
+        content.body = "Toque aqui e eu começo a ouvir o seu dia — é o seu único passo."
+        content.sound = .default
+        content.categoryIdentifier = diarioStartCategoryId
+
+        var comps = DateComponents()
+        comps.hour = hora; comps.minute = minuto
+        let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: true)
+        // Identificador fixo: re-agendar substitui em vez de acumular.
+        UNUserNotificationCenter.current().add(UNNotificationRequest(
+            identifier: "diario-bom-dia", content: content, trigger: trigger))
+    }
 
     /// Chamado do Diário automático: um momento foi capturado, falta o rótulo.
     static func presentDiario(titulo: String, corpo: String) {
@@ -150,7 +170,10 @@ final class NotificationCoordinator: NSObject, UNUserNotificationCenterDelegate 
         let diario = UNNotificationCategory(
             identifier: NotificationScheduler.diarioCategoryId,
             actions: [], intentIdentifiers: [], options: [])
-        center.setNotificationCategories([category, diario])
+        let diarioStart = UNNotificationCategory(
+            identifier: NotificationScheduler.diarioStartCategoryId,
+            actions: [], intentIdentifiers: [], options: [])
+        center.setNotificationCategories([category, diario, diarioStart])
     }
 
     // Mostra a notificação mesmo com o app aberto.
@@ -171,6 +194,15 @@ final class NotificationCoordinator: NSObject, UNUserNotificationCenterDelegate 
                 // O toque no chamado do Diário leva direto à folha de rótulo.
                 DiarioModel.shared.querRotular = true
                 DiarioModel.shared.abrirPedido = true
+                completionHandler()
+                return
+            }
+            if category == NotificationScheduler.diarioStartCategoryId {
+                // Bom-dia tocado → o dia começa aqui mesmo, sem mais toques.
+                DiarioModel.shared.abrirPedido = true
+                if DiarioModel.shared.estado == .desligado {
+                    DiarioModel.shared.comecarDia()
+                }
                 completionHandler()
                 return
             }

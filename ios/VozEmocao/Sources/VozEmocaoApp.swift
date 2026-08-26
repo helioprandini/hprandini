@@ -7,6 +7,8 @@ struct VozEmocaoApp: App {
     init() {
         NotificationScheduler.requestAuthorization()
         NotificationCoordinator.shared.register()
+        // O bom-dia fica sempre agendado; identificador fixo evita duplicar.
+        NotificationScheduler.agendarBomDia()
     }
 
     var body: some Scene {
