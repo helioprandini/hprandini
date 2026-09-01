@@ -168,6 +168,14 @@ Depois do app funcionar, o Helio definiu o trabalho como duas frentes:
 Números reais, não impressão. Rodar sempre com
 `node research/benchmark/analyze-dataset.js <dataset.json>`.
 
+**Onde o dado mora:** `research/datasets/` (ver o README de lá). A pasta é
+**ignorada pelo Git por lista de permissão** — este repositório é público, e voz
+com rótulo emocional é dado íntimo. Consequência prática que não pode ser
+esquecida: **o dataset não tem cópia no Git.** Ele vive no `Documents` do app no
+iPhone e no `localStorage` do navegador. Rebuild por cima preserva; **apagar o
+app apaga o dataset junto** — e o build de Personal Team expira em 7 dias, o que
+faz de reinstalar uma rotina. **Exportar antes de reinstalar** é a regra.
+
 | | 1º dataset (n=6) | 2º dataset (n=9 limpas de 16) |
 |---|---|---|
 | Viés de ativação | −0.60 (motor via o Helio mais calmo do que ele estava) | **−0.31** |
@@ -277,11 +285,17 @@ O que foi construído (`DiarioModel.swift`, `DiarioView.swift`):
 ## Próximos passos
 
 - [x] Terminar a instalação do app no iPhone do Helio.
-- [ ] **Captura de ground truth** (como a pessoa se sentiu) após cada gravação —
-      começa na web (`js/`), depois porta pro iOS. É o tijolo zero do dataset.
-- [ ] **Testar o Diário automático no iPhone** — `cd ios && xcodegen generate`,
-      abrir no Xcode, Team, build. (Novos arquivos exigem regenerar o projeto —
-      lição do bug do `Theme.swift`.)
+- [x] **Captura de ground truth na web** (`js/app.js`) — `match`, `affect`,
+      `feeling` e `outcome`, com a grade de afeto e a estrutura multicanal
+      (`canais.autorrelato`). O tijolo zero está assentado. *Conferido no
+      código em 2026-09-01: estava marcado como pendente por engano.*
+- [ ] Portar a mesma captura para o iOS fora do Diário (o Diário já rotula).
+- [ ] **Testar o Diário automático no iPhone** — abrir no Xcode e dar ▶.
+      **Só rodar `xcodegen generate` se algum arquivo novo tiver entrado**; do
+      contrário ele regenera o `.xcodeproj` à toa e pode derrubar o Team da
+      assinatura (lição do commit `0d863c4`). Conferido em 2026-09-01: os 12
+      fontes Swift já estão no `project.pbxproj` — **não precisa de xcodegen**.
+      (Quando entrar arquivo novo, aí sim: lição do bug do `Theme.swift`.)
 - [x] Portar motor v2 (semitons + energia) para o Swift.
 - [ ] Renomear o produto de "VozEmoção" para **Voice&Emotion** no app e docs.
 - [ ] Frente de design: identidade visual, fluxo, primeira impressão.

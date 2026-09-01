@@ -1,0 +1,61 @@
+# Datasets — onde o dado real mora
+
+Esta pasta guarda os datasets rotulados exportados do V&E. É o ativo mais
+valioso do projeto: pela tese do `ESTRATEGIA_DADOS.md`, **o gargalo não é o
+modelo, é o dado real, rotulado e consentido.**
+
+## Regra número um: isto não vai para o Git
+
+O repositório é **público** (o GitHub Pages exige, em conta gratuita). Voz e
+rótulo emocional são dado íntimo — e o Princípio 3 do `CLAUDE.md` é
+*privacidade primeiro*.
+
+Por isso o `.gitignore` desta pasta ignora **tudo** por padrão, e libera só ele
+mesmo e este README. Não existe "só desta vez": um `git add -f` num dataset
+publica a voz de alguém para sempre, porque o Git não esquece.
+
+**Faça backup fora do Git.** Um segundo lugar qualquer que não seja um só
+aparelho — o ponto é não ter cópia única.
+
+## De onde vêm os arquivos
+
+| Origem | Como exportar | Nome do arquivo |
+|---|---|---|
+| **Diário automático (iOS)** | Diário de Voz → **Exportar** (folha de compartilhamento) | `vem-diario-auto-<data>.json` |
+| **Diário de Voz (web)** | botão de exportar em `diario.html` | `vem-diario-<data>.json` |
+| **Estúdio de Anotação** | exportar em `studio.html` | dataset de reunião |
+
+⚠️ **Exporte antes de reinstalar o app.** No iOS o dataset vive no `Documents`
+do aplicativo. Rebuild *por cima* preserva; **apagar o app apaga o dataset
+junto.** E o build de Personal Team expira em 7 dias, então reinstalar é
+rotina — o que faz desta a armadilha mais provável de todas.
+
+## Como ler os números
+
+```bash
+node research/benchmark/analyze-dataset.js research/datasets/<arquivo>.json
+```
+
+O script só considera honestas as amostras com `qualidade: "limpa"` — aquelas
+em que a voz medida é a de quem rotulou. Em trecho com mistura de vozes, o
+motor lê uma pessoa enquanto o rótulo descreve outra: o par sinal↔rótulo não
+existe, e contá-lo seria inventar precisão.
+
+## Não misturar réguas
+
+Todo registro carrega `motorVersao`. Dataset sem carimbo mistura medições de
+motores diferentes e o resultado não quer dizer nada.
+
+Também não misturar **distribuições**: `origem: diario` cobre o dia inteiro,
+`origem: reuniao` cobre uma faixa emocional estreita. São populações
+diferentes — juntar as duas numa média esconde exatamente o efeito que o
+Diário foi criado para revelar.
+
+## Onde estamos
+
+Em 2026-08, com **n = 9 amostras limpas**: correlação de valência r = 0.37 e de
+ativação r = 0.28 — as duas fracas.
+
+A faixa de energia do motor está marcada `PROVISÓRIO` e **só se revalida acima
+de ~30 amostras limpas**. Até lá, a regra é firme: **não recalibrar escala com
+n pequeno.** Ajustar a régua para caber em 9 pontos é decorar o ruído.

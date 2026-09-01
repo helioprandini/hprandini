@@ -1,0 +1,7 @@
+# Nada de dado de voz entra no Git. Este repositório é PÚBLICO.
+#
+# Ignora tudo por padrão...
+*
+# ...menos as regras e a explicação.
+!.gitignore
+!README.md

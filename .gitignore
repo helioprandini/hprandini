@@ -1,0 +1,8 @@
+# Lixo do macOS
+.DS_Store
+
+# Projeto Xcode: gerado pelo xcodegen a partir de ios/project.yml.
+# A fonte da verdade é o project.yml — o .xcodeproj é derivado.
+ios/*.xcodeproj/
+
+# Datasets: a regra de verdade está em research/datasets/.gitignore
