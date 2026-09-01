@@ -6,3 +6,6 @@
 ios/*.xcodeproj/
 
 # Datasets: a regra de verdade está em research/datasets/.gitignore
+
+# Log do backup automatico (launchd)
+research/scripts/backup.log

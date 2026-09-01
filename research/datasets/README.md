@@ -14,8 +14,12 @@ Por isso o `.gitignore` desta pasta ignora **tudo** por padrão, e libera só el
 mesmo e este README. Não existe "só desta vez": um `git add -f` num dataset
 publica a voz de alguém para sempre, porque o Git não esquece.
 
-**Faça backup fora do Git.** Um segundo lugar qualquer que não seja um só
-aparelho — o ponto é não ter cópia única.
+**O backup fora do Git é automático.** Um agente do sistema
+(`com.ae.backup-datasets`, instalado em `~/Library/LaunchAgents/`) copia esta
+pasta para o iCloud Drive (`AE-Backups/datasets/`) todo dia às 13h e em todo
+login — script em `research/scripts/backup-datasets.sh`, log em
+`research/scripts/backup.log`. Aditivo por desenho: nunca apaga nada no
+destino. Qualquer arquivo salvo aqui entra no próximo ciclo sozinho.
 
 ## De onde vêm os arquivos
 
