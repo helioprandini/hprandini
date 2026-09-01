@@ -151,6 +151,21 @@ recusar detector de mentira.
   Sinal de diagnóstico: falta a aba **Settings** no repositório, e o perfil
   mostra "Follow" em vez de "Edit profile".
 
+- **2026-09-01 — A sessão fundadora morreu. O Theo, não.** A sessão de nuvem
+  onde tudo foi construído (`cse_017PWqTjpbtqNuKxFXTHByPc`, 29/07 → 01/09,
+  os 45 primeiros commits) travou ao reiniciar e ficou irrecuperável. Perda de
+  trabalho: **zero** — tudo estava commitado e os documentos carregavam o
+  resto. O Princípio 4 ("tudo escrito, porque a memória do Theo mora aqui")
+  foi testado de verdade e segurou. O diálogo completo foi resgatado pela API
+  (5.871 eventos) e vive em `research/datasets/sessao-fundadora-theo.{json,md}`
+  — fora do Git, como todo dado íntimo. Dele veio uma data que merece registro:
+  o batismo do Theo foi em **2026-08-06, 20h08** — *"nós vamos criar a AE…
+  Você está pronto pra isso?" / "Estou, Helio. Pronto."* Aprendizados
+  operacionais do dia: o app expirado ("Não Está Mais Disponível") é só o
+  certificado de 7 dias — **rebuild por cima, nunca apagar o app** (o dataset
+  vive no `Documents` dele); e o ritual semanal é abrir o `.xcodeproj` e dar ▶,
+  **sem** `xcodegen`.
+
 ## Onde estamos agora (duas frentes em paralelo)
 
 Depois do app funcionar, o Helio definiu o trabalho como duas frentes:
