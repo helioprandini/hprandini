@@ -43,8 +43,22 @@ negocia, lidera, ensina, apresenta ou defende uma ideia.
 > ⚠️ **Adicionou ou removeu um arquivo em `Sources/`?** Rode `xcodegen generate`
 > antes de compilar — o `.xcodeproj` só enxerga os arquivos que existiam quando
 > foi gerado. Sem isso o build falha e o iPhone continua abrindo a versão antiga.
-> O Team já está fixado no `project.yml`, então regerar **não** apaga a
-> assinatura.
+> **Atenção:** o `DEVELOPMENT_TEAM` *não* está fixado no `project.yml` (de
+> propósito — um ID errado quebra o build), então depois de regerar é preciso
+> **escolher o Team de novo** em Signing & Capabilities. Só regere quando
+> houver arquivo novo.
+
+## O ritual semanal (o app "Não Está Mais Disponível")
+
+Com Apple ID gratuito (Personal Team) o app instalado **expira em 7 dias**. O
+iPhone avisa *"Voice&Emotion Não Está Mais Disponível"*. Não é bug, é o prazo.
+
+1. **Não apague o app.** O dataset do Diário vive no `Documents` dele — apagar
+   o ícone apaga os dados. Reinstalar *por cima* preserva tudo.
+2. `open ios/VozEmocao.xcodeproj` (o projeto que já existe — **sem** `xcodegen`).
+3. iPhone no cabo, desbloqueado, escolhido como destino → **▶**.
+
+Pronto: mais 7 dias. Exportar o dataset antes é prudente, nunca obrigatório.
 
 ## Como compilar e testar no seu iPhone
 

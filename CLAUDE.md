@@ -297,6 +297,40 @@ O que foi construído (`DiarioModel.swift`, `DiarioView.swift`):
 - Limites de plataforma ditos na UI: precisa reabrir após reiniciar o aparelho;
   bateria; build de Personal Team expira em 7 dias (reinstalar via Xcode).
 
+### Escuta Ativa (decisão do Helio, 2026-09-04) — o Diário de sorteio sai do centro
+
+Depois de três dias com o Diário automático, veredito do Helio: *"a dinâmica é
+dura e zero fluida"*. Diagnóstico aceito e registrado: **o sorteio sorteia hora,
+não fala** — a maioria dos momentos cai em silêncio e a pergunta chega em hora
+sem dado nenhum por trás. Nova estrutura, dele: o telefone ouve o dia inteiro,
+**palavra-chave dispara** a captura de ~60s, e o app pergunta *"posso
+registrar?"* — "não" apaga na hora; dezenas de vezes por dia.
+
+O que ficou decidido junto (e por quê):
+- **Texto do trecho no dataset: só sentimento calculado + termos que dispararam.**
+  Nunca o texto bruto — um minuto de reunião carrega a fala de terceiros.
+- **Rol em camadas, medido, não de dicionário.** Contra 45 mil palavras de seis
+  reuniões reais (Plaud): 62 dos 132 termos antigos **nunca apareciam**; o mais
+  frequente ("negócio", 197x) era em boa parte gíria. Regra: **genérica só
+  dispara em par na janela de 60s**; específica, emocional, inglês e
+  personalizada disparam sozinhas (`BusinessKeywords.swift`, `GatilhoDetector`).
+- **Camada emocional entra, com o vocabulário real dele** — inclusive "puta"
+  (37x, o marcador de tensão mais frequente). É ela que conserta o mapa: a
+  reunião nunca vai para a valência negativa; o corredor vai.
+- **Inglês entra** (reunião ONGC inteira em inglês). **Parceiros** (Zurich,
+  MetLife, iFood, Neon, Quinto Andar…) ficam na lista personalizada, nunca no
+  produto.
+- **Interação de dois toques, nunca mais** — um na notificação, um no quadrante.
+  Dezenas por dia com a interação de hoje seria pior, não melhor.
+- Chão dito antes: escuta contínua **custa bateria**; amostras de reunião são
+  em boa parte `mista` (outras vozes) até termos separação de falantes — a
+  pergunta de consentimento carrega o "era você falando?".
+
+Estado: **rol + regra prontos, compilados e testados (11 casos)**, ligados ao
+modo Ouvir existente. Falta o segundo passo: captura automática de 60s de
+medidas em RAM → "Posso registrar?" → 1 toque no quadrante → registro com
+`gatilho: {termo, camada, tom}`. O Diário de sorteio vira opcional.
+
 ## Próximos passos
 
 - [x] Terminar a instalação do app no iPhone do Helio.
@@ -304,6 +338,9 @@ O que foi construído (`DiarioModel.swift`, `DiarioView.swift`):
       `feeling` e `outcome`, com a grade de afeto e a estrutura multicanal
       (`canais.autorrelato`). O tijolo zero está assentado. *Conferido no
       código em 2026-09-01: estava marcado como pendente por engano.*
+- [ ] **Escuta Ativa, passo 2:** captura automática de 60s (features em RAM)
+      → "Posso registrar? / Era você falando?" → 1 toque no quadrante → dataset
+      com `gatilho`. Regra de dois toques. Ver seção "Escuta Ativa".
 - [ ] Portar a mesma captura para o iOS fora do Diário (o Diário já rotula).
 - [ ] **Testar o Diário automático no iPhone** — abrir no Xcode e dar ▶.
       **Só rodar `xcodegen generate` se algum arquivo novo tiver entrado**; do

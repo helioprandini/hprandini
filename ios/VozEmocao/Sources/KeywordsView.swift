@@ -36,10 +36,10 @@ struct KeywordsView: View {
                     }
                 }
 
-                Section("Categorias base (negócios)") {
+                Section("Rol da Escuta Ativa (medido nas suas reuniões)") {
                     ForEach(BusinessKeywords.base.keys.sorted(), id: \.self) { cat in
                         HStack {
-                            Text(cat.replacingOccurrences(of: "_", with: " ").capitalized)
+                            Text(cat)
                             Spacer()
                             Text("\(BusinessKeywords.base[cat]?.count ?? 0)")
                                 .foregroundStyle(.secondary)

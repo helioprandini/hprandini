@@ -24,6 +24,9 @@ final class ConversationModel: NSObject, ObservableObject {
     @Published var statusText: String = "Toque em Ouvir e fale como você fala no dia a dia"
     @Published var showRecordPrompt: Bool = false
     @Published var triggeredKeyword: String = ""
+    /// Camada do rol que disparou (A–E) e, se emocional, o tom — vai para o dataset.
+    @Published var triggeredCamada: BusinessKeywords.Camada?
+    @Published var triggeredTom: BusinessKeywords.Tom?
 
     // Medidores ao vivo (0...1)
     @Published var liveEnergy: Double = 0
@@ -43,8 +46,7 @@ final class ConversationModel: NSObject, ObservableObject {
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
 
-    private var keywordWords = Set<String>()
-    private var keywordPhrases = [String]()
+    private var detector = GatilhoDetector(rol: BusinessKeywords.rol(custom: []))
 
     private var session: RecordingSession?
     private var recentPitches = [Float]()
@@ -57,9 +59,7 @@ final class ConversationModel: NSObject, ObservableObject {
 
     func reloadKeywords() {
         let custom = UserSettings.customKeywords
-        let sets = BusinessKeywords.loadSets(custom: custom)
-        keywordWords = sets.words
-        keywordPhrases = sets.phrases
+        detector = GatilhoDetector(rol: BusinessKeywords.rol(custom: custom))
     }
 
     // MARK: - Permissões
@@ -120,9 +120,7 @@ final class ConversationModel: NSObject, ObservableObject {
             guard let self else { return }
             if let result = result {
                 let text = result.bestTranscription.formattedString
-                if let match = BusinessKeywords.firstMatch(in: text,
-                                                           words: self.keywordWords,
-                                                           phrases: self.keywordPhrases) {
+                if let match = self.detector.avaliar(text) {
                     Task { @MainActor in self.handleKeyword(match) }
                 }
             }
@@ -137,15 +135,18 @@ final class ConversationModel: NSObject, ObservableObject {
 
     private func restartRecognition() {
         tearDownAudio()
+        detector.reset() // o texto reconhecido recomeça do zero
         try? beginSpeechRecognition()
     }
 
     @MainActor
-    private func handleKeyword(_ keyword: String) {
+    private func handleKeyword(_ match: BusinessKeywords.Match) {
         guard mode == .listening, !showRecordPrompt else { return }
-        triggeredKeyword = keyword
+        triggeredKeyword = match.termo
+        triggeredCamada = match.camada
+        triggeredTom = match.tom
         showRecordPrompt = true
-        NotificationScheduler.presentRecordPrompt(keyword: keyword)
+        NotificationScheduler.presentRecordPrompt(keyword: match.termo)
     }
 
     func stopListening() {
