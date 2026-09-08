@@ -86,6 +86,23 @@ enum NotificationScheduler {
     static let actionDismiss = "DISMISS_PROMPT"
     static let diarioCategoryId = "DIARIO_LABEL"
     static let diarioStartCategoryId = "DIARIO_START"
+    static let escutaCategoryId = "ESCUTA_CONSENT"
+    static let escutaSim = "ESCUTA_SIM"
+    static let escutaNao = "ESCUTA_NAO"
+
+    /// Escuta Ativa: o rol acordou e um momento espera em RAM. Dois botões,
+    /// e o "Não" apaga sem abrir o app — a promessa dos dois toques.
+    static func presentConsentimento(termo: String, id: String) {
+        let content = UNMutableNotificationContent()
+        content.title = "Posso registrar esse momento?"
+        content.body = "Ouvi \"\(termo)\". Sim = você marca como estava (1 toque). Não = apago agora."
+        content.sound = .default
+        content.categoryIdentifier = escutaCategoryId
+        content.interruptionLevel = .timeSensitive
+        content.userInfo = ["momento": id]
+        UNUserNotificationCenter.current().add(UNNotificationRequest(
+            identifier: "escuta-\(id)", content: content, trigger: nil))
+    }
 
     /// Bom-dia diário: o telefone lembra a pessoa, não o contrário. O toque
     /// nesta notificação LIGA o dia (ver NotificationCoordinator) — o iOS não
@@ -173,7 +190,16 @@ final class NotificationCoordinator: NSObject, UNUserNotificationCenterDelegate 
         let diarioStart = UNNotificationCategory(
             identifier: NotificationScheduler.diarioStartCategoryId,
             actions: [], intentIdentifiers: [], options: [])
-        center.setNotificationCategories([category, diario, diarioStart])
+        let escutaSim = UNNotificationAction(
+            identifier: NotificationScheduler.escutaSim,
+            title: "✅ Sim, registrar", options: [.foreground])
+        let escutaNao = UNNotificationAction(
+            identifier: NotificationScheduler.escutaNao,
+            title: "Não, apagar", options: [.destructive])
+        let escuta = UNNotificationCategory(
+            identifier: NotificationScheduler.escutaCategoryId,
+            actions: [escutaSim, escutaNao], intentIdentifiers: [], options: [])
+        center.setNotificationCategories([category, diario, diarioStart, escuta])
     }
 
     // Mostra a notificação mesmo com o app aberto.
@@ -190,6 +216,21 @@ final class NotificationCoordinator: NSObject, UNUserNotificationCenterDelegate 
         let action = response.actionIdentifier
         let category = response.notification.request.content.categoryIdentifier
         Task { @MainActor in
+            if category == NotificationScheduler.escutaCategoryId {
+                // "Posso registrar?" — Sim (ou toque na notificação) registra e
+                // abre a folha; Não apaga. Descartar a notificação não decide:
+                // o momento espera até 2h e morre sozinho.
+                switch action {
+                case NotificationScheduler.escutaNao:
+                    DiarioModel.shared.consentir(false)
+                case NotificationScheduler.escutaSim, UNNotificationDefaultActionIdentifier:
+                    DiarioModel.shared.consentir(true)
+                default:
+                    break
+                }
+                completionHandler()
+                return
+            }
             if category == NotificationScheduler.diarioCategoryId {
                 // O toque no chamado do Diário leva direto à folha de rótulo.
                 DiarioModel.shared.querRotular = true

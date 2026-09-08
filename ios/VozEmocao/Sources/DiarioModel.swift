@@ -1,6 +1,7 @@
 import Foundation
 import AVFoundation
 import Combine
+import Speech
 import UserNotifications
 
 /// Diário de Voz AUTOMÁTICO — o dia inteiro com um toque.
@@ -8,10 +9,18 @@ import UserNotifications
 /// O pedido do Helio: "quero que meu celular me ouça sem eu fazer nenhum
 /// passo". Este é o máximo que o iOS permite a um app legítimo, e é muito:
 /// ligado de manhã, o app mantém o microfone aberto (modo de áudio em segundo
-/// plano, o mesmo da escuta de palavras), sorteia os momentos sozinho e, em
-/// cada um, captura ~30s de FEATURES — o áudio nunca é escrito em disco. A
-/// pessoa só é chamada para o único passo que não pode ser automatizado:
-/// dizer como se sentia. Esse passo É o dado (ground truth).
+/// plano) e captura ~60s de FEATURES em cada momento — o áudio nunca é
+/// escrito em disco. A pessoa só é chamada para o único passo que não pode
+/// ser automatizado: dizer como se sentia. Esse passo É o dado (ground truth).
+///
+/// Dois gatilhos, um microfone:
+///  · **Escuta Ativa** (2026-09, o centro): o reconhecedor de fala roda no
+///    mesmo tap e o rol em camadas (`BusinessKeywords`) dispara quando surge
+///    fala que importa. 30s antes + 30s depois viram um momento que fica **em
+///    RAM** até a pessoa responder "Posso registrar?" — "não" apaga, sem
+///    resposta em 2h apaga, "sim" grava e abre a folha de rótulo. Dois toques.
+///  · **Sorteio** (opcional): horários aleatórios no dia, como antes. Ficou
+///    fora do centro porque sorteia hora, não fala — a maioria caía em silêncio.
 ///
 /// Limites de plataforma, para ninguém se enganar:
 ///  · é preciso abrir o app e tocar "Começar o dia" uma vez (após reiniciar o
@@ -34,8 +43,8 @@ final class DiarioModel: NSObject, ObservableObject {
     struct Momento: Codable, Identifiable {
         let id: String
         let data: Date
-        let origem = "diario"
-        let chamado = "automatico"     // capturado pelo sorteio, sem toque
+        var origem = "diario"          // "diario" (sorteio) | "escuta" (gatilho) — nunca misturar as distribuições
+        var chamado = "automatico"     // "automatico" (sorteio) | "gatilho" (rol)
         let fonte = "voz"
         let origemRotulo = "humano"
         var qualidade: String?         // "limpa" | "mista" — quem falou?
@@ -43,9 +52,14 @@ final class DiarioModel: NSObject, ObservableObject {
         var relatado: Relatado?        // nil enquanto não rotulado
         var observado: Observado
         var inferido: Inferido
+        var gatilho: Gatilho?          // o que acordou a Escuta Ativa
+        var verbal: Verbal?            // canal verbal: sentimento + termos, nunca o texto
 
         var rotulado: Bool { relatado != nil }
     }
+
+    struct Gatilho: Codable { var termo: String; var camada: String; var tom: String? }
+    struct Verbal: Codable { var sentimento: Double?; var termos: [String]; var disponivel: Bool }
 
     struct Contexto: Codable { var onde: String?; var comQuem: String?; var hora: Int }
     struct Relatado: Codable { var speaker = "eu"; var affect: Affect; var feeling: String? }
@@ -74,6 +88,15 @@ final class DiarioModel: NSObject, ObservableObject {
     @Published var horarios: [Date] = []
     @Published var capturados = 0
     @Published var momentos: [Momento] = []
+    /// Escuta Ativa: quantas vezes o rol acordou hoje, e o momento que espera
+    /// o "Posso registrar?" — vive só em RAM até o sim.
+    @Published var gatilhosHoje = 0
+    @Published var aguardando: Momento?
+    @Published var escutaAtiva = false
+    /// Sorteio de horários além dos gatilhos (opcional; padrão desligado).
+    @Published var sorteioLigado: Bool = UserDefaults.standard.bool(forKey: "diario.sorteio") {
+        didSet { UserDefaults.standard.set(sorteioLigado, forKey: "diario.sorteio") }
+    }
     /// Notificação de rótulo tocada → a UI navega para o Diário sozinha.
     /// (`abrirPedido` guia a navegação e precisa ficar true enquanto a tela
     /// está aberta; `querRotular` é consumido pela tela para abrir a folha.)
@@ -83,9 +106,16 @@ final class DiarioModel: NSObject, ObservableObject {
     // MARK: - Captura
 
     private let audioEngine = AVAudioEngine()
-    private let buffer = RollingFrameBuffer(keepMs: 35_000)
+    private let buffer = RollingFrameBuffer(keepMs: 65_000)
     private var checkTimer: Timer?
     private var pendentes: [Date] = []
+    private var escuta: EscutaAtiva?
+    private var capturaAgendada = false
+    private var ultimoGatilho: Date = .distantPast
+    /// Entre dois momentos por gatilho: dezenas por dia, não um por minuto.
+    private let gapGatilho: TimeInterval = 4 * 60
+    /// Sem resposta ao "Posso registrar?", o momento morre — frescor é o dado.
+    private let validadeConsentimento: TimeInterval = 2 * 60 * 60
 
     private let storeURL: URL = {
         let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
@@ -113,11 +143,12 @@ final class DiarioModel: NSObject, ObservableObject {
                 }
                 do {
                     try self.ligarMicrofone()
-                    self.sortear(janelaHoras: janelaHoras, vezes: vezes)
+                    self.sortear(janelaHoras: janelaHoras, vezes: self.sorteioLigado ? vezes : 0)
                     self.estado = .ouvindo
                     self.capturados = 0
-                    self.statusText = "Ouvindo o seu dia. Pode bloquear a tela e guardar o telefone — eu chamo você."
+                    self.gatilhosHoje = 0
                     self.armarVigia()
+                    self.ligarEscutaAtiva()
                 } catch {
                     self.statusText = "Não consegui ligar o microfone: \(error.localizedDescription)"
                 }
@@ -127,6 +158,8 @@ final class DiarioModel: NSObject, ObservableObject {
 
     func encerrarDia() {
         checkTimer?.invalidate(); checkTimer = nil
+        escuta?.parar(); escuta = nil; escutaAtiva = false
+        aguardando = nil; capturaAgendada = false
         if audioEngine.isRunning { audioEngine.stop() }
         audioEngine.inputNode.removeTap(onBus: 0)
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
@@ -150,16 +183,97 @@ final class DiarioModel: NSObject, ObservableObject {
         let sampleRate = Float(format.sampleRate)
         let buffer = self.buffer
 
-        input.installTap(onBus: 0, bufferSize: 2048, format: format) { pcm, _ in
+        input.installTap(onBus: 0, bufferSize: 2048, format: format) { [weak self] pcm, _ in
             buffer.ingest(pcm, sampleRate: sampleRate)
+            self?.escuta?.alimentar(pcm)   // o mesmo buffer alimenta o reconhecedor
         }
         audioEngine.prepare()
         try audioEngine.start()
     }
 
+    // MARK: - Escuta Ativa (o centro)
+
+    private func ligarEscutaAtiva() {
+        SFSpeechRecognizer.requestAuthorization { [weak self] auth in
+            Task { @MainActor in
+                guard let self, self.estado == .ouvindo else { return }
+                guard auth == .authorized else {
+                    self.escutaAtiva = false
+                    self.statusText = self.sorteioLigado
+                        ? "Sem reconhecimento de fala (Ajustes → Voice&Emotion). Sigo só com o sorteio."
+                        : "Preciso do reconhecimento de fala para a Escuta Ativa. Ajustes → Voice&Emotion → Reconhecimento de Fala."
+                    return
+                }
+                let e = EscutaAtiva(custom: UserSettings.customKeywords)
+                e.onGatilho = { [weak self] match, texto in
+                    Task { @MainActor in self?.gatilhou(match, textoRecente: texto) }
+                }
+                self.escuta = e
+                e.iniciar()
+                self.escutaAtiva = e.disponivel
+                self.statusText = e.disponivel
+                    ? "Ouvindo o seu dia. Quando surgir assunto que importa, eu leio o momento e te pergunto se posso registrar."
+                    : "Reconhecimento de fala indisponível agora (sem modelo pt-BR no aparelho?). Sigo ouvindo; tento de novo sozinho."
+            }
+        }
+    }
+
+    /// O rol acordou. Espera 30s (para ter o depois, não só o antes) e captura.
+    private func gatilhou(_ match: BusinessKeywords.Match, textoRecente: String) {
+        guard estado == .ouvindo, !capturaAgendada, aguardando == nil else { return }
+        guard Date().timeIntervalSince(ultimoGatilho) >= gapGatilho else { return }
+        ultimoGatilho = Date()
+        gatilhosHoje += 1
+        capturaAgendada = true
+        // O canal verbal é calculado AGORA e o texto morre aqui.
+        let verbal = Verbal(
+            sentimento: EscutaAtiva.sentimento(textoRecente),
+            termos: EscutaAtiva.termosPresentes(textoRecente, custom: UserSettings.customKeywords),
+            disponivel: true)
+        statusText = "Ouvi \"\(match.termo)\". Lendo o próximo meio minuto…"
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30) { [weak self] in
+            self?.capturarGatilho(match, verbal: verbal)
+        }
+    }
+
+    private func capturarGatilho(_ match: BusinessKeywords.Match, verbal: Verbal) {
+        capturaAgendada = false
+        guard estado == .ouvindo else { return }
+        guard let m = montarMomento(prefixo: "escuta", janelaMs: 60_000) else {
+            // Gatilho em fala que não durou: não registra, não incomoda.
+            statusText = "Ouvindo o seu dia."
+            return
+        }
+        var momento = m
+        momento.origem = "escuta"
+        momento.chamado = "gatilho"
+        momento.gatilho = Gatilho(termo: match.termo, camada: match.camada.rawValue, tom: match.tom?.rawValue)
+        momento.verbal = verbal
+        aguardando = momento               // só RAM até o "sim"
+        statusText = "Posso registrar esse momento? Responda na notificação — ou aqui."
+        NotificationScheduler.presentConsentimento(termo: match.termo, id: momento.id)
+    }
+
+    /// A resposta ao "Posso registrar?". Não = o momento nunca existiu.
+    func consentir(_ sim: Bool) {
+        guard let m = aguardando else { return }
+        aguardando = nil
+        guard sim else {
+            statusText = "Apagado. Sigo ouvindo."
+            return
+        }
+        momentos.insert(m, at: 0)
+        capturados += 1
+        salvar()
+        querRotular = true
+        abrirPedido = true
+        statusText = "Registrado. Falta só marcar como você estava."
+    }
+
     // MARK: - Sorteio (mesmas regras do diário web)
 
     private func sortear(janelaHoras: ClosedRange<Int>, vezes: Int) {
+        guard vezes > 0 else { pendentes = []; horarios = []; return }
         let cal = Calendar.current
         let agora = Date()
         let inicioJanela = cal.date(bySettingHour: janelaHoras.lowerBound, minute: 0,
@@ -204,6 +318,10 @@ final class DiarioModel: NSObject, ObservableObject {
     private func conferir() {
         guard estado == .ouvindo else { return }
         let agora = Date()
+        if let a = aguardando, agora.timeIntervalSince(a.data) > validadeConsentimento {
+            aguardando = nil   // sem resposta: o frescor foi embora, o momento vai junto
+            statusText = "Ouvindo o seu dia."
+        }
         guard let idx = pendentes.firstIndex(where: { $0 <= agora }) else { return }
         pendentes.remove(at: idx)
         capturar()
@@ -215,8 +333,7 @@ final class DiarioModel: NSObject, ObservableObject {
     // MARK: - Captura de um momento
 
     private func capturar() {
-        let frames = buffer.snapshot(lastMs: 30_000)
-        guard let s = EmotionEngine.summarize(frames) else {
+        guard let m = montarMomento(prefixo: "diario-auto", janelaMs: 30_000) else {
             // Silêncio no momento sorteado (telefone longe, ninguém falando).
             // Registrar nada é melhor que registrar lixo — mas avisar, porque
             // amostra perdida em silêncio é o pior tipo de perda.
@@ -225,9 +342,22 @@ final class DiarioModel: NSObject, ObservableObject {
                 corpo: "Não ouvi você por perto agora. Se quiser, abra e grave este momento manualmente.")
             return
         }
+        momentos.insert(m, at: 0)
+        capturados += 1
+        salvar()
 
-        let m = Momento(
-            id: "diario-auto-\(Int(Date().timeIntervalSince1970))",
+        NotificationScheduler.presentDiario(
+            titulo: "Como você está agora?",
+            corpo: "Acabei de ler um momento do seu dia. Toque e marque como você se sente — 10 segundos.")
+    }
+
+    /// Lê os últimos `janelaMs` do buffer e monta um momento ainda sem rótulo.
+    /// `nil` quando não houve fala suficiente — o motor não resume silêncio.
+    private func montarMomento(prefixo: String, janelaMs: Double) -> Momento? {
+        let frames = buffer.snapshot(lastMs: janelaMs)
+        guard let s = EmotionEngine.summarize(frames) else { return nil }
+        return Momento(
+            id: "\(prefixo)-\(Int(Date().timeIntervalSince1970))",
             data: Date(),
             qualidade: nil,
             contexto: Contexto(onde: nil, comQuem: nil,
@@ -245,13 +375,6 @@ final class DiarioModel: NSObject, ObservableObject {
                                   ativacao: Double(s.energy) / 100 * 3),
                 categoria: s.dominant.key)
         )
-        momentos.insert(m, at: 0)
-        capturados += 1
-        salvar()
-
-        NotificationScheduler.presentDiario(
-            titulo: "Como você está agora?",
-            corpo: "Acabei de ler um momento do seu dia. Toque e marque como você se sente — 10 segundos.")
     }
 
     // MARK: - Rótulo (o passo humano)

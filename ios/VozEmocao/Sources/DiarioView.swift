@@ -10,6 +10,7 @@ struct DiarioView: View {
             VStack(spacing: 16) {
                 explicacao
                 controle
+                if diario.aguardando != nil { consentimentoCard }
                 if !diario.pendentesDeRotulo.isEmpty { pendentesCard }
                 if !diario.momentos.isEmpty { historicoCard }
                 avisoLegal
@@ -34,7 +35,7 @@ struct DiarioView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("O dia inteiro, sozinho")
                 .font(.system(size: 16, weight: .semibold))
-            Text("Ligue de manhã e guarde o telefone. Eu sorteio os momentos, capturo 30 segundos de **medidas** (o áudio nunca é gravado) e te chamo só para marcar como você se sente — o único passo que precisa ser seu, porque ele é a verdade que me ensina.")
+            Text("Ligue de manhã e guarde o telefone. Quando surgir fala que importa — negócio, tensão, alívio — eu leio um minuto de **medidas** (o áudio nunca é gravado) e pergunto: *posso registrar?* Não apaga na hora. Sim é um toque para marcar como você estava — o único passo que precisa ser seu, porque ele é a verdade que me ensina.")
                 .font(.system(size: 13))
                 .foregroundStyle(Theme.textDim)
                 .lineSpacing(3)
@@ -53,6 +54,14 @@ struct DiarioView: View {
 
             switch diario.estado {
             case .desligado:
+                Toggle(isOn: $diario.sorteioLigado) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Sortear momentos também").font(.system(size: 13.5))
+                        Text("5 horários aleatórios, além dos gatilhos").font(.system(size: 11.5))
+                            .foregroundStyle(Theme.textFaint)
+                    }
+                }
+                .tint(Theme.warm)
                 Button { diario.comecarDia() } label: {
                     Label("Começar o dia", systemImage: "sunrise.fill")
                         .font(.system(size: 15, weight: .semibold))
@@ -63,9 +72,14 @@ struct DiarioView: View {
                         .clipShape(RoundedRectangle(cornerRadius: Theme.rMd, style: .continuous))
                 }
             case .ouvindo:
-                Label("Ouvindo o seu dia…", systemImage: "waveform")
+                Label(diario.escutaAtiva ? "Escuta Ativa ligada" : "Ouvindo o seu dia…",
+                      systemImage: diario.escutaAtiva ? "ear.fill" : "waveform")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(Theme.pitch)
+                Text("Gatilhos hoje: \(diario.gatilhosHoje) · registrados: \(diario.capturados)")
+                    .font(.system(size: 12))
+                    .foregroundStyle(Theme.textFaint)
+                    .monospacedDigit()
                 if !diario.horarios.isEmpty {
                     Text("Próximos momentos: " + diario.horarios
                         .map { $0.formatted(date: .omitted, time: .shortened) }
@@ -85,6 +99,41 @@ struct DiarioView: View {
                 }
             }
         }
+        .card()
+    }
+
+    /// O "Posso registrar?" também mora aqui, para quem está com o app aberto.
+    private var consentimentoCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Posso registrar esse momento?")
+                .font(.system(size: 15, weight: .semibold))
+            if let g = diario.aguardando?.gatilho {
+                Text("Ouvi \"\(g.termo)\". Se sim, você marca como estava — um toque. Se não, apago agora e não guardo nada.")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Theme.textDim)
+                    .lineSpacing(3)
+            }
+            HStack(spacing: 10) {
+                Button { diario.consentir(false) } label: {
+                    Text("Não, apagar")
+                        .font(.system(size: 14, weight: .medium))
+                        .frame(maxWidth: .infinity).padding(.vertical, 12)
+                        .background(Theme.bgInset).foregroundStyle(Theme.textDim)
+                        .clipShape(RoundedRectangle(cornerRadius: Theme.rMd, style: .continuous))
+                }
+                Button {
+                    diario.consentir(true)
+                    rotulando = diario.pendentesDeRotulo.first
+                } label: {
+                    Text("Sim, registrar")
+                        .font(.system(size: 14, weight: .semibold))
+                        .frame(maxWidth: .infinity).padding(.vertical, 12)
+                        .background(Theme.warm).foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: Theme.rMd, style: .continuous))
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .card()
     }
 
@@ -143,6 +192,12 @@ struct DiarioView: View {
                             .monospacedDigit()
                     }
                     Spacer()
+                    if let g = m.gatilho {
+                        Text("🔑 \(g.termo)")
+                            .font(.system(size: 11))
+                            .foregroundStyle(Theme.textFaint)
+                            .lineLimit(1)
+                    }
                     Text(m.qualidade == "mista" ? "🗣️+" : "✓")
                         .font(.system(size: 12))
                         .foregroundStyle(Theme.textFaint)
@@ -187,7 +242,8 @@ struct RotuloSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    Text("Momento das \(momento.data.formatted(date: .omitted, time: .shortened))")
+                    Text(momento.gatilho.map { "Momento das \(momento.data.formatted(date: .omitted, time: .shortened)) — ouvi \"\($0.termo)\"" }
+                         ?? "Momento das \(momento.data.formatted(date: .omitted, time: .shortened))")
                         .font(.system(size: 13))
                         .foregroundStyle(Theme.textDim)
 

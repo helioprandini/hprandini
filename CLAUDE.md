@@ -326,10 +326,17 @@ O que ficou decidido junto (e por quê):
   em boa parte `mista` (outras vozes) até termos separação de falantes — a
   pergunta de consentimento carrega o "era você falando?".
 
-Estado: **rol + regra prontos, compilados e testados (11 casos)**, ligados ao
-modo Ouvir existente. Falta o segundo passo: captura automática de 60s de
-medidas em RAM → "Posso registrar?" → 1 toque no quadrante → registro com
-`gatilho: {termo, camada, tom}`. O Diário de sorteio vira opcional.
+**Construído (2026-09-08), `EscutaAtiva.swift` + `DiarioModel`:** um só tap de
+microfone alimenta o buffer de medidas **e** o reconhecedor de fala (pt-BR, no
+aparelho). O rol dispara → espera 30s (para ter o depois) → 60s de medidas
+viram um momento **em RAM** → notificação *"Posso registrar?"* com **Sim /
+Não** → Não apaga (nunca foi salvo); sem resposta em 2h apaga; Sim grava, abre
+a folha, 1 toque no quadrante. Gap mínimo de 4 min entre gatilhos. O registro
+carrega `origem: "escuta"`, `chamado: "gatilho"`, `gatilho {termo, camada,
+tom}` e `verbal {sentimento, termos}` — o sentimento é calculado no instante
+com NaturalLanguage e **o texto morre ali** (primeiro tijolo do degrau 2,
+texto + tom). O sorteio virou um toggle, desligado por padrão. Compilado e
+testado no simulador; **falta o teste na mão do Helio.**
 
 ## Próximos passos
 
@@ -338,9 +345,11 @@ medidas em RAM → "Posso registrar?" → 1 toque no quadrante → registro com
       `feeling` e `outcome`, com a grade de afeto e a estrutura multicanal
       (`canais.autorrelato`). O tijolo zero está assentado. *Conferido no
       código em 2026-09-01: estava marcado como pendente por engano.*
-- [ ] **Escuta Ativa, passo 2:** captura automática de 60s (features em RAM)
-      → "Posso registrar? / Era você falando?" → 1 toque no quadrante → dataset
-      com `gatilho`. Regra de dois toques. Ver seção "Escuta Ativa".
+- [x] **Escuta Ativa, passo 2** — construído em 2026-09-08 (ver seção). 
+- [ ] **Testar a Escuta Ativa no iPhone** — entrou arquivo novo
+      (`EscutaAtiva.swift`), então o `.xcodeproj` foi regenerado: **reescolher
+      o Team** em Signing & Capabilities antes do ▶. Medir: acordou nas horas
+      certas? Quantos "não"? Bateria no fim do dia?
 - [ ] Portar a mesma captura para o iOS fora do Diário (o Diário já rotula).
 - [ ] **Testar o Diário automático no iPhone** — abrir no Xcode e dar ▶.
       **Só rodar `xcodegen generate` se algum arquivo novo tiver entrado**; do
