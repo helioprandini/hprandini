@@ -317,7 +317,9 @@ O que ficou decidido junto (e por quê):
 - **Camada emocional entra, com o vocabulário real dele** — inclusive "puta"
   (37x, o marcador de tensão mais frequente). É ela que conserta o mapa: a
   reunião nunca vai para a valência negativa; o corredor vai.
-- **Inglês entra** (reunião ONGC inteira em inglês). **Parceiros** (Zurich,
+- **Inglês entra** — a reunião em inglês que apareceu nas transcrições (ONGC)
+  era da **Roberta**, esposa do Helio, que usa o mesmo Mac; a camada fica
+  porque termo específico em inglês não erra e não custa nada. **Parceiros** (Zurich,
   MetLife, iFood, Neon, Quinto Andar…) ficam na lista personalizada, nunca no
   produto.
 - **Interação de dois toques, nunca mais** — um na notificação, um no quadrante.
