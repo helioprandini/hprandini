@@ -99,7 +99,7 @@ final class ConversationModel: NSObject, ObservableObject {
         // `.record` silencia toda a reprodução do aparelho enquanto ouvimos.
         // Mesmo arranjo do Diário: grava, deixa os outros tocarem, som no alto-falante.
         try session.setCategory(.playAndRecord, mode: .measurement,
-                                options: [.mixWithOthers, .allowBluetooth, .defaultToSpeaker])
+                                options: [.mixWithOthers, .allowBluetoothHFP, .defaultToSpeaker])
         try session.setActive(true, options: .notifyOthersOnDeactivation)
 
         let request = SFSpeechAudioBufferRecognitionRequest()
@@ -177,7 +177,7 @@ final class ConversationModel: NSObject, ObservableObject {
         do {
             let audioSession = AVAudioSession.sharedInstance()
             try audioSession.setCategory(.playAndRecord, mode: .measurement,
-                                         options: [.mixWithOthers, .allowBluetooth, .defaultToSpeaker])
+                                         options: [.mixWithOthers, .allowBluetoothHFP, .defaultToSpeaker])
             try audioSession.setActive(true)
 
             let input = audioEngine.inputNode

@@ -178,7 +178,7 @@ final class DiarioModel: NSObject, ObservableObject {
         // aparelho para o alto-falante do ouvido (o de ligação) — o "alto-falante
         // parou de funcionar" que o Helio viu em 2026-09-09.
         try session.setCategory(.playAndRecord, mode: .measurement,
-                                options: [.mixWithOthers, .allowBluetooth, .defaultToSpeaker])
+                                options: [.mixWithOthers, .allowBluetoothHFP, .defaultToSpeaker])
         try session.setActive(true)
         observarInterrupcoes()
 
@@ -206,25 +206,29 @@ final class DiarioModel: NSObject, ObservableObject {
         guard !observandoInterrupcoes else { return }
         observandoInterrupcoes = true
         let nc = NotificationCenter.default
-        nc.addObserver(forName: AVAudioSession.interruptionNotification, object: nil, queue: .main) { [weak self] n in
-            guard let self, self.estado == .ouvindo,
-                  let raw = n.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt,
-                  let tipo = AVAudioSession.InterruptionType(rawValue: raw) else { return }
-            switch tipo {
-            case .began:
-                self.statusText = "Pausado por uma ligação ou outro app. Volto sozinho quando acabar."
-            case .ended:
-                self.retomarDepoisDeInterrupcao()
-            @unknown default: break
+        nc.addObserver(forName: AVAudioSession.interruptionNotification, object: nil, queue: .main) { n in
+            let raw = n.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt
+            Task { @MainActor [weak self] in
+                guard let self, self.estado == .ouvindo,
+                      let raw, let tipo = AVAudioSession.InterruptionType(rawValue: raw) else { return }
+                switch tipo {
+                case .began:
+                    self.statusText = "Pausado por uma ligação ou outro app. Volto sozinho quando acabar."
+                case .ended:
+                    self.retomarDepoisDeInterrupcao()
+                @unknown default: break
+                }
             }
         }
-        nc.addObserver(forName: AVAudioSession.routeChangeNotification, object: nil, queue: .main) { [weak self] n in
-            guard let self, self.estado == .ouvindo,
-                  let raw = n.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt,
-                  let motivo = AVAudioSession.RouteChangeReason(rawValue: raw) else { return }
-            // Fone entrou ou saiu: o engine precisa reabrir com o formato novo.
-            if motivo == .newDeviceAvailable || motivo == .oldDeviceUnavailable {
-                self.retomarDepoisDeInterrupcao()
+        nc.addObserver(forName: AVAudioSession.routeChangeNotification, object: nil, queue: .main) { n in
+            let raw = n.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt
+            Task { @MainActor [weak self] in
+                guard let self, self.estado == .ouvindo,
+                      let raw, let motivo = AVAudioSession.RouteChangeReason(rawValue: raw) else { return }
+                // Fone entrou ou saiu: o engine precisa reabrir com o formato novo.
+                if motivo == .newDeviceAvailable || motivo == .oldDeviceUnavailable {
+                    self.retomarDepoisDeInterrupcao()
+                }
             }
         }
     }
