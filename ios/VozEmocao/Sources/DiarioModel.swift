@@ -174,9 +174,13 @@ final class DiarioModel: NSObject, ObservableObject {
     private func ligarMicrofone() throws {
         let session = AVAudioSession.sharedInstance()
         // `.mixWithOthers`: o dia inteiro não pode silenciar música/ligações.
+        // `.defaultToSpeaker`: sem isto, `.playAndRecord` manda TODO o som do
+        // aparelho para o alto-falante do ouvido (o de ligação) — o "alto-falante
+        // parou de funcionar" que o Helio viu em 2026-09-09.
         try session.setCategory(.playAndRecord, mode: .measurement,
-                                options: [.mixWithOthers, .allowBluetooth])
+                                options: [.mixWithOthers, .allowBluetooth, .defaultToSpeaker])
         try session.setActive(true)
+        observarInterrupcoes()
 
         let input = audioEngine.inputNode
         let format = input.outputFormat(forBus: 0)
@@ -189,6 +193,57 @@ final class DiarioModel: NSObject, ObservableObject {
         }
         audioEngine.prepare()
         try audioEngine.start()
+    }
+
+    // MARK: - Interrupções (ligação, Siri, alarme) e trocas de rota
+
+    private var observandoInterrupcoes = false
+
+    /// Uma ligação toma o microfone; quando termina, o iOS nos devolve — mas
+    /// o engine não volta sozinho. Sem isto, a escuta morria em silêncio na
+    /// primeira ligação do dia.
+    private func observarInterrupcoes() {
+        guard !observandoInterrupcoes else { return }
+        observandoInterrupcoes = true
+        let nc = NotificationCenter.default
+        nc.addObserver(forName: AVAudioSession.interruptionNotification, object: nil, queue: .main) { [weak self] n in
+            guard let self, self.estado == .ouvindo,
+                  let raw = n.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt,
+                  let tipo = AVAudioSession.InterruptionType(rawValue: raw) else { return }
+            switch tipo {
+            case .began:
+                self.statusText = "Pausado por uma ligação ou outro app. Volto sozinho quando acabar."
+            case .ended:
+                self.retomarDepoisDeInterrupcao()
+            @unknown default: break
+            }
+        }
+        nc.addObserver(forName: AVAudioSession.routeChangeNotification, object: nil, queue: .main) { [weak self] n in
+            guard let self, self.estado == .ouvindo,
+                  let raw = n.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt,
+                  let motivo = AVAudioSession.RouteChangeReason(rawValue: raw) else { return }
+            // Fone entrou ou saiu: o engine precisa reabrir com o formato novo.
+            if motivo == .newDeviceAvailable || motivo == .oldDeviceUnavailable {
+                self.retomarDepoisDeInterrupcao()
+            }
+        }
+    }
+
+    private func retomarDepoisDeInterrupcao() {
+        // Pequena folga: o sistema ainda está devolvendo a sessão de áudio.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
+            guard let self, self.estado == .ouvindo else { return }
+            if self.audioEngine.isRunning { self.audioEngine.stop() }
+            self.audioEngine.inputNode.removeTap(onBus: 0)
+            do {
+                try self.ligarMicrofone()
+                self.escuta?.parar(); self.escuta = nil
+                self.ligarEscutaAtiva()
+                self.statusText = "De volta. Ouvindo o seu dia."
+            } catch {
+                self.statusText = "Não consegui retomar o microfone: \(error.localizedDescription). Toque em Encerrar e Começar de novo."
+            }
+        }
     }
 
     // MARK: - Escuta Ativa (o centro)
