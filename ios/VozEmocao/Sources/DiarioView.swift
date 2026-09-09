@@ -76,7 +76,7 @@ struct DiarioView: View {
                       systemImage: diario.escutaAtiva ? "ear.fill" : "waveform")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(Theme.pitch)
-                Text("Gatilhos hoje: \(diario.gatilhosHoje) · registrados: \(diario.capturados)")
+                Text("Gatilhos hoje: \(diario.gatilhosHoje) · registrados: \(diario.capturados) · barrados pelo assunto: \(diario.suprimidosHoje)")
                     .font(.system(size: 12))
                     .foregroundStyle(Theme.textFaint)
                     .monospacedDigit()

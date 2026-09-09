@@ -45,8 +45,8 @@ final class DiarioModel: NSObject, ObservableObject {
         let data: Date
         var origem = "diario"          // "diario" (sorteio) | "escuta" (gatilho) — nunca misturar as distribuições
         var chamado = "automatico"     // "automatico" (sorteio) | "gatilho" (rol)
-        let fonte = "voz"
-        let origemRotulo = "humano"
+        var fonte = "voz"
+        var origemRotulo = "humano"
         var qualidade: String?         // "limpa" | "mista" — quem falou?
         var contexto: Contexto?
         var relatado: Relatado?        // nil enquanto não rotulado
@@ -58,7 +58,11 @@ final class DiarioModel: NSObject, ObservableObject {
         var rotulado: Bool { relatado != nil }
     }
 
-    struct Gatilho: Codable { var termo: String; var camada: String; var tom: String? }
+    struct Gatilho: Codable {
+        var termo: String; var camada: String; var tom: String?
+        var assunto: String?      // veredito do porteiro: trabalho | cotidiano | indisponivel
+        var confianca: Double?    // 0…1
+    }
     struct Verbal: Codable { var sentimento: Double?; var termos: [String]; var disponivel: Bool }
 
     struct Contexto: Codable { var onde: String?; var comQuem: String?; var hora: Int }
@@ -91,6 +95,8 @@ final class DiarioModel: NSObject, ObservableObject {
     /// Escuta Ativa: quantas vezes o rol acordou hoje, e o momento que espera
     /// o "Posso registrar?" — vive só em RAM até o sim.
     @Published var gatilhosHoje = 0
+    /// Palavras-chave que o porteiro de assunto barrou hoje (conversa cotidiana).
+    @Published var suprimidosHoje = 0
     @Published var aguardando: Momento?
     @Published var escutaAtiva = false
     /// Sorteio de horários além dos gatilhos (opcional; padrão desligado).
@@ -147,6 +153,7 @@ final class DiarioModel: NSObject, ObservableObject {
                     self.estado = .ouvindo
                     self.capturados = 0
                     self.gatilhosHoje = 0
+                    self.suprimidosHoje = 0
                     self.armarVigia()
                     self.ligarEscutaAtiva()
                 } catch {
@@ -267,6 +274,9 @@ final class DiarioModel: NSObject, ObservableObject {
                 e.onGatilho = { [weak self] match, texto in
                     Task { @MainActor in self?.gatilhou(match, textoRecente: texto) }
                 }
+                e.onSuprimido = { [weak self] _, _ in
+                    Task { @MainActor in self?.suprimidosHoje += 1 }
+                }
                 self.escuta = e
                 e.iniciar()
                 self.escutaAtiva = e.disponivel
@@ -306,7 +316,8 @@ final class DiarioModel: NSObject, ObservableObject {
         var momento = m
         momento.origem = "escuta"
         momento.chamado = "gatilho"
-        momento.gatilho = Gatilho(termo: match.termo, camada: match.camada.rawValue, tom: match.tom?.rawValue)
+        momento.gatilho = Gatilho(termo: match.termo, camada: match.camada.rawValue, tom: match.tom?.rawValue,
+                                  assunto: match.assunto, confianca: match.confianca)
         momento.verbal = verbal
         aguardando = momento               // só RAM até o "sim"
         statusText = "Posso registrar esse momento? Responda na notificação — ou aqui."

@@ -14,6 +14,10 @@ targets:
       # Catálogo de assets: é onde mora o ícone do app (AppIcon 1024px,
       # gerado a partir da marca — a onda de voz azul→coral do icon.svg).
       - VozEmocao/Resources/Assets.xcassets
+      # Porteiro de assunto da Escuta Ativa (Create ML, treinado nas reunioes
+      # do Helio) e a lista de muletas de fala que a normalizacao remove.
+      - VozEmocao/Resources/AssuntoClassifier.mlmodel
+      - VozEmocao/Resources/muletas.json
     settings:
       base:
         INFOPLIST_FILE: VozEmocao/Resources/Info.plist

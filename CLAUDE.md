@@ -340,6 +340,36 @@ com NaturalLanguage e **o texto morre ali** (primeiro tijolo do degrau 2,
 texto + tom). O sorteio virou um toggle, desligado por padrão. Compilado e
 testado no simulador; **falta o teste na mão do Helio.**
 
+### Porteiro de assunto (2026-09-09) — "compreender a conversa, não a palavra"
+
+Pedido do Helio: o app tem que distinguir "negócio" (business) de "negócio"
+(coisa) **pelo contexto**. Chão dito antes de construir: o iPhone 15 (não Pro)
+**não roda** o modelo de linguagem do iOS 26; servidor foi recusado (a fala de
+terceiros sairia do aparelho); os embeddings de frase do sistema deram **3/6 —
+moeda**. O que dá: um classificador treinado **nas reuniões dele**.
+
+Construído (`research/classificador/`, `AssuntoGate` em `EscutaAtiva.swift`):
+Create ML maxEnt, trabalho (transcrições Plaud + frases escritas) × cotidiano
+(corpus à mão, com 22 "negócio = coisa", em versão escrita **e** falada).
+**94,7% no holdout, 20/22 em frases nunca vistas** (as 2 erradas têm 6
+palavras, sem contexto); no app a janela é de 50 palavras. Barra só com ≥ 70%
+de "cotidiano" — as frases de trabalho ficam entre 0,00 e 0,21. Emocionais e
+personalizadas **não passam pelo porteiro** (o "puta problema" de corredor é
+o que a gente quer). Cada gatilho carrega `assunto` e `confianca`; a tela
+mostra "barrados pelo assunto" para medir na vida real.
+
+**Duas lições que ficam:** (1) o primeiro modelo fez 98% no holdout e **9/18**
+nas frases duras — aprendeu *estilo* (transcrição × escrito), não assunto;
+holdout alto com teste externo baixo é o cheiro desse erro. (2) Modelo de
+texto carrega vocabulário: nomes de clientes e pessoas foram tirados do treino
+antes de o `.mlmodel` entrar num repositório público.
+
+**O que ainda não está feito (pedido do Helio, mesma data): reconhecer só a
+voz dele.** O iOS não tem API de locutor. Plano: Fase A, impressão vocal por
+cadastro de 2 min no app (filtro com erro); Fase B, modelo de voz de verdade,
+treinado e validado no Mac com áudio dele e de outros (precisa de 2–3 áudios
+do Plaud, que nunca saem do Mac). Aguarda o "2" dele e os áudios.
+
 ## Próximos passos
 
 - [x] Terminar a instalação do app no iPhone do Helio.
@@ -352,6 +382,8 @@ testado no simulador; **falta o teste na mão do Helio.**
       (`EscutaAtiva.swift`), então o `.xcodeproj` foi regenerado: **reescolher
       o Team** em Signing & Capabilities antes do ▶. Medir: acordou nas horas
       certas? Quantos "não"? Bateria no fim do dia?
+- [ ] **Só a minha voz** (Fase A: cadastro de 2 min + impressão vocal; Fase B:
+      modelo de locutor com áudio do Plaud). Ver "Porteiro de assunto".
 - [ ] Portar a mesma captura para o iOS fora do Diário (o Diário já rotula).
 - [ ] **Testar o Diário automático no iPhone** — abrir no Xcode e dar ▶.
       **Só rodar `xcodegen generate` se algum arquivo novo tiver entrado**; do

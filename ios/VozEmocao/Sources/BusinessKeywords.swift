@@ -30,6 +30,9 @@ enum BusinessKeywords {
         let termo: String
         let camada: Camada
         let tom: Tom?
+        /// Preenchidos pelo porteiro de assunto (AssuntoGate), quando passa por ele.
+        var assunto: String? = nil
+        var confianca: Double? = nil
     }
 
     // MARK: - Camada A · específicas (frequência real entre parênteses)
