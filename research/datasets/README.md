@@ -28,6 +28,7 @@ destino. Qualquer arquivo salvo aqui entra no próximo ciclo sozinho.
 | **Diário automático (iOS)** | Diário de Voz → **Exportar** (folha de compartilhamento) | `vem-diario-auto-<data>.json` |
 | **Diário de Voz (web)** | botão de exportar em `diario.html` | `vem-diario-<data>.json` |
 | **Estúdio de Anotação** | exportar em `studio.html` | dataset de reunião |
+| **Papai** (acervo dos filhos) | exportar em `papai.html` | `papai-acervo-<data>.json` (com voz) · `papai-palavras-<data>.json` |
 
 ⚠️ **Exporte antes de reinstalar o app.** No iOS o dataset vive no `Documents`
 do aplicativo. Rebuild *por cima* preserva; **apagar o app apaga o dataset
@@ -63,3 +64,14 @@ ativação r = 0.28 — as duas fracas.
 A faixa de energia do motor está marcada `PROVISÓRIO` e **só se revalida acima
 de ~30 amostras limpas**. Até lá, a regra é firme: **não recalibrar escala com
 n pequeno.** Ajustar a régua para caber em 9 pontos é decorar o ruído.
+
+## O acervo "Papai" é caso à parte
+
+Os arquivos `papai-*.json` ficam aqui pelo backup (a pasta já é espelhada no
+iCloud todo dia), mas **não são dataset de treino**. Todo registro carrega
+`origem: "papai"`, e é por esse campo que eles se mantêm fora de qualquer
+análise de distribuição — misturá-los envenenaria o dataset de reunião e, pior,
+trataria como descartável um material que não é. Ver `PAPAI.md`.
+
+Vale também a regra do Git com mais força ainda: são opiniões, sentimentos e a
+voz de um pai falando dos filhos. **Nunca** um `git add -f` aqui.

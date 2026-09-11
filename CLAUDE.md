@@ -370,6 +370,41 @@ cadastro de 2 min no app (filtro com erro); Fase B, modelo de voz de verdade,
 treinado e validado no Mac com áudio dele e de outros (precisa de 2–3 áudios
 do Plaud, que nunca saem do Mac). Aguarda o "2" dele e os áudios.
 
+### Papai (2026-09-11) — a frente que não é sobre a AE
+
+Pedido do Helio: *"um histórico de opiniões meus pra doar pros meus filhos.
+Vicky e Toni. Guarde todas as decisões morais, de opinião, de sentimentos."*
+Construído em `papai.html` + `js/papai.js` + `js/papai-perguntas.js`. O
+documento inteiro é o `PAPAI.md`; o que não pode se perder é isto:
+
+- **Aqui o áudio é guardado, e essa inversão é de propósito.** Em todo o resto
+  do V&E a voz é medida e descartada. Neste acervo a voz **é** o produto: um
+  dia os filhos não vão querer ler "valência +0,8", vão querer ouvir o pai.
+  A razão da regra original (terceiros gravados sem consentimento) continua
+  respeitada — fala uma pessoa só, dona do que fala, e nada sai do aparelho.
+- **É histórico, não livro de regras.** Dois campos seguram isso e nenhuma
+  sessão futura deve "simplificá-los": `certeza` (1–5, o quanto ele estava
+  firme naquele dia) e `revisaoDe` (a opinião nova aponta para a velha, e a
+  **velha nunca é apagada**). Sem eles vira uma pilha de frases sem trajetória
+  — que é exatamente o que um pai pronto e falso pareceria.
+- **Banco de 84 perguntas em 7 eixos** (morais, opiniões, sentimentos, de onde
+  a gente vem, conselhos, cartas para um dia específico, mudei de ideia),
+  sorteadas — campo em branco mata diário, e responder em ordem deixa um eixo
+  cheio e o resto vazio.
+- **O V&E entra de carona, não como finalidade.** Cada resposta guarda
+  `observado`/`inferido` com `motorVersao`, e `origem: "papai"` mantém tudo
+  **fora** do dataset de treino. Dado de treino é descartável; isto não é.
+- **Chão dito na tela e que continua valendo:** a etiqueta de emoção é
+  ilustrativa (a valência do motor ainda é fraca, r = 0,37) — a máquina descreve
+  como a voz soou, quem sabe é quem ouviu. E navegador **não é cofre**: o
+  código pede `storage.persist()` e cobra backup, mas a regra é **exportar a
+  cada sessão** e guardar o `.json` em dois lugares.
+- **Nada de resposta entra no Git.** Só o código e as perguntas. O repositório
+  é público e este é o dado mais íntimo que o projeto já tocou.
+
+Testado ponta a ponta no Chromium (gravar → guardar → revisar → exportar com a
+voz embutida → apagar → restaurar → tocar). **Falta o teste na mão do Helio.**
+
 ## Próximos passos
 
 - [x] Terminar a instalação do app no iPhone do Helio.
@@ -393,5 +428,10 @@ do Plaud, que nunca saem do Mac). Aguarda o "2" dele e os áudios.
       (Quando entrar arquivo novo, aí sim: lição do bug do `Theme.swift`.)
 - [x] Portar motor v2 (semitons + energia) para o Swift.
 - [ ] Renomear o produto de "VozEmoção" para **Voice&Emotion** no app e docs.
+- [ ] **Papai: a página do lado deles** — hoje existe o lado de quem grava.
+      Falta o leitor que a Vicky e o Toni vão abrir: carregar o `.json`, ouvir,
+      navegar por eixo e ver a trajetória de cada opinião. Ver `PAPAI.md` §6.
+- [ ] **Papai: backup sem depender de lembrar** — exportar direto para a pasta
+      que o `backup-datasets.sh` já espelha no iCloud.
 - [ ] Frente de design: identidade visual, fluxo, primeira impressão.
 - [ ] Reativar a Siri (resolver o `AppIntentsSSUTraining`) quando der.

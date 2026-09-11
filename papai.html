@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Papai — histórico de opiniões para a Vicky e o Toni</title>
+  <link rel="stylesheet" href="css/styles.css?v=20260911a" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0b0e14" />
+  <link rel="stylesheet" href="css/studio.css?v=20260911a" />
+  <link rel="stylesheet" href="css/diario.css?v=20260911a" />
+  <link rel="stylesheet" href="css/papai.css?v=20260911a" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="mark pap-mark" aria-hidden="true">👨‍👧‍👦</div>
+      <div>
+        <h1>Papai</h1>
+        <p class="tagline">O que eu penso, o que eu senti, e por quê — para a Vicky e o Toni</p>
+      </div>
+    </div>
+    <a href="index.html" class="btn ghost sm">← Voltar</a>
+  </header>
+
+  <main>
+    <!-- ------------------------------------------------------------------ -->
+    <!-- O que é isto                                                        -->
+    <!-- ------------------------------------------------------------------ -->
+    <section class="card pap-intro">
+      <h2>O que é isto</h2>
+      <p class="std-note">
+        Um <strong>histórico</strong> — não um livro de regras. Cada registro
+        guarda o que você pensava, sentia ou decidiu <em>naquele dia</em>, com a
+        data e com o quanto você tinha de certeza. Quando você mudar de ideia,
+        a ideia velha <strong>não é apagada</strong>: a nova fica amarrada nela.
+        O que a Vicky e o Toni recebem não é um pai pronto — é um pai
+        <strong>em movimento</strong>, que é a única versão verdadeira.
+      </p>
+      <p class="std-note">
+        E fica a sua <strong>voz</strong>. Não só o que você disse: o jeito
+        que você disse. O Voice&amp;Emotion lê a emoção de cada resposta e
+        guarda junto, para que um dia eles possam ver não só a opinião, mas o
+        peso que ela tinha na sua voz.
+      </p>
+      <div class="pap-warn">
+        🔐 <strong>Isto não vai para a internet.</strong> Fica neste aparelho,
+        neste navegador. É o dado mais íntimo do projeto todo — e o repositório
+        é público. Por isso a regra é dura: <strong>exporte e guarde fora
+        daqui</strong> (seção 4). Limpar o navegador apaga tudo.
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- 1 · Escolher a pergunta                                             -->
+    <!-- ------------------------------------------------------------------ -->
+    <section class="card" id="askCard">
+      <div class="std-head">
+        <h2>1 · Sobre o que você quer falar hoje</h2>
+        <div class="std-counter" id="progressoGeral">—</div>
+      </div>
+
+      <div class="pap-cats" id="catRow"></div>
+
+      <div class="pap-question" id="questionBox">
+        <div class="pap-question-cat" id="qCat">—</div>
+        <div class="pap-question-text" id="qText">Escolha um eixo acima, ou sorteie.</div>
+      </div>
+
+      <div class="pap-ask-actions">
+        <button id="sortearBtn" class="btn primary">🎲 Sortear uma pergunta</button>
+        <button id="listarBtn" class="btn ghost">📋 Ver todas do eixo</button>
+        <button id="livreBtn" class="btn ghost">✍️ Falar do que eu quiser</button>
+      </div>
+
+      <div class="pap-list" id="listaPerguntas" hidden></div>
+
+      <div class="pap-livre" id="livreBox" hidden>
+        <label class="gt-q" for="livreInput">Sobre o que é? (vira o título do registro)</label>
+        <input type="text" id="livreInput" class="pap-input"
+               placeholder="Ex.: o que eu penso sobre dever favor a alguém" />
+        <div class="std-actions">
+          <button id="livreOkBtn" class="btn primary">Usar esta</button>
+        </div>
+      </div>
+
+      <div class="std-actions" id="responderRow" hidden>
+        <button id="responderBtn" class="btn primary">Responder esta →</button>
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- 2 · Responder                                                       -->
+    <!-- ------------------------------------------------------------------ -->
+    <section class="card" id="answerCard" hidden>
+      <div class="std-head">
+        <h2>2 · A sua resposta</h2>
+        <button id="fecharRespostaBtn" class="btn ghost sm">✕ Fechar</button>
+      </div>
+
+      <div class="pap-question sticky">
+        <div class="pap-question-cat" id="aCat">—</div>
+        <div class="pap-question-text" id="aText">—</div>
+        <div class="pap-revisao-nota" id="revisaoNota" hidden></div>
+      </div>
+
+      <div class="pap-modo" id="modoRow">
+        <button class="chip selected" data-modo="voz">🎙️ Falar</button>
+        <button class="chip" data-modo="escrito">⌨️ Escrever</button>
+      </div>
+
+      <!-- Voz -->
+      <div id="vozBloco">
+        <div class="dia-recorder">
+          <button id="recBtn" class="dia-rec" aria-label="Gravar">
+            <span class="dia-rec-icon"></span>
+          </button>
+          <div class="dia-timer" id="recTimer">00:00</div>
+          <div class="dia-hint" id="recHint">Toque e fale como você fala. Sem ensaiar.</div>
+          <div class="dia-level">
+            <div class="dia-level-bar"><div class="dia-level-fill" id="levelFill"></div></div>
+          </div>
+        </div>
+        <div class="pap-preview" id="previewBox" hidden>
+          <audio id="previewAudio" controls></audio>
+          <button id="regravarBtn" class="btn ghost sm">↺ Gravar de novo</button>
+        </div>
+      </div>
+
+      <!-- Escrito -->
+      <div id="escritoBloco" hidden>
+        <textarea id="escritoInput" class="pap-textarea" rows="7"
+                  placeholder="Escreva do jeito que você falaria."></textarea>
+      </div>
+
+      <!-- Metadados do registro -->
+      <div id="metaBloco" hidden>
+        <p class="gt-q">Para quem é?</p>
+        <div class="gt-row" id="paraRow">
+          <button class="chip selected" data-para="ambos">👧🧒 Os dois</button>
+          <button class="chip" data-para="vicky">👧 Vicky</button>
+          <button class="chip" data-para="toni">🧒 Toni</button>
+        </div>
+
+        <p class="gt-q">
+          Quanta certeza você tem disso <strong>hoje</strong>?
+          <span class="std-optional">(é o que transforma a coleção em histórico)</span>
+        </p>
+        <div class="gt-row" id="certezaRow">
+          <button class="chip" data-certeza="1">🤷 Estou pensando alto</button>
+          <button class="chip" data-certeza="2">🤔 Acho que é por aí</button>
+          <button class="chip selected" data-certeza="3">🙂 Penso assim hoje</button>
+          <button class="chip" data-certeza="4">💪 Tenho convicção</button>
+          <button class="chip" data-certeza="5">🪨 Isso eu não mudo</button>
+        </div>
+
+        <p class="gt-q">Uma nota para eles <span class="std-optional">(opcional)</span></p>
+        <textarea id="notaInput" class="pap-textarea" rows="2"
+                  placeholder="Contexto, um lembrete, o que estava acontecendo naquele dia…"></textarea>
+
+        <div class="pap-abrir">
+          <p class="gt-q">Quando eles podem abrir? <span class="std-optional">(opcional)</span></p>
+          <div class="gt-row" id="abrirRow">
+            <button class="chip selected" data-abrir="sempre">📖 Quando quiserem</button>
+            <button class="chip" data-abrir="18">🎂 Aos 18</button>
+            <button class="chip" data-abrir="momento">✉️ No dia certo</button>
+          </div>
+          <input type="text" id="abrirQuando" class="pap-input" hidden
+                 placeholder="Que dia é esse? Ex.: no casamento, quando sair de casa…" />
+        </div>
+
+        <div class="std-actions">
+          <button id="descartarBtn" class="btn ghost">Descartar</button>
+          <button id="salvarBtn" class="btn primary" disabled>Guardar</button>
+        </div>
+        <div class="std-missing" id="faltando"></div>
+      </div>
+
+      <!-- O que a voz disse -->
+      <div class="std-reveal" id="revelacao" hidden>
+        <h3>Guardado. E a sua voz disse isto:</h3>
+        <div class="pap-reveal-line" id="revelacaoTexto">—</div>
+        <div class="std-reveal-detail" id="revelacaoDetalhe"></div>
+        <div class="std-actions">
+          <button id="proximaBtn" class="btn primary">Próxima pergunta →</button>
+          <button id="pararBtn" class="btn ghost">Por hoje chega</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- 3 · O acervo                                                        -->
+    <!-- ------------------------------------------------------------------ -->
+    <section class="card" id="acervoCard" hidden>
+      <div class="std-head">
+        <h2>3 · O acervo</h2>
+        <div class="std-counter" id="acervoContador">—</div>
+      </div>
+
+      <div class="std-stats" id="acervoStats"></div>
+
+      <div class="pap-filtros">
+        <div class="gt-row" id="filtroCatRow"></div>
+        <div class="gt-row" id="filtroParaRow">
+          <button class="chip selected" data-fpara="todos">Todos</button>
+          <button class="chip" data-fpara="vicky">👧 Vicky</button>
+          <button class="chip" data-fpara="toni">🧒 Toni</button>
+        </div>
+      </div>
+
+      <div class="pap-registros" id="registros"></div>
+    </section>
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- 4 · Guardar fora daqui                                              -->
+    <!-- ------------------------------------------------------------------ -->
+    <section class="card" id="cofreCard">
+      <h2>4 · Guardar fora daqui <span class="pap-badge">importante</span></h2>
+      <p class="std-note">
+        O navegador <strong>não é um cofre</strong>. Ele apaga dados sozinho
+        quando fica sem espaço, e some junto com o aparelho. Um acervo que morre
+        numa limpeza de cache é pior que não ter começado — porque você vai achar
+        que está guardado. <strong>Exporte depois de cada sessão</strong> e ponha
+        o arquivo em pelo menos dois lugares (iCloud e um HD, por exemplo).
+      </p>
+
+      <div class="pap-cofre-grid">
+        <div class="pap-cofre-item">
+          <button id="exportTudoBtn" class="btn primary">🎁 Exportar tudo (com as vozes)</button>
+          <p class="dia-note">
+            O acervo inteiro em <strong>um arquivo só</strong> — áudio incluído.
+            É este que você entrega a eles um dia. Pode ficar grande.
+          </p>
+        </div>
+        <div class="pap-cofre-item">
+          <button id="exportTextoBtn" class="btn ghost">📄 Exportar só as palavras</button>
+          <p class="dia-note">
+            Leve, sem áudio. Serve para conferir e para levar as leituras de
+            emoção para o <code>research/datasets/</code>.
+          </p>
+        </div>
+        <div class="pap-cofre-item">
+          <label for="importInput" class="btn ghost pap-file-btn">📥 Restaurar de um arquivo</label>
+          <input type="file" id="importInput" accept="application/json" hidden />
+          <p class="dia-note">
+            Traz um acervo exportado de volta — em aparelho novo, ou no
+            aparelho deles. Registro repetido não é duplicado.
+          </p>
+        </div>
+      </div>
+
+      <div class="pap-espaco" id="espacoNota"></div>
+
+      <div class="std-actions">
+        <button id="limparBtn" class="btn ghost sm">Apagar tudo deste aparelho</button>
+      </div>
+    </section>
+
+    <p class="disclaimer">
+      🔒 Tudo fica no seu aparelho. Nada é enviado para servidor nenhum —
+      não existe servidor. A leitura de emoção é um <strong>correlato
+      acústico</strong>: descreve como a voz soou, não afirma o que você sentia.
+    </p>
+  </main>
+
+  <script src="js/affectgrid.js?v=20260911a"></script>
+  <script src="js/emotion.js?v=20260911a"></script>
+  <script src="js/papai-perguntas.js?v=20260911a"></script>
+  <script src="js/papai.js?v=20260911a"></script>
+</body>
+</html>

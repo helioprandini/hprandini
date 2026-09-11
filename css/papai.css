@@ -1,0 +1,355 @@
+/*
+ * papai.css — o acervo para a Vicky e o Toni.
+ *
+ * O sistema visual do V&E é "ferramenta profissional com alma humana". Aqui a
+ * balança pende para o humano: esta página não é instrumento de medição, é
+ * um lugar onde um pai fala com os filhos. Mesma base escura e mesma tipografia
+ * (é o mesmo produto), mas respiro maior, textos em corpo de leitura e o calor
+ * — âmbar e coral — presente onde as outras telas usariam azul de estrutura.
+ */
+
+.pap-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  background: linear-gradient(140deg, rgba(255, 138, 91, 0.25), rgba(255, 107, 157, 0.2));
+}
+
+/* ---------- Abertura ---------- */
+.pap-intro .std-note { font-size: 15.5px; }
+
+.pap-warn {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  background: rgba(255, 138, 91, 0.10);
+  border: 1px solid rgba(255, 138, 91, 0.28);
+  color: var(--warm-soft);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.pap-warn strong { color: #ffd2bd; }
+
+.pap-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(255, 84, 112, 0.16);
+  color: #ff8fa3;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+/* ---------- 1 · Eixos ---------- */
+.pap-cats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+  margin: 14px 0 18px;
+}
+
+.pap-cat {
+  --cor: var(--trust);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+  padding: 12px 13px;
+  border-radius: var(--r-md);
+  background: var(--bg-inset);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--cor);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, border-color 0.15s;
+  font-family: inherit;
+}
+.pap-cat:hover { background: #202839; transform: translateY(-1px); }
+.pap-cat.selected {
+  background: color-mix(in srgb, var(--cor) 14%, var(--bg-inset));
+  border-color: var(--cor);
+}
+.pap-cat-emoji { font-size: 19px; }
+.pap-cat-nome { font-weight: 650; font-size: 14.5px; }
+.pap-cat-desc { font-size: 12.5px; color: var(--text-dim); line-height: 1.4; }
+.pap-cat-n { font-size: 11.5px; color: var(--cor); font-weight: 600; }
+
+/* ---------- A pergunta ---------- */
+.pap-question {
+  --cor: var(--warm);
+  padding: 18px 20px;
+  border-radius: var(--r-lg);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--cor) 12%, var(--bg-inset)), var(--bg-inset));
+  border: 1px solid color-mix(in srgb, var(--cor) 30%, transparent);
+  margin-bottom: 14px;
+}
+.pap-question.sticky { margin-bottom: 16px; }
+.pap-question-cat {
+  font-size: 12px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+/* Corpo grande: a pergunta é para ser lida e respondida em voz alta, não
+   escaneada. Texto pequeno faz a pessoa resumir; texto grande faz falar. */
+.pap-question-text {
+  font-size: 20px;
+  line-height: 1.4;
+  font-weight: 550;
+  color: var(--text);
+}
+
+.pap-revisao-nota {
+  margin-top: 12px;
+  padding: 9px 12px;
+  border-radius: var(--r-sm);
+  background: rgba(152, 162, 184, 0.12);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.pap-ask-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Lista de perguntas ---------- */
+.pap-list {
+  margin-top: 14px;
+  max-height: 340px;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: rgba(0, 0, 0, 0.18);
+}
+.pap-list-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  width: 100%;
+  text-align: left;
+  padding: 11px 14px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.45;
+  cursor: pointer;
+}
+.pap-list-item:last-child { border-bottom: none; }
+.pap-list-item:hover { background: rgba(255, 255, 255, 0.04); }
+.pap-list-item.feito { color: var(--text-faint); }
+.pap-list-mark { color: var(--flow); font-weight: 700; }
+
+/* ---------- Entrada de texto ---------- */
+.pap-input, .pap-textarea {
+  width: 100%;
+  margin-top: 8px;
+  padding: 11px 13px;
+  border-radius: var(--r-md);
+  background: var(--bg-inset);
+  border: 1px solid var(--line-strong);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.55;
+  resize: vertical;
+}
+.pap-input:focus, .pap-textarea:focus {
+  outline: none;
+  border-color: var(--warm);
+}
+.pap-livre { margin-top: 14px; }
+
+.pap-modo {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.pap-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 12px;
+}
+.pap-preview audio { max-width: 100%; }
+
+.pap-abrir { margin-top: 4px; }
+
+/* ---------- 3 · Acervo ---------- */
+.pap-filtros {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 14px 0 18px;
+}
+
+.pap-registros {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pap-reg {
+  --cor: var(--text-dim);
+  padding: 16px 18px;
+  border-radius: var(--r-md);
+  background: var(--bg-inset);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--cor);
+}
+.pap-reg-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.pap-reg-cat {
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--cor);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.pap-reg-data { font-size: 12px; color: var(--text-faint); }
+.pap-reg-q {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+.pap-reg-texto {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text);
+  white-space: pre-wrap;
+  padding: 10px 12px;
+  border-radius: var(--r-sm);
+  background: rgba(0, 0, 0, 0.22);
+}
+.pap-reg-texto.vazio { color: var(--text-faint); font-style: italic; }
+
+.pap-reg-audio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 8px 10px;
+  border-radius: var(--r-sm);
+  background: rgba(0, 0, 0, 0.22);
+}
+.pap-play {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--warm);
+  color: #1a0d07;
+  font-size: 14px;
+  cursor: pointer;
+  flex: none;
+}
+.pap-dur { font-size: 12.5px; color: var(--text-dim); }
+.pap-audio-slot { flex: 1 1 220px; font-size: 12.5px; color: var(--text-faint); }
+.pap-audio-slot audio { width: 100%; }
+
+.pap-reg-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.pap-tag {
+  font-size: 11.5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line);
+  color: var(--text-dim);
+}
+.pap-tag.voz { color: var(--pitch); border-color: rgba(79, 209, 197, 0.3); }
+
+.pap-reg-nota {
+  margin-top: 10px;
+  font-size: 13.5px;
+  color: var(--text-dim);
+  line-height: 1.55;
+  font-style: italic;
+}
+
+/* O histórico fica fechado por padrão: a versão de hoje é a que se lê, a
+   trajetória é para quem quiser puxar o fio. */
+.pap-historico {
+  margin-top: 12px;
+  border-top: 1px dashed var(--line-strong);
+  padding-top: 10px;
+}
+.pap-historico summary {
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+.pap-reg-antigo {
+  margin-top: 10px;
+  padding-left: 12px;
+  border-left: 2px solid var(--line-strong);
+  opacity: 0.85;
+}
+
+.pap-reg-acoes {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+/* ---------- 4 · Cofre ---------- */
+.pap-cofre-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+.pap-cofre-item { display: flex; flex-direction: column; gap: 6px; }
+.pap-cofre-item .btn { width: 100%; justify-content: center; }
+.pap-file-btn { text-align: center; cursor: pointer; }
+
+.pap-espaco {
+  padding: 11px 14px;
+  border-radius: var(--r-md);
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+.pap-espaco strong { color: var(--text); }
+
+/* ---------- Revelação ---------- */
+.pap-reveal-line {
+  font-size: 19px;
+  font-weight: 600;
+  text-align: center;
+  margin: 10px 0;
+}
+
+@media (max-width: 560px) {
+  .pap-question-text { font-size: 18px; }
+  .pap-cats { grid-template-columns: 1fr; }
+}
