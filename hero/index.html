@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>HeRo — Guia de Viagens · Doha</title>
+<meta name="description" content="Curadoria gastronômica de Doha para setembro de 2026: 43 restaurantes avaliados, preços em QAR e BRL, roteiros e reservas.">
+<meta name="theme-color" content="#f7f3ec" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14120f" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="HeRo">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="css/hero.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="top-in">
+      <div class="brand"><span><span class="he">He</span>Ro</span><small>guia de viagens</small></div>
+      <div class="top-sp"></div>
+      <button class="icon-btn" id="btnImp" title="Importar comentários">⬇</button>
+      <button class="icon-btn" id="btnExp" title="Exportar comentários">⬆</button>
+      <button class="icon-btn" id="btnTema" title="Claro / escuro">◐</button>
+    </div>
+    <nav class="tabs" id="tabs" role="tablist"></nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <h1 id="hTitulo">Doha</h1>
+    <p>Curadoria gastronômica para um casal brasileiro. Alta gastronomia, cozinha qatari, árabe do Golfo
+       e as casas locais que um turista não acha sozinho — com o que é confirmado separado do que é estimativa.</p>
+    <div class="meta-row">
+      <span class="chip" id="hBase"></span>
+      <span class="chip" id="hCambio" title=""></span>
+      <span class="chip" id="hData"></span>
+      <span class="chip" id="hQtd"></span>
+    </div>
+    <p style="font-size:12px;color:var(--ink-3);margin-top:10px" id="cambioNota"></p>
+  </section>
+
+  <main id="app"></main>
+
+  <footer class="foot">
+    <p><b>HeRo</b> — guia de viagens do Helio e da Roberta. Esta é a cidade de estreia: Doha, setembro de 2026.
+       A estrutura é multi-cidade por construção: cada destino é um par de arquivos em <code>hero/js/</code>,
+       e uma cidade nova não mexe em uma linha da interface.</p>
+    <p><b>Seus comentários ficam só neste aparelho</b> (armazenamento local do navegador). Não sobem para lugar
+       nenhum e não são lidos por ninguém. Se trocar de celular ou limpar os dados do Safari, eles somem —
+       por isso existem os botões ⬆ exportar e ⬇ importar no topo.</p>
+    <p><b>Reservas:</b> o app prepara o pedido pronto em inglês e entrega num toque; não confirma sozinho.
+       O porquê disso está escrito na aba "Saber antes".</p>
+    <p>Preços em QAR convertidos a BRL pela cotação exibida no topo. Onde não foi possível confirmar o preço
+       com fonte primária, a ficha diz <b>"preço não confirmado"</b> — e a faixa exibida é estimativa declarada.</p>
+  </footer>
+</div>
+
+<div class="sheet-bg" id="sheetBg"></div>
+<aside class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet-head">
+    <div style="flex:1;min-width:0">
+      <h2 id="sheetTitle"></h2>
+      <div class="sh-sub" id="sheetSub"></div>
+    </div>
+    <button class="icon-btn" id="sheetClose" aria-label="Fechar">✕</button>
+  </div>
+  <div class="sheet-body" id="sheetBody"></div>
+</aside>
+
+<script src="js/data-doha.js"></script>
+<script src="js/data-doha-curadoria.js"></script>
+<script src="js/hero.js"></script>
+</body>
+</html>

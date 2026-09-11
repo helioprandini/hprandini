@@ -1,0 +1,13 @@
+{
+  "name": "HeRo — Guia de Viagens",
+  "short_name": "HeRo",
+  "description": "Curadoria gastronômica de viagem. Cidade de estreia: Doha, setembro de 2026.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f3ec",
+  "theme_color": "#f7f3ec",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
