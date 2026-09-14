@@ -8,10 +8,10 @@
  * recebe a versão mais recente; sem internet, recebe a última que funcionou.
  * O custo é alguns kilobytes por abertura — barato perto de ver conteúdo velho.
  */
-var CACHE = 'hero-v17';
+var CACHE = 'hero-v18';
 var ARQUIVOS = [
   './', './index.html', './css/hero.css', './icon.svg', './manifest.webmanifest',
-  './js/arte.js', './js/data-destinos.js', './js/data-india.js', './js/data-ny.js', './js/data-eu23.js',
+  './js/arte.js', './js/data-destinos.js', './js/data-india.js', './js/data-ny.js', './js/data-eu23.js', './js/data-eu25.js',
   './js/data-doha.js', './js/data-doha-curadoria.js', './js/data-doha-beber.js',
   './js/hero.js'
 ];

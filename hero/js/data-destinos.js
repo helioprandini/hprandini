@@ -2,7 +2,7 @@
  * Cidade nova = um objeto aqui + um arquivo de dados. A interface não muda.
  */
 
-const HERO_VERSAO = { n: 'v17', data: '2026-09-14' };
+const HERO_VERSAO = { n: 'v18', data: '2026-09-14' };
 
 const HERO_MOEDAS = {
   base: 'BRL',
@@ -45,6 +45,11 @@ const HERO_DESTINOS = [
   {
     id: 'eu23', nome: 'Europa 2023', pais: 'Alemanha · Suíça · Itália', arte: 'eu23',
     periodo: '12 a 24 de maio de 2023', resumo: 'Arquivo de veredictos · do 11/10 à nota zero',
+    moeda: 'EUR', pronto: true, arquivo: true
+  },
+  {
+    id: 'eu25', nome: 'Europa 2025', pais: 'Espanha · Andorra · Portugal · França', arte: 'eu25',
+    periodo: '30/12/2025 a 21/01/2026', resumo: '23 dias · 8 cidades · 99 lugares',
     moeda: 'EUR', pronto: true, arquivo: true
   }
 ];

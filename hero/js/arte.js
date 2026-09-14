@@ -125,6 +125,37 @@ var HERO_ARTE = (function () {
         '#f2c179', '#c9713f', '#fbe7c6', '#e6a86f');
     },
 
+    /* Europa 2025 — torre, neve e telhados de Paris/Lisboa */
+    eu25: function () {
+      var telhados = '';
+      [[8,118,26,34],[38,108,22,44],[64,124,30,28],[248,116,24,36],[276,106,20,46],[300,122,20,30]].forEach(function (b) {
+        telhados += '<rect x="' + b[0] + '" y="' + b[1] + '" width="' + b[2] + '" height="' + b[3] + '" fill="#6b5a70" opacity=".7"/>' +
+                    '<path d="M' + (b[0] - 3) + ' ' + b[1] + ' L' + (b[0] + b[2] / 2) + ' ' + (b[1] - 12) +
+                    ' L' + (b[0] + b[2] + 3) + ' ' + b[1] + ' Z" fill="#4a3c52" opacity=".8"/>';
+      });
+      var flocos = '';
+      for (var i = 0; i < 26; i++) {
+        var x = (i * 47 % 320), y = (i * 29 % 120) + 8, r = 1 + (i % 3) * .6;
+        flocos += '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="#fff" opacity="' + (0.25 + (i % 4) * 0.12) + '"/>';
+      }
+      return moldura(
+        '<circle cx="62" cy="52" r="20" fill="%SOL%" opacity=".5"/>' +
+        flocos + telhados +
+        /* a torre */
+        '<g fill="#3b3042">' +
+        '<path d="M160 28 L156 44 L164 44 Z"/>' +
+        '<path d="M150 46 h20 l6 28 h-32 z" opacity=".92"/>' +
+        '<path d="M140 76 h40 l10 34 h-60 z" opacity=".92"/>' +
+        '<path d="M126 112 h68 l14 40 h-96 z" opacity=".92"/>' +
+        '<rect x="124" y="108" width="72" height="5"/>' +
+        '<rect x="136" y="72" width="48" height="5"/>' +
+        '</g>' +
+        '<path d="M113 152 h94" stroke="#3b3042" stroke-width="4" fill="none"/>' +
+        '<path d="M0 152 L320 152 L320 200 L0 200 Z" fill="#e9e2ee" opacity=".55"/>' +
+        '<path d="M0 162 Q80 152 160 162 T320 158 L320 200 L0 200 Z" fill="#fff" opacity=".45"/>',
+        '#ffd9a8', '#c96f9a', '#dfe7f5', '#a88bc4');
+    },
+
     /* Índia — Taj Mahal */
     india: function () {
       return moldura(

@@ -428,11 +428,14 @@
     { id: 'nyroteiro', l: 'Roteiro' },
     { id: 'nymudou', l: 'O que mudou' },
     { id: 'nylugares', l: 'Lugares' },
+    { id: 'mapa', l: 'Mapa' },
     { id: 'nyouro', l: 'Continua valendo' }
   ];
+  var ABA_MAPA = { id: 'mapa', l: '\ud83d\uddfa\ufe0f Mapa' };
   var ABAS_EU23 = [
     { id: 'euroteiro', l: 'A viagem' },
     { id: 'eunotas', l: 'As notas' },
+    { id: 'mapa', l: 'Mapa' },
     { id: 'eureparos', l: 'Reparos' }
   ];
   var ABAS_INDIA = [
@@ -468,7 +471,8 @@
     nyouro:   ico('<path d="M12 3.5l2.5 5.3 5.5.8-4 4 .95 5.7L12 16.6l-4.95 2.7L8 13.6l-4-4 5.5-.8z"/>'),
     euroteiro:ico('<path d="M4 20c4-1.5 5-6 5-9.5A4.5 4.5 0 0 0 4 6M20 20c-4-1.5-5-6-5-9.5A4.5 4.5 0 0 1 20 6"/><path d="M12 21V8M9 8h6l-3-4z"/>'),
     eunotas:  ico('<path d="M5 4.5h14v15l-7-3.2-7 3.2z"/><path d="M9 9.5h6M9 13h4"/>'),
-    eureparos:ico('<circle cx="12" cy="12" r="9"/><path d="M12 8.5v4.5M12 16h.01"/>')
+    eureparos:ico('<circle cx="12" cy="12" r="9"/><path d="M12 8.5v4.5M12 16h.01"/>'),
+    mapa:     ico('<path d="M9 19.5l-5.5 2V5.5L9 3.5l6 2 5.5-2v16l-5.5 2z"/><path d="M9 3.5v16M15 5.5v16"/>')
   };
   var CURTO = {
     destinos:'Destinos', lista:'Comer', curadoria:'Curadoria', roteiros:'Roteiros',
@@ -476,21 +480,25 @@
     reservaria:'Reservar', avisos:'Saber', cambio:'Moedas',
     iroteiro:'Roteiro', ivoos:'Voos', ihoteis:'Hotéis',
     nyroteiro:'Roteiro', nymudou:'Mudou', nylugares:'Lugares', nyouro:'Ouro',
-    euroteiro:'A viagem', eunotas:'As notas', eureparos:'Reparos'
+    euroteiro:'A viagem', eunotas:'As notas', eureparos:'Reparos', mapa:'Mapa'
   };
-  var PRIMARIAS = { doha: ['lista', 'roteiros', 'escala', 'beber'], india: ['iroteiro', 'ivoos', 'ihoteis', 'cambio'], ny: ['nyroteiro', 'nymudou', 'nylugares', 'nyouro'], eu23: ['euroteiro', 'eunotas', 'eureparos', 'cambio'] };
+  var PRIMARIAS = { doha: ['lista', 'mapa', 'roteiros', 'beber'], india: ['iroteiro', 'ivoos', 'ihoteis', 'cambio'], ny: ['nyroteiro', 'nymudou', 'nylugares', 'mapa'], eu23: ['euroteiro', 'eunotas', 'mapa', 'eureparos'],
+                   eu25: ['euroteiro', 'eunotas', 'mapa', 'eureparos'] };
   var ABA_HOME = { id: 'destinos', l: '← Destinos' };
   var ABA_CAMBIO = { id: 'cambio', l: '💱 Moedas' };
   function abasAtuais() {
     if (!destino) return [ABA_CAMBIO];
-    var base = destino === 'india' ? ABAS_INDIA : destino === 'ny' ? ABAS_NY : destino === 'eu23' ? ABAS_EU23 : ABAS_DOHA;
+    var base = destino === 'india' ? ABAS_INDIA : destino === 'ny' ? ABAS_NY :
+      (destino === 'eu23' || destino === 'eu25') ? ABAS_EU23 : ABAS_DOHA.concat([ABA_MAPA]);
     return [ABA_HOME].concat(base, [ABA_CAMBIO]);
   }
   function primeiraAba() {
-    return destino === 'india' ? 'iroteiro' : destino === 'ny' ? 'nyroteiro' : destino === 'eu23' ? 'euroteiro' : destino === 'doha' ? 'lista' : 'destinos';
+    return destino === 'india' ? 'iroteiro' : destino === 'ny' ? 'nyroteiro' :
+      (destino === 'eu23' || destino === 'eu25') ? 'euroteiro' : destino === 'doha' ? 'lista' : 'destinos';
   }
   function irPara(d) {
     destino = d; pref.destino = d; save(LS_PREF, pref);
+    mapaCidade = 'todas';
     aba = primeiraAba(); render();
   }
 
@@ -566,9 +574,9 @@
       h.appendChild(el('p', null, 'O guia de viagens do Helio e da Roberta. Escolha um destino.'));
       return;
     }
-    if (destino === 'eu23') {
-      var E = HERO_EU23;
-      h.appendChild(el('h1', null, 'Europa 2023'));
+    if (destino === 'eu23' || destino === 'eu25') {
+      var E = dadosEu();
+      h.appendChild(el('h1', null, E.cidade));
       h.appendChild(el('p', null, esc(E.rota)));
       var me = el('div', 'meta-row');
       var tot = 0, com = 0;
@@ -1618,6 +1626,188 @@
   }
 
 
+
+  /* ---------- MAPA ----------
+     Dois caminhos, de propósito:
+     1) Leaflet + OpenStreetMap — mapa de verdade, com ruas. Precisa de internet.
+     2) Se o Leaflet não carregar (sem sinal, ou a política de segurança do link
+        privado bloqueando), entra um mapa desenhado aqui mesmo, em SVG, a partir
+        das coordenadas. Não tem rua, mas mostra onde as coisas estão umas em
+        relação às outras — e funciona offline, que é o caso de Doha. */
+
+  var CORPIN = {
+    aberto: '#1f7a47', fechado: '#c4383f', mudou: '#d98324', 'nao-confirmado': '#0e8c96'
+  };
+  function corDoPonto(x) {
+    if (x.nota != null) return x.nota >= 10 ? '#a1690f' : x.nota >= 8 ? '#1f7a47' : x.nota >= 6 ? '#0e8c96' : '#c4383f';
+    return CORPIN[x.conf] || '#6b6270';
+  }
+
+  /* Junta os pontos do destino atual num formato único. */
+  function pontosDoDestino() {
+    var p = [];
+    if (destino === 'doha') {
+      R.forEach(function (r) {
+        if (!r.lat) return;
+        p.push({ n: r.nome, lat: r.lat, lng: r.lng, prec: 'end', conf: r.status === 'aberto' ? 'aberto' : r.status === 'fechado' ? 'fechado' : 'nao-confirmado',
+                 nota: null, sub: r.cozinha, id: r.id });
+      });
+    } else if (destino === 'ny') {
+      HERO_NY.lugares.forEach(function (x) { if (x.lat) p.push({ n: x.n, lat: x.lat, lng: x.lng, prec: x.prec, conf: x.conf, nota: null, sub: x.z + ' · ' + x.tipo }); });
+    } else if (destino === 'eu23' || destino === 'eu25') {
+      dadosEu().paradas.forEach(function (q) {
+        if (mapaCidade !== 'todas' && q.id !== mapaCidade) return;
+        q.lugares.forEach(function (l) {
+          if (l.lat) p.push({ n: l.n, lat: l.lat, lng: l.lng, prec: l.prec, conf: l.conf, nota: l.nota, sub: q.nome + ' · ' + l.tipo, fora: l.feito === false });
+        });
+      });
+    }
+    return p;
+  }
+
+  var mapaCidade = 'todas';
+  var leafletTentado = false, leafletPronto = false;
+  function carregaLeaflet(cb) {
+    if (leafletPronto) { cb(true); return; }
+    if (leafletTentado) { cb(!!window.L); return; }
+    leafletTentado = true;
+    var css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
+    document.head.appendChild(css);
+    var js = document.createElement('script');
+    js.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js';
+    js.onload = function () { leafletPronto = !!window.L; cb(leafletPronto); };
+    js.onerror = function () { cb(false); };
+    document.head.appendChild(js);
+    setTimeout(function () { if (!leafletPronto) cb(!!window.L); }, 6000);
+  }
+
+  /* Mapa desenhado aqui, sem dependência nenhuma. */
+  function mapaSVG(cx, pts) {
+    var las = pts.map(function (x) { return x.lat; }), lns = pts.map(function (x) { return x.lng; });
+    if (minhaPos) { las.push(minhaPos.lat); lns.push(minhaPos.lng); }
+    var la0 = Math.min.apply(null, las), la1 = Math.max.apply(null, las);
+    var ln0 = Math.min.apply(null, lns), ln1 = Math.max.apply(null, lns);
+    var mLa = Math.max((la1 - la0) * 0.12, 0.004), mLn = Math.max((ln1 - ln0) * 0.12, 0.004);
+    la0 -= mLa; la1 += mLa; ln0 -= mLn; ln1 += mLn;
+    var W = 320, H = 260;
+    function px(x) { return ((x.lng - ln0) / (ln1 - ln0)) * W; }
+    function py(x) { return H - ((x.lat - la0) / (la1 - la0)) * H; }
+
+    var g = '';
+    for (var i = 1; i < 6; i++) {
+      g += '<line x1="0" y1="' + (H * i / 6) + '" x2="' + W + '" y2="' + (H * i / 6) + '" stroke="currentColor" stroke-width=".4" opacity=".12"/>' +
+           '<line x1="' + (W * i / 6) + '" y1="0" x2="' + (W * i / 6) + '" y2="' + H + '" stroke="currentColor" stroke-width=".4" opacity=".12"/>';
+    }
+    var pins = '';
+    pts.forEach(function (x) {
+      var cxp = px(x).toFixed(1), cyp = py(x).toFixed(1);
+      pins += '<circle cx="' + cxp + '" cy="' + cyp + '" r="4.2" fill="' + corDoPonto(x) + '" stroke="#fff" stroke-width="1.4" opacity="' + (x.fora ? '.45' : '1') + '"><title>' + esc(x.n) + '</title></circle>';
+    });
+    if (minhaPos) {
+      var me = { lat: minhaPos.lat, lng: minhaPos.lng };
+      pins += '<circle cx="' + px(me).toFixed(1) + '" cy="' + py(me).toFixed(1) + '" r="7" fill="none" stroke="#c81e64" stroke-width="2"/>' +
+              '<circle cx="' + px(me).toFixed(1) + '" cy="' + py(me).toFixed(1) + '" r="3" fill="#c81e64"><title>Você está aqui</title></circle>';
+    }
+    var larguraKm = hav(la0, ln0, la0, ln1);
+    var escala = larguraKm < 3 ? Math.round(larguraKm * 1000) + ' m' : larguraKm.toFixed(larguraKm < 20 ? 1 : 0).replace('.', ',') + ' km';
+    cx.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block;color:var(--ink)" role="img" ' +
+      'aria-label="Mapa esquemático com ' + pts.length + ' lugares">' + g + pins +
+      '<line x1="10" y1="' + (H - 12) + '" x2="70" y2="' + (H - 12) + '" stroke="currentColor" stroke-width="1.6"/>' +
+      '<line x1="10" y1="' + (H - 16) + '" x2="10" y2="' + (H - 8) + '" stroke="currentColor" stroke-width="1.6"/>' +
+      '<line x1="70" y1="' + (H - 16) + '" x2="70" y2="' + (H - 8) + '" stroke="currentColor" stroke-width="1.6"/>' +
+      '<text x="74" y="' + (H - 8.5) + '" font-size="9" fill="currentColor" opacity=".75">' +
+      (larguraKm * 60 / W < 1 ? Math.round(larguraKm * 60 / W * 1000) + ' m' : (larguraKm * 60 / W).toFixed(1).replace('.', ',') + ' km') +
+      '</text>' +
+      '<text x="' + (W - 8) + '" y="' + (H - 8.5) + '" font-size="9" text-anchor="end" fill="currentColor" opacity=".55">' +
+      esc(escala) + ' de ponta a ponta</text></svg>';
+  }
+
+  function viewMapa(root) {
+    var pts = pontosDoDestino();
+    var p0 = el('div', 'panel');
+    p0.appendChild(el('h2', null, 'Mapa'));
+    p0.appendChild(el('div', 'lead', pts.length + ' lugares no mapa. Toque num pino para ver o nome. ' +
+      'A cor diz o estado: verde é confirmado, vermelho fechou, laranja mudou, azul não confirmado' +
+      ((destino === 'eu23' || destino === 'eu25') ? ' — e onde houve nota de vocês, a cor segue a nota.' : '.')));
+    root.appendChild(p0);
+
+    if (destino === 'eu23' || destino === 'eu25') {
+      var ch = el('div', 'chips');
+      var op = [{ id: 'todas', l: 'A viagem toda' }].concat(dadosEu().paradas.map(function (q) { return { id: q.id, l: q.nome }; }));
+      op.forEach(function (o) {
+        var b = el('button', 'chip' + (mapaCidade === o.id ? ' on' : ''), esc(o.l));
+        b.onclick = function () { mapaCidade = o.id; leafletTentado = leafletTentado && leafletPronto; render(true); };
+        ch.appendChild(b);
+      });
+      root.appendChild(ch);
+    }
+
+    caixaGeo(root, 'os pinos');
+
+    var cx = el('div', 'mapa-wrap');
+    cx.appendChild(el('div', 'mapa-aviso', 'Carregando o mapa…'));
+    root.appendChild(cx);
+
+    var leg = el('div', 'panel');
+    leg.appendChild(el('h2', null, 'Legenda'));
+    var lg = el('div', 'legenda');
+    [['#1f7a47', 'confirmado aberto'], ['#c4383f', 'fechou'], ['#d98324', 'mudou'], ['#0e8c96', 'não confirmado']].forEach(function (x) {
+      var r = el('div', 'lg-item');
+      r.appendChild(el('i', null, '')); r.lastChild.style.background = x[0];
+      r.appendChild(el('span', null, x[1]));
+      lg.appendChild(r);
+    });
+    leg.appendChild(lg);
+    if (destino === 'eu23' || destino === 'eu25') {
+      leg.appendChild(el('div', 'note', 'Nos roteiros com nota, o pino usa a NOTA de vocês: dourado é 10 ou mais, ' +
+        'verde de 8 a 9, azul de 6 a 7, vermelho abaixo de 6. Pino apagado é o que ficou de fora.'));
+    }
+    leg.appendChild(el('div', 'note', 'As coordenadas fui eu que anotei, no nível do quarteirão, do bairro ou do ' +
+      'centro da cidade — cada ficha diz qual. Para chegar de verdade, use o botão de rota da ficha.'));
+    root.appendChild(leg);
+
+    if (!pts.length) { cx.innerHTML = ''; cx.appendChild(el('div', 'mapa-aviso', 'Este destino ainda não tem lugares com coordenada.')); return; }
+
+    carregaLeaflet(function (ok) {
+      if (!ok || !window.L) {
+        cx.innerHTML = '';
+        var av = el('div', 'mapa-aviso', '<b>Sem internet para o mapa com ruas.</b><br>' +
+          'Abaixo, o mapa que eu desenho aqui mesmo: sem ruas, mas mostra onde as coisas estão umas em relação às outras.');
+        cx.appendChild(av);
+        var box = el('div', 'mapa-svg'); cx.appendChild(box);
+        mapaSVG(box, pts);
+        return;
+      }
+      cx.innerHTML = '';
+      var d = el('div'); d.id = 'mapa-' + destino; d.className = 'mapa'; cx.appendChild(d);
+      var mapa = L.map(d, { scrollWheelZoom: false });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19, attribution: '&copy; OpenStreetMap'
+      }).addTo(mapa);
+      var grupo = [];
+      pts.forEach(function (x) {
+        var m = L.circleMarker([x.lat, x.lng], {
+          radius: 7, color: '#fff', weight: 2, fillColor: corDoPonto(x),
+          fillOpacity: x.fora ? 0.5 : 0.95
+        }).addTo(mapa);
+        m.bindPopup('<b>' + esc(x.n) + '</b><br>' + esc(x.sub || '') +
+          (x.nota != null ? '<br>nota de vocês: <b>' + x.nota + '</b>' : '') +
+          (x.fora ? '<br><i>ficou de fora</i>' : '') +
+          '<br><a href="' + rotaPara(x) + '" target="_blank" rel="noopener">rota daqui</a>');
+        grupo.push([x.lat, x.lng]);
+      });
+      if (minhaPos) {
+        L.circleMarker([minhaPos.lat, minhaPos.lng], { radius: 9, color: '#c81e64', weight: 3, fillColor: '#c81e64', fillOpacity: .5 })
+          .addTo(mapa).bindPopup('Você está aqui');
+        grupo.push([minhaPos.lat, minhaPos.lng]);
+      }
+      mapa.fitBounds(grupo, { padding: [26, 26] });
+      setTimeout(function () { mapa.invalidateSize(); }, 120);
+    });
+  }
+
   /* ---------- Europa 2023: arquivo de veredictos ---------- */
   function corNota(n) {
     if (n == null) return '';
@@ -1652,8 +1842,10 @@
     return p;
   }
 
+  function dadosEu() { return destino === 'eu25' ? HERO_EU25 : HERO_EU23; }
+
   function viewEuRoteiro(root) {
-    var E = HERO_EU23;
+    var E = dadosEu();
     var p0 = el('div', 'panel');
     p0.appendChild(el('h2', null, 'A viagem, parada por parada'));
     p0.appendChild(el('div', 'lead', esc(E.intro)));
@@ -1693,7 +1885,7 @@
   }
 
   function viewEuNotas(root) {
-    var E = HERO_EU23;
+    var E = dadosEu();
     var todos = [];
     E.paradas.forEach(function (x) {
       x.lugares.forEach(function (l) { if (l.nota != null) todos.push({ l: l, onde: x.nome }); });
@@ -1735,7 +1927,7 @@
   }
 
   function viewEuReparos(root) {
-    var E = HERO_EU23;
+    var E = dadosEu();
     var p = el('div', 'panel');
     p.appendChild(el('h2', null, 'O que eu reparei, olhando de fora'));
     p.appendChild(el('div', 'lead', 'Conferência de ' +
@@ -1839,6 +2031,7 @@
     pintaCabecalho();
     if (aba === 'destinos' || !destino) { viewDestinos(root); return; }
     if (aba === 'cambio') viewCambio(root);
+    else if (aba === 'mapa') viewMapa(root);
     else if (aba === 'euroteiro') viewEuRoteiro(root);
     else if (aba === 'eunotas') viewEuNotas(root);
     else if (aba === 'eureparos') viewEuReparos(root);
