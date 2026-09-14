@@ -1,8 +1,75 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#1c1a17"/>
-  <path d="M128 150v212" stroke="#a8761f" stroke-width="34" stroke-linecap="round"/>
-  <path d="M128 256h96" stroke="#a8761f" stroke-width="34" stroke-linecap="round"/>
-  <path d="M224 150v212" stroke="#a8761f" stroke-width="34" stroke-linecap="round"/>
-  <circle cx="344" cy="212" r="60" fill="none" stroke="#f7f3ec" stroke-width="34"/>
-  <path d="M310 258l74 104" stroke="#f7f3ec" stroke-width="34" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="HeRo — Guia de Viagens">
+  <defs>
+    <linearGradient id="ceu" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1a0b2e"/><stop offset=".55" stop-color="#4a1350"/><stop offset="1" stop-color="#8b1c56"/>
+    </linearGradient>
+    <linearGradient id="sol" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe259"/><stop offset=".45" stop-color="#ff8a3d"/><stop offset="1" stop-color="#ff2d95"/>
+    </linearGradient>
+    <linearGradient id="chao" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a0b3f"/><stop offset="1" stop-color="#12061f"/>
+    </linearGradient>
+    <clipPath id="disco"><rect x="0" y="0" width="512" height="512" rx="112"/></clipPath>
+    <clipPath id="solClip"><circle cx="256" cy="228" r="112"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#disco)">
+    <rect width="512" height="512" fill="url(#ceu)"/>
+
+    <!-- estrelas -->
+    <g fill="#fff" opacity=".55">
+      <circle cx="64" cy="70" r="2.5"/><circle cx="118" cy="44" r="1.8"/><circle cx="410" cy="62" r="2.2"/>
+      <circle cx="452" cy="106" r="1.6"/><circle cx="86" cy="140" r="1.6"/><circle cx="386" cy="132" r="1.8"/>
+    </g>
+
+    <!-- sol listrado -->
+    <circle cx="256" cy="228" r="112" fill="url(#sol)"/>
+    <g clip-path="url(#solClip)" fill="#1a0b2e" opacity=".92">
+      <rect x="144" y="250" width="224" height="9"/>
+      <rect x="144" y="272" width="224" height="12"/>
+      <rect x="144" y="298" width="224" height="15"/>
+      <rect x="144" y="326" width="224" height="19"/>
+    </g>
+
+    <!-- horizonte -->
+    <rect x="0" y="344" width="512" height="168" fill="url(#chao)"/>
+    <rect x="0" y="342" width="512" height="4" fill="#00e5ff" opacity=".9"/>
+
+    <!-- grade em perspectiva -->
+    <g stroke="#00e5ff" stroke-width="2.4" opacity=".55" fill="none">
+      <path d="M256 346 L-140 512"/><path d="M256 346 L-10 512"/><path d="M256 346 L110 512"/>
+      <path d="M256 346 L256 512"/>
+      <path d="M256 346 L402 512"/><path d="M256 346 L522 512"/><path d="M256 346 L652 512"/>
+      <path d="M0 366 H512"/><path d="M0 392 H512"/><path d="M0 428 H512"/><path d="M0 474 H512"/>
+    </g>
+
+    <!-- palmeiras -->
+    <g fill="#12061f">
+      <path d="M92 344 q-6 -46 6 -78 l10 2 q-8 34 -4 76 z"/>
+      <path d="M104 266 q-30 -16 -50 -6 q22 -18 52 -4 z"/>
+      <path d="M104 266 q30 -16 50 -6 q-22 -18 -52 -4 z"/>
+      <path d="M104 262 q-16 -28 -42 -32 q28 0 46 26 z"/>
+      <path d="M104 262 q16 -28 42 -32 q-28 0 -46 26 z"/>
+      <path d="M414 344 q6 -40 -4 -68 l-9 2 q7 30 3 66 z"/>
+      <path d="M404 276 q-26 -14 -44 -5 q19 -16 46 -4 z"/>
+      <path d="M404 276 q26 -14 44 -5 q-19 -16 -46 -4 z"/>
+      <path d="M404 272 q-14 -24 -36 -28 q24 0 40 23 z"/>
+      <path d="M404 272 q14 -24 36 -28 q-24 0 -40 23 z"/>
+    </g>
+
+    <!-- HeRo -->
+    <g font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="800" text-anchor="middle">
+      <text x="256" y="252" font-size="132" letter-spacing="-4" fill="#1a0b2e" opacity=".35">HeRo</text>
+      <text x="256" y="246" font-size="132" letter-spacing="-4" fill="#ffffff">HeRo</text>
+      <text x="256" y="246" font-size="132" letter-spacing="-4" fill="none" stroke="#00e5ff" stroke-width="2.5" opacity=".8">HeRo</text>
+    </g>
+
+    <!-- faixas de assinatura -->
+    <rect x="150" y="266" width="212" height="9" rx="4.5" fill="#ff2d95"/>
+    <rect x="176" y="283" width="160" height="7" rx="3.5" fill="#00e5ff"/>
+
+    <!-- título -->
+    <text x="256" y="446" text-anchor="middle" font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
+          font-size="35" font-weight="700" letter-spacing="7" fill="#ffd9f0">GUIA DE VIAGENS</text>
+  </g>
 </svg>

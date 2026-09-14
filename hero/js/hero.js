@@ -384,8 +384,9 @@
   }
 
   /* ---------- abas ---------- */
+  var destino = pref.destino || '';
   var aba = 'lista';
-  var ABAS = [
+  var ABAS_DOHA = [
     { id: 'lista', l: 'Restaurantes' },
     { id: 'curadoria', l: 'Curadoria' },
     { id: 'roteiros', l: 'Roteiros' },
@@ -395,11 +396,244 @@
     { id: 'reservaria', l: 'Eu reservaria' },
     { id: 'avisos', l: 'Saber antes' }
   ];
+  var ABAS_INDIA = [
+    { id: 'iroteiro', l: 'Roteiro' },
+    { id: 'ivoos', l: '✈️ Voos' },
+    { id: 'ihoteis', l: '🏨 Hotéis' }
+  ];
+  var ABA_HOME = { id: 'destinos', l: '← Destinos' };
+  var ABA_CAMBIO = { id: 'cambio', l: '💱 Moedas' };
+  function abasAtuais() {
+    if (!destino) return [ABA_CAMBIO];
+    var base = destino === 'india' ? ABAS_INDIA : ABAS_DOHA;
+    return [ABA_HOME].concat(base, [ABA_CAMBIO]);
+  }
+  function primeiraAba() { return destino === 'india' ? 'iroteiro' : destino === 'doha' ? 'lista' : 'destinos'; }
+  function irPara(d) {
+    destino = d; pref.destino = d; save(LS_PREF, pref);
+    aba = primeiraAba(); render();
+  }
 
   function linkR(id, rotulo) {
     var b = el('button', 'pill-link', esc(rotulo || (byId[id] ? byId[id].nome : id)));
     b.onclick = function () { abrir(id); };
     return b;
+  }
+
+
+  /* ---------- cabeçalho por destino ---------- */
+  function pintaCabecalho() {
+    var h = $('#heroHead');
+    h.innerHTML = '';
+    if (!destino) {
+      h.appendChild(el('h1', null, 'Para onde a gente vai'));
+      h.appendChild(el('p', null, 'O guia de viagens do Helio e da Roberta. Escolha um destino.'));
+      return;
+    }
+    if (destino === 'india') {
+      h.appendChild(el('h1', null, 'Índia · ' + esc(HERO_INDIA.periodo)));
+      h.appendChild(el('p', null, esc(HERO_INDIA.nota)));
+      var m = el('div', 'meta-row');
+      m.appendChild(el('span', 'chip', '<b>4</b> cidades'));
+      m.appendChild(el('span', 'chip', '<b>' + HERO_INDIA.hoteis.length + '</b> hotéis'));
+      m.appendChild(el('span', 'chip', '1 INR = <b>R$ 0,054</b>'));
+      h.appendChild(m);
+      return;
+    }
+    h.appendChild(el('h1', null, C.cidade + ' · ' + C.periodo));
+    h.appendChild(el('p', null, 'Curadoria gastronômica para um casal brasileiro. Alta gastronomia, cozinha qatari, ' +
+      'árabe do Golfo e as casas locais que um turista não acha sozinho — com o que é confirmado separado do que é estimativa.'));
+    var mr = el('div', 'meta-row');
+    mr.appendChild(el('span', 'chip', 'Base: <b>' + esc(C.base.nome) + '</b>'));
+    mr.appendChild(el('span', 'chip', '1 QAR = <b>R$ ' + taxa.toFixed(2).replace('.', ',') + '</b>'));
+    mr.appendChild(el('span', 'chip', '<b>' + R.length + '</b> lugares avaliados'));
+    h.appendChild(mr);
+  }
+
+  /* ---------- seletor de destinos ---------- */
+  function viewDestinos(root) {
+    var v = el('div', 'panel');
+    v.appendChild(el('h2', null, HERO_VIAGEM.titulo));
+    v.appendChild(el('p', null, esc(HERO_VIAGEM.texto)));
+    root.appendChild(v);
+
+    var g = el('div', 'destinos');
+    HERO_DESTINOS.forEach(function (d) {
+      var c = el('button', 'destino');
+      c.type = 'button';
+      c.onclick = function () { irPara(d.id); };
+      var art = el('div', 'destino-arte');
+      art.innerHTML = HERO_ARTE[d.arte] ? HERO_ARTE[d.arte]() : '';
+      c.appendChild(art);
+      var b = el('div', 'destino-txt');
+      b.appendChild(el('strong', null, esc(d.nome)));
+      b.appendChild(el('span', null, esc(d.pais)));
+      b.appendChild(el('em', null, esc(d.periodo)));
+      b.appendChild(el('small', null, esc(d.resumo)));
+      c.appendChild(b);
+      g.appendChild(c);
+    });
+    root.appendChild(g);
+
+    var a = HERO_VIAGEM.alerta;
+    var pa = el('div', 'panel');
+    pa.appendChild(el('h2', null, '⚠️ ' + esc(a.t)));
+    pa.appendChild(el('div', 'note warn', esc(a.d)));
+    pa.appendChild(el('div', 'note ok', esc(a.d2)));
+    root.appendChild(pa);
+  }
+
+  /* ---------- conversor de moedas ---------- */
+  function viewCambio(root) {
+    var M = HERO_MOEDAS;
+    var p = el('div', 'panel');
+    p.appendChild(el('h2', null, 'Conversor'));
+    p.appendChild(el('div', 'lead', 'Digite em qualquer moeda — as outras acompanham. Taxas de ' +
+      new Date(M.atualizado + 'T12:00:00').toLocaleDateString('pt-BR') + '.'));
+
+    var campos = {};
+    var box = el('div', 'conv');
+    M.lista.forEach(function (m) {
+      var row = el('label', 'conv-row');
+      var lab = el('div', 'conv-lab');
+      lab.appendChild(el('b', null, m.c));
+      lab.appendChild(el('span', null, esc(m.nome + ' · ' + m.pais)));
+      row.appendChild(lab);
+      var inp = el('input');
+      inp.type = 'text'; inp.inputMode = 'decimal'; inp.id = 'conv-' + m.c;
+      inp.autocomplete = 'off'; inp.placeholder = m.simb + ' 0';
+      inp.oninput = function () { propaga(m.c, inp.value); };
+      row.appendChild(inp);
+      campos[m.c] = inp;
+      box.appendChild(row);
+    });
+    p.appendChild(box);
+
+    function fmt(v, dec) {
+      return v.toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+    }
+    function propaga(origem, txt) {
+      var n = parseFloat(String(txt).replace(/\./g, '').replace(',', '.'));
+      if (isNaN(n)) {
+        M.lista.forEach(function (m) { if (m.c !== origem) campos[m.c].value = ''; });
+        return;
+      }
+      var src = M.lista.filter(function (m) { return m.c === origem; })[0];
+      var emBRL = n * src.emBRL;
+      M.lista.forEach(function (m) {
+        if (m.c === origem) return;
+        campos[m.c].value = fmt(emBRL / m.emBRL, m.dec);
+      });
+    }
+
+    var at = el('div', 'btnrow'); at.style.marginTop = '12px';
+    M.atalhos.forEach(function (v) {
+      var b = el('button', 'btn sec', 'QAR ' + v);
+      b.onclick = function () { campos.QAR.value = fmt(v, 2); propaga('QAR', String(v)); };
+      at.appendChild(b);
+    });
+    p.appendChild(el('div', 'lead', 'Atalhos em riyal:'));
+    p.appendChild(at);
+
+    var at2 = el('div', 'btnrow'); at2.style.marginTop = '8px';
+    [100, 500, 1000, 5000, 20000, 50000].forEach(function (v) {
+      var b = el('button', 'btn sec', '₹ ' + v.toLocaleString('pt-BR'));
+      b.onclick = function () { campos.INR.value = fmt(v, 0); propaga('INR', String(v)); };
+      at2.appendChild(b);
+    });
+    p.appendChild(el('div', 'lead', 'Atalhos em rupia:'));
+    p.appendChild(at2);
+    root.appendChild(p);
+
+    var pn = el('div', 'panel');
+    pn.appendChild(el('h2', null, 'O que saber sobre estas taxas'));
+    M.notas.forEach(function (t, i) {
+      var row = el('div', 'pick');
+      row.appendChild(el('div', 'rank', String(i + 1)));
+      var b2 = el('div', 'pb'); b2.appendChild(el('div', 'px', esc(t)));
+      row.appendChild(b2); pn.appendChild(row);
+    });
+    var box2 = el('div', 'srcs'); box2.style.marginTop = '12px';
+    M.fontes.forEach(function (f) {
+      var a = el('a', null, '↗ ' + esc(f.t)); a.href = f.u; a.target = '_blank'; a.rel = 'noopener';
+      box2.appendChild(a);
+    });
+    pn.appendChild(box2);
+    root.appendChild(pn);
+
+    setTimeout(function () { campos.BRL.focus(); }, 60);
+  }
+
+  /* ---------- Índia ---------- */
+  function viewIndiaRoteiro(root) {
+    var I = HERO_INDIA;
+    var p = el('div', 'panel');
+    p.appendChild(el('h2', null, 'Dia a dia'));
+    p.appendChild(el('div', 'lead', 'Roteiro do anfitrião local, com as minhas notas onde tenho algo útil a dizer.'));
+    root.appendChild(p);
+
+    I.dias.forEach(function (d) {
+      var c = el('div', 'panel dia');
+      var art = el('div', 'dia-arte');
+      art.innerHTML = HERO_ARTE[d.arte] ? HERO_ARTE[d.arte]() : '';
+      c.appendChild(art);
+      var b = el('div', 'dia-txt');
+      var top = el('div', 'nn');
+      top.appendChild(el('span', 'nh', esc(d.d)));
+      top.appendChild(document.createTextNode(d.cidade));
+      if (d.ponte) top.appendChild(el('span', 'tag gold', 'vira para Doha'));
+      b.appendChild(top);
+      b.appendChild(el('div', 'nl', esc(d.t)));
+      b.appendChild(el('div', 'nx', esc(d.x)));
+      b.appendChild(el('div', 'nx', '<b>Hotel:</b> ' + esc(d.hotel)));
+      if (d.theo) b.appendChild(el('div', 'note', '<b>Theo:</b> ' + esc(d.theo)));
+      if (d.alerta) b.appendChild(el('div', 'note warn', '⚠️ ' + esc(d.alerta)));
+      if (d.ponte) {
+        var br = el('div', 'btnrow'); br.style.marginTop = '8px';
+        var bt = el('button', 'btn gold', 'Abrir o guia de Doha →');
+        bt.onclick = function () { irPara('doha'); };
+        br.appendChild(bt); b.appendChild(br);
+      }
+      c.appendChild(b);
+      root.appendChild(c);
+    });
+  }
+
+  function viewIndiaVoos(root) {
+    var p = el('div', 'panel');
+    p.appendChild(el('h2', null, 'Os voos'));
+    p.appendChild(el('div', 'lead', 'Seis trechos. Localizadores e números de bilhete ficaram DE FORA de propósito — ' +
+      'este repositório é público, e localizador com sobrenome é suficiente para mexer numa reserva.'));
+    HERO_INDIA.voos.forEach(function (v) {
+      var n = el('div', 'night');
+      n.appendChild(el('div', 'nl', esc(v.d) + ' · ' + esc(v.cia)));
+      var nn = el('div', 'nn');
+      nn.appendChild(document.createTextNode(v.de + '  →  ' + v.para));
+      if (v.n !== '—') nn.appendChild(el('span', 'nh', esc(v.n)));
+      n.appendChild(nn);
+      n.appendChild(el('div', 'nx', '<b>' + esc(v.sai) + '</b> → <b>' + esc(v.chega) + '</b> · ' + esc(v.dur)));
+      p.appendChild(n);
+    });
+    root.appendChild(p);
+  }
+
+  function viewIndiaHoteis(root) {
+    var p = el('div', 'panel');
+    p.appendChild(el('h2', null, 'Os hotéis da Índia'));
+    p.appendChild(el('div', 'lead', 'Com os benefícios que constam nas suas confirmações — vale usar, a maioria some se não perguntar.'));
+    HERO_INDIA.hoteis.forEach(function (h) {
+      var n = el('div', 'night');
+      n.appendChild(el('div', 'nl', esc(h.c) + ' · ' + esc(h.p)));
+      n.appendChild(el('div', 'nn', esc(h.n)));
+      n.appendChild(el('div', 'nx', esc(h.obs)));
+      var br = el('div', 'btnrow'); br.style.marginTop = '8px';
+      var m = el('a', 'btn sec', '📍 Mapa');
+      m.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(h.n + ' ' + h.c);
+      m.target = '_blank'; m.rel = 'noopener'; br.appendChild(m);
+      n.appendChild(br);
+      p.appendChild(n);
+    });
+    root.appendChild(p);
   }
 
   function viewLista(root) {
@@ -819,10 +1053,25 @@
   /* ---------- render ---------- */
   function render(mantemFoco) {
     var root = $('#app'); root.innerHTML = '';
-    Array.prototype.forEach.call($('#tabs').children, function (b) {
-      b.setAttribute('aria-selected', b.dataset.id === aba ? 'true' : 'false');
+    var tabs = $('#tabs'); tabs.innerHTML = '';
+    abasAtuais().forEach(function (a) {
+      var b = el('button', null, a.l);
+      b.dataset.id = a.id; b.setAttribute('role', 'tab');
+      b.setAttribute('aria-selected', a.id === aba ? 'true' : 'false');
+      b.onclick = function () {
+        if (a.id === 'destinos') { destino = ''; pref.destino = ''; save(LS_PREF, pref); aba = 'destinos'; }
+        else aba = a.id;
+        render();
+      };
+      tabs.appendChild(b);
     });
-    if (aba === 'lista') viewLista(root);
+    pintaCabecalho();
+    if (aba === 'destinos' || !destino) { viewDestinos(root); return; }
+    if (aba === 'cambio') viewCambio(root);
+    else if (aba === 'iroteiro') viewIndiaRoteiro(root);
+    else if (aba === 'ivoos') viewIndiaVoos(root);
+    else if (aba === 'ihoteis') viewIndiaHoteis(root);
+    else if (aba === 'lista') viewLista(root);
     else if (aba === 'curadoria') viewCuradoria(root);
     else if (aba === 'roteiros') viewRoteiros(root);
     else if (aba === 'souq') viewSouq(root);
@@ -867,20 +1116,7 @@
     /* tema */
     if (pref.tema) document.documentElement.setAttribute('data-theme', pref.tema);
 
-    var tabs = $('#tabs');
-    ABAS.forEach(function (a) {
-      var b = el('button', null, a.l);
-      b.dataset.id = a.id; b.setAttribute('role', 'tab');
-      b.onclick = function () { aba = a.id; render(); };
-      tabs.appendChild(b);
-    });
-
-    $('#hTitulo').textContent = C.cidade + ' · ' + C.periodo;
-    $('#hBase').innerHTML = 'Base: <b>' + esc(C.base.nome) + '</b>';
-    $('#hCambio').innerHTML = '1 QAR = <b>R$ ' + taxa.toFixed(2).replace('.', ',') + '</b>';
-    $('#hData').innerHTML = 'Pesquisa de <b>' + new Date(C.pesquisadoEm + 'T12:00:00').toLocaleDateString('pt-BR') + '</b>';
-    $('#hQtd').innerHTML = '<b>' + R.length + '</b> lugares avaliados';
-    $('#cambioNota').textContent = C.cambio.metodo;
+    aba = primeiraAba();
 
     $('#btnTema').onclick = function () {
       var cur = document.documentElement.getAttribute('data-theme');
