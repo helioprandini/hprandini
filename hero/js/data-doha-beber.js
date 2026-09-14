@@ -308,11 +308,37 @@ const HERO_STOPOVER = {
     'entrar com o localizador do voo — ela muda conforme as datas e a disponibilidade. Os preços ' +
     'e as marcas acima vêm da imprensa de viagem, não da página oficial. Tudo aqui é "a partir de".',
   comoVer: [
-    'Entre em discoverqatar.qa e vá em Stopover.',
+    'Entre em discoverqatar.qa e vá em Stopover. (O outro caminho é qatarairways.com → Stopover/Packages, mas como o voo já está comprado, a Discover Qatar é o atalho.)',
     'Informe o localizador do voo Qatar Airways e o sobrenome.',
-    'O site mostra os níveis disponíveis PARA AS SUAS DATAS, com o hotel, foto, descrição e o preço final.',
+    'Escolha o NÍVEL (Standard, Premium, Premium com praia, Luxury). Dentro do nível, você escolhe o hotel numa lista — não é sorteio nem atribuição.',
+    'O site mostra o que está disponível PARA AS SUAS DATAS, com foto, descrição e preço final. É aí que se descobre se o Alwadi está lá.',
     'Compare com os R$ 565 por noite do Park Hyatt antes de mexer em qualquer coisa.'
   ],
+
+  prazos: {
+    t: 'Os prazos, que importam mais do que parece',
+    itens: [
+      { o: 'Até quando dá para reservar', d: 'Até 72 horas antes do check-in. Para vocês, isso é 25 de setembro.' },
+      { o: 'Por que não esperar até lá', d: 'A própria Qatar Airways avisa que os melhores hotéis e as tarifas mais baixas esgotam rápido, sobretudo na alta temporada — que vai de OUTUBRO A ABRIL. As datas de vocês, 28/09 a 1º/10, caem exatamente na virada para a alta.' },
+      { o: 'A ordem certa', d: 'Consulte o Stopover ANTES de cancelar qualquer coisa. Só cancele o Park Hyatt depois de ter a reserva do Stopover confirmada e o hotel escolhido.' }
+    ]
+  },
+
+  cuidado: 'ANTES de tudo: confira a política de cancelamento da sua reserva do Park Hyatt. ' +
+    'Na lista que você me mandou, vários hotéis apareciam com "totalmente reembolsável", mas o ' +
+    'Park Hyatt não trazia essa marca. Se a tarifa dele não for reembolsável, o Stopover deixa de ' +
+    'ser uma alternativa e vira só uma curiosidade — e aí a decisão é apenas quantas noites manter.',
+
+  alwadiResposta: {
+    t: 'Dá para ficar no Alwadi por US$ 24 por pessoa?',
+    d: 'Resposta honesta: eu não sei, e ninguém sabe sem consultar as suas datas. Três coisas ' +
+       'separam o que eu sei do que você quer saber. Primeiro: US$ 24 é "a partir de" — é o piso ' +
+       'do nível Premium, e hotel melhor dentro do mesmo nível pode custar mais. Segundo: o Alwadi ' +
+       'apareceu como EXEMPLO de hotel do nível Premium em veículos de viagem, não numa lista ' +
+       'oficial, e a composição muda. Terceiro: disponibilidade em 28/09–01/10 é uma incógnita até ' +
+       'você entrar com o localizador. O que dá para afirmar: se ele estiver lá, você escolhe — ' +
+       'a mecânica é escolher o nível e depois o hotel dentro dele.'
+  },
   veredito: 'Vale os 10 minutos de consulta, por um motivo específico: se o Alwadi MGallery estiver ' +
     'no nível Premium nas suas datas, você paga cerca de R$ 245 a noite em vez de R$ 632, num hotel ' +
     'nota 9,6 que tem o melhor rooftop perto do Souq. Se não estiver, mantenha o Park Hyatt — ele é ' +

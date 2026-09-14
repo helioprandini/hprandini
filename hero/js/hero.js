@@ -959,6 +959,20 @@
         var bb = el('div', 'pb'); bb.appendChild(el('div', 'px', esc(t)));
         row.appendChild(bb); pn2.appendChild(row);
       });
+      if (S.alwadiResposta) {
+        pn2.appendChild(el('h3', null, esc(S.alwadiResposta.t)));
+        pn2.appendChild(el('p', null, esc(S.alwadiResposta.d)));
+      }
+      if (S.prazos) {
+        pn2.appendChild(el('h3', null, esc(S.prazos.t)));
+        var dlp = el('dl', 'kv');
+        S.prazos.itens.forEach(function (x) {
+          dlp.appendChild(el('dt', null, esc(x.o)));
+          dlp.appendChild(el('dd', null, esc(x.d)));
+        });
+        pn2.appendChild(dlp);
+      }
+      if (S.cuidado) pn2.appendChild(el('div', 'note bad', '⚠️ ' + esc(S.cuidado)));
       pn2.appendChild(el('div', 'note ok', '<b>Meu voto:</b> ' + esc(S.veredito)));
       root.appendChild(pn2);
     }

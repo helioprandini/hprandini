@@ -2,7 +2,7 @@
  * Motivo de existir: vocês vão usar isto em Doha e na Índia, provavelmente
  * sem dados. Depois da primeira visita, o app inteiro funciona sem internet.
  */
-var CACHE = 'hero-v6';
+var CACHE = 'hero-v7';
 var ARQUIVOS = [
   './', './index.html', './css/hero.css', './icon.svg', './manifest.webmanifest',
   './js/arte.js', './js/data-destinos.js', './js/data-india.js',
