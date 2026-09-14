@@ -430,6 +430,11 @@
     { id: 'nylugares', l: 'Lugares' },
     { id: 'nyouro', l: 'Continua valendo' }
   ];
+  var ABAS_EU23 = [
+    { id: 'euroteiro', l: 'A viagem' },
+    { id: 'eunotas', l: 'As notas' },
+    { id: 'eureparos', l: 'Reparos' }
+  ];
   var ABAS_INDIA = [
     { id: 'iroteiro', l: 'Roteiro' },
     { id: 'ivoos', l: '✈️ Voos' },
@@ -460,25 +465,29 @@
     nyroteiro:ico('<path d="M9 19.5l-5.5 2V5.5L9 3.5m0 16V3.5m0 16l6-2m-6-14l6 2m0 12V5.5m0 12l5.5 2V5.5L15 3.5"/>'),
     nymudou:  ico('<path d="M20.5 11.5A8.5 8.5 0 1 0 19 16.5"/><path d="M20.5 6.5v5h-5"/>'),
     nylugares:ico('<path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>'),
-    nyouro:   ico('<path d="M12 3.5l2.5 5.3 5.5.8-4 4 .95 5.7L12 16.6l-4.95 2.7L8 13.6l-4-4 5.5-.8z"/>')
+    nyouro:   ico('<path d="M12 3.5l2.5 5.3 5.5.8-4 4 .95 5.7L12 16.6l-4.95 2.7L8 13.6l-4-4 5.5-.8z"/>'),
+    euroteiro:ico('<path d="M4 20c4-1.5 5-6 5-9.5A4.5 4.5 0 0 0 4 6M20 20c-4-1.5-5-6-5-9.5A4.5 4.5 0 0 1 20 6"/><path d="M12 21V8M9 8h6l-3-4z"/>'),
+    eunotas:  ico('<path d="M5 4.5h14v15l-7-3.2-7 3.2z"/><path d="M9 9.5h6M9 13h4"/>'),
+    eureparos:ico('<circle cx="12" cy="12" r="9"/><path d="M12 8.5v4.5M12 16h.01"/>')
   };
   var CURTO = {
     destinos:'Destinos', lista:'Comer', curadoria:'Curadoria', roteiros:'Roteiros',
     souq:'Souq', escala:'A escala', beber:'Beber', hoteis:'Hotéis',
     reservaria:'Reservar', avisos:'Saber', cambio:'Moedas',
     iroteiro:'Roteiro', ivoos:'Voos', ihoteis:'Hotéis',
-    nyroteiro:'Roteiro', nymudou:'Mudou', nylugares:'Lugares', nyouro:'Ouro'
+    nyroteiro:'Roteiro', nymudou:'Mudou', nylugares:'Lugares', nyouro:'Ouro',
+    euroteiro:'A viagem', eunotas:'As notas', eureparos:'Reparos'
   };
-  var PRIMARIAS = { doha: ['lista', 'roteiros', 'escala', 'beber'], india: ['iroteiro', 'ivoos', 'ihoteis', 'cambio'], ny: ['nyroteiro', 'nymudou', 'nylugares', 'nyouro'] };
+  var PRIMARIAS = { doha: ['lista', 'roteiros', 'escala', 'beber'], india: ['iroteiro', 'ivoos', 'ihoteis', 'cambio'], ny: ['nyroteiro', 'nymudou', 'nylugares', 'nyouro'], eu23: ['euroteiro', 'eunotas', 'eureparos', 'cambio'] };
   var ABA_HOME = { id: 'destinos', l: '← Destinos' };
   var ABA_CAMBIO = { id: 'cambio', l: '💱 Moedas' };
   function abasAtuais() {
     if (!destino) return [ABA_CAMBIO];
-    var base = destino === 'india' ? ABAS_INDIA : destino === 'ny' ? ABAS_NY : ABAS_DOHA;
+    var base = destino === 'india' ? ABAS_INDIA : destino === 'ny' ? ABAS_NY : destino === 'eu23' ? ABAS_EU23 : ABAS_DOHA;
     return [ABA_HOME].concat(base, [ABA_CAMBIO]);
   }
   function primeiraAba() {
-    return destino === 'india' ? 'iroteiro' : destino === 'ny' ? 'nyroteiro' : destino === 'doha' ? 'lista' : 'destinos';
+    return destino === 'india' ? 'iroteiro' : destino === 'ny' ? 'nyroteiro' : destino === 'eu23' ? 'euroteiro' : destino === 'doha' ? 'lista' : 'destinos';
   }
   function irPara(d) {
     destino = d; pref.destino = d; save(LS_PREF, pref);
@@ -555,6 +564,19 @@
     if (!destino) {
       h.appendChild(el('h1', null, 'Para onde a gente vai'));
       h.appendChild(el('p', null, 'O guia de viagens do Helio e da Roberta. Escolha um destino.'));
+      return;
+    }
+    if (destino === 'eu23') {
+      var E = HERO_EU23;
+      h.appendChild(el('h1', null, 'Europa 2023'));
+      h.appendChild(el('p', null, esc(E.rota)));
+      var me = el('div', 'meta-row');
+      var tot = 0, com = 0;
+      E.paradas.forEach(function (x) { x.lugares.forEach(function (l) { tot++; if (l.nota != null) com++; }); });
+      me.appendChild(el('span', 'chip', esc(E.periodo)));
+      me.appendChild(el('span', 'chip', '<b>' + E.paradas.length + '</b> paradas'));
+      me.appendChild(el('span', 'chip', '<b>' + com + '</b> notas de voc\u00eas'));
+      h.appendChild(me);
       return;
     }
     if (destino === 'ny') {
@@ -1406,6 +1428,51 @@
   /* ---------- render ---------- */
 
 
+
+  /* ---------- localização, para qualquer destino ----------
+     Um só painel, usado por Doha, Nova York e Europa 2023. A distância sai do
+     haversine entre você e a coordenada do lugar — e a coordenada carrega a
+     precisão com que eu a anotei, porque 'a 300 m' só quer dizer alguma coisa
+     se você souber que o ponto é o quarteirão e não a porta. */
+  var PREC = { end: 'quarteirão', bairro: 'bairro', cidade: 'centro da cidade' };
+
+  function distDe(x) {
+    if (!minhaPos || !x || !x.lat) return null;
+    return hav(minhaPos.lat, minhaPos.lng, x.lat, x.lng);
+  }
+  function txtDist(x) {
+    var d = distDe(x); if (d == null) return '';
+    return d < 1 ? Math.round(d * 1000) + ' m de você' : d.toFixed(1).replace('.', ',') + ' km de você';
+  }
+  function caixaGeo(root, oQue) {
+    var geo = el('div', 'geo-box');
+    geo.appendChild(el('span', null, minhaPos
+      ? '📍 Ordenando ' + oQue + ' pelos mais perto de você agora.'
+      : '📍 Ative a localização para ordenar ' + oQue + ' pelos mais próximos de onde você está.'));
+    var gb = el('button', 'btn sec', minhaPos ? 'atualizar' : 'ativar');
+    gb.onclick = function () { pedirLocal(gb); };
+    geo.appendChild(gb);
+    root.appendChild(geo);
+  }
+  function chipDist(x) {
+    var d = distDe(x); if (d == null) return null;
+    var t = el('span', 'tag dist', '📍 ' + txtDist(x));
+    t.title = 'Coordenada no nível do ' + (PREC[x.prec] || 'quarteirão') + '.';
+    return t;
+  }
+  function rotaPara(x) {
+    var de = minhaPos ? (minhaPos.lat + ',' + minhaPos.lng) : '';
+    return 'https://www.google.com/maps/dir/?api=1' + (de ? '&origin=' + de : '') +
+      '&destination=' + encodeURIComponent(x.lat + ',' + x.lng);
+  }
+  function botaoRota(x, rotulo) {
+    if (!x.lat) return null;
+    var a = el('a', 'btn sec', '🧭 ' + (rotulo || (minhaPos ? 'Rota daqui' : 'Ver no mapa')));
+    a.href = rotaPara(x); a.target = '_blank'; a.rel = 'noopener';
+    a.style.fontSize = '13px'; a.style.padding = '8px 12px';
+    return a;
+  }
+
   /* ---------- Nova York: um roteiro antigo, conferido ---------- */
   var SELO_NY = {
     aberto:          { c: 'ok',   l: 'confirmado aberto' },
@@ -1491,6 +1558,8 @@
     p0.appendChild(el('div', 'lead', 'Todos os lugares citados no seu roteiro, com carimbo de conferência.'));
     root.appendChild(p0);
 
+    caixaGeo(root, 'os lugares');
+
     var FN = [
       { id: 'todos', l: 'Todos' },
       { id: 'fechado', l: '⚠️ Fecharam' },
@@ -1507,8 +1576,17 @@
     root.appendChild(fb);
 
     var ordem = { fechado: 0, mudou: 1, aberto: 2, 'nao-confirmado': 3 };
-    var lista = N.lugares.filter(function (x) { return nyFiltro === 'todos' || x.conf === nyFiltro; })
-      .slice().sort(function (a, b) { return ordem[a.conf] - ordem[b.conf]; });
+    var lista = N.lugares.filter(function (x) { return nyFiltro === 'todos' || x.conf === nyFiltro; }).slice();
+    if (minhaPos) {
+      lista.sort(function (a, b) {
+        var da = distDe(a), db = distDe(b);
+        if (da == null) return 1;
+        if (db == null) return -1;
+        return da - db;
+      });
+    } else {
+      lista.sort(function (a, b) { return ordem[a.conf] - ordem[b.conf]; });
+    }
 
     var cnt = el('div', 'count', lista.length + ' de ' + N.lugares.length + ' lugares');
     cnt.style.margin = '10px 0'; root.appendChild(cnt);
@@ -1521,8 +1599,10 @@
       tg.appendChild(el('span', 'tag ' + sel.c, sel.l));
       tg.appendChild(el('span', 'tag', esc(x.z)));
       tg.appendChild(el('span', 'tag', esc(x.tipo)));
+      var cd = chipDist(x); if (cd) tg.appendChild(cd);
       p.appendChild(tg);
       if (x.d) p.appendChild(el('p', null, esc(x.d)));
+      var br = botaoRota(x); if (br) { var bw = el('div', 'btnrow'); bw.appendChild(br); p.appendChild(bw); }
       var f = fontesDe(x.f); if (f) p.appendChild(f);
       root.appendChild(p);
     });
@@ -1535,6 +1615,138 @@
     p.appendChild(el('div', 'lead', 'Nada aqui envelheceu. É o julgamento, não a informação — e julgamento não fecha por falência.'));
     N.ouro.forEach(function (t) { p.appendChild(el('div', 'note ok', esc(t))); });
     root.appendChild(p);
+  }
+
+
+  /* ---------- Europa 2023: arquivo de veredictos ---------- */
+  function corNota(n) {
+    if (n == null) return '';
+    if (n >= 11) return 'gold';
+    if (n >= 9) return 'ok';
+    if (n >= 7) return 'blue';
+    if (n >= 5) return 'warn';
+    return 'bad';
+  }
+  function chipNota(l) {
+    if (l.nota == null) return null;
+    return el('span', 'tag ' + corNota(l.nota), l.nota === 11 ? '11/10' : l.nota + '/10');
+  }
+
+  function fichaEu(l) {
+    var p = el('div', 'panel');
+    var h = el('h2', null, esc(l.n));
+    if (!l.feito) h.innerHTML = esc(l.n) + ' <span class="riscou">ficou de fora</span>';
+    p.appendChild(h);
+    var tg = el('div', 'tagrow');
+    var cn = chipNota(l); if (cn) tg.appendChild(cn);
+    tg.appendChild(el('span', 'tag', esc(l.tipo)));
+    var sel = SELO_NY[l.conf];
+    if (sel) tg.appendChild(el('span', 'tag ' + sel.c, sel.l));
+    var cd = chipDist(l); if (cd) tg.appendChild(cd);
+    p.appendChild(tg);
+    if (l.voce) p.appendChild(el('div', 'note ' + (l.nota != null && l.nota <= 5 ? 'bad' : 'ok'),
+      '<b>Vocês escreveram:</b> “' + esc(l.voce) + '”'));
+    if (l.d) p.appendChild(el('div', 'note', esc(l.d)));
+    var br = botaoRota(l); if (br) { var bw = el('div', 'btnrow'); bw.appendChild(br); p.appendChild(bw); }
+    var f = fontesDe(l.f); if (f) p.appendChild(f);
+    return p;
+  }
+
+  function viewEuRoteiro(root) {
+    var E = HERO_EU23;
+    var p0 = el('div', 'panel');
+    p0.appendChild(el('h2', null, 'A viagem, parada por parada'));
+    p0.appendChild(el('div', 'lead', esc(E.intro)));
+    p0.appendChild(el('div', 'note', 'As notas são de vocês, escritas na hora, e ficam como estão. ' +
+      'Eu conferi uma coisa só: a casa ainda existe? Onde não achei fonte, a ficha diz <b>não confirmado</b>.'));
+    root.appendChild(p0);
+
+    caixaGeo(root, 'a lista');
+    if (minhaPos) {
+      var perto = [];
+      E.paradas.forEach(function (x) {
+        x.lugares.forEach(function (l) { if (l.lat) perto.push({ l: l, onde: x.nome, d: distDe(l) }); });
+      });
+      perto.sort(function (a, b) { return a.d - b.d; });
+      var pp = el('div', 'panel');
+      pp.appendChild(el('h2', null, 'Mais perto de você agora'));
+      pp.appendChild(el('div', 'lead', 'Se vocês estiverem no Brasil, os números vão ser absurdos — e é assim ' +
+        'mesmo: a viagem foi em 2023. Isto serve para quando vocês voltarem à Europa.'));
+      perto.slice(0, 8).forEach(function (t) {
+        pp.appendChild(el('div', 'note', '<b>' + esc(t.l.n) + '</b> · ' + esc(t.onde) +
+          ' — ' + esc(txtDist(t.l)) + (t.l.nota != null ? ' · nota ' + t.l.nota : '')));
+      });
+      root.appendChild(pp);
+    }
+
+    E.paradas.forEach(function (x) {
+      var p = el('div', 'panel');
+      p.appendChild(el('h2', null, esc(x.nome)));
+      p.appendChild(el('div', 'lead', esc(x.datas)));
+      if (x.hotel && x.hotel.n) {
+        p.appendChild(el('div', 'note', '🏨 <b>' + esc(x.hotel.n) + '</b>' +
+          (x.hotel.d ? ' — ' + esc(x.hotel.d) : '')));
+      }
+      root.appendChild(p);
+      x.lugares.forEach(function (l) { root.appendChild(fichaEu(l)); });
+    });
+  }
+
+  function viewEuNotas(root) {
+    var E = HERO_EU23;
+    var todos = [];
+    E.paradas.forEach(function (x) {
+      x.lugares.forEach(function (l) { if (l.nota != null) todos.push({ l: l, onde: x.nome }); });
+    });
+    todos.sort(function (a, b) { return b.l.nota - a.l.nota; });
+
+    var p0 = el('div', 'panel');
+    p0.appendChild(el('h2', null, 'As notas de vocês, do topo ao fundo'));
+    p0.appendChild(el('div', 'lead', 'Esta é a informação que nenhum guia tem: o que VOCÊS acharam. ' +
+      'Nada aqui foi recalculado — só ordenado.'));
+    root.appendChild(p0);
+
+    var g = el('div', 'panel');
+    todos.forEach(function (t) {
+      var r = el('div', 'linha-nota');
+      var b = el('div', 'ln-nota ' + corNota(t.l.nota), t.l.nota === 11 ? '11' : String(t.l.nota));
+      r.appendChild(b);
+      var c = el('div', 'ln-txt');
+      c.appendChild(el('strong', null, esc(t.l.n)));
+      c.appendChild(el('span', null, esc(t.onde) + ' · ' + esc(t.l.tipo)));
+      if (t.l.voce) c.appendChild(el('em', null, '“' + esc(t.l.voce) + '”'));
+      r.appendChild(c);
+      g.appendChild(r);
+    });
+    root.appendChild(g);
+
+    var pf = el('div', 'panel');
+    pf.appendChild(el('h2', null, 'Ficaram de fora'));
+    pf.appendChild(el('div', 'lead', 'Marcados com ◦ no roteiro original — estavam no plano e não aconteceram.'));
+    E.paradas.forEach(function (x) {
+      x.lugares.forEach(function (l) {
+        if (l.feito === false) {
+          pf.appendChild(el('div', 'note warn', '<b>' + esc(l.n) + '</b> (' + esc(x.nome) + ')' +
+            (l.d ? '<br>' + esc(l.d) : '')));
+        }
+      });
+    });
+    root.appendChild(pf);
+  }
+
+  function viewEuReparos(root) {
+    var E = HERO_EU23;
+    var p = el('div', 'panel');
+    p.appendChild(el('h2', null, 'O que eu reparei, olhando de fora'));
+    p.appendChild(el('div', 'lead', 'Conferência de ' +
+      new Date(E.conferidoEm + 'T12:00:00').toLocaleDateString('pt-BR') + '.'));
+    root.appendChild(p);
+    E.reparos.forEach(function (r) {
+      var q = el('div', 'panel');
+      q.appendChild(el('h2', null, esc(r.t)));
+      q.appendChild(el('p', null, esc(r.d)));
+      root.appendChild(q);
+    });
   }
 
   /* ---------- botao do Theo ----------
@@ -1627,6 +1839,9 @@
     pintaCabecalho();
     if (aba === 'destinos' || !destino) { viewDestinos(root); return; }
     if (aba === 'cambio') viewCambio(root);
+    else if (aba === 'euroteiro') viewEuRoteiro(root);
+    else if (aba === 'eunotas') viewEuNotas(root);
+    else if (aba === 'eureparos') viewEuReparos(root);
     else if (aba === 'nyroteiro') viewNyRoteiro(root);
     else if (aba === 'nymudou') viewNyMudou(root);
     else if (aba === 'nylugares') viewNyLugares(root);

@@ -487,3 +487,29 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
 .fontes .fl{ color:var(--muted,#6b6270); text-transform:uppercase; letter-spacing:.09em; font-size:10px; }
 .fontes a{ color:var(--blue); text-decoration:none; border-bottom:1px solid color-mix(in srgb, var(--blue) 40%, transparent); overflow-wrap:anywhere; }
 .fontes a:hover{ border-bottom-color:var(--blue); }
+
+/* ---------- Europa 2023: linha de nota ---------- */
+.riscou{ font-size:12px; font-weight:600; color:var(--money); letter-spacing:.04em; text-transform:uppercase; }
+.linha-nota{ display:flex; gap:12px; align-items:flex-start; padding:11px 0; border-top:1px solid color-mix(in srgb, var(--ink) 10%, transparent); }
+.linha-nota:first-child{ border-top:0; }
+.ln-nota{
+  flex:0 0 42px; height:42px; border-radius:12px; display:grid; place-items:center;
+  font-family:var(--disp); font-weight:700; font-size:18px; font-variant-numeric:tabular-nums;
+  background:color-mix(in srgb, var(--ink) 8%, transparent); color:var(--ink);
+}
+.ln-nota.gold{ background:color-mix(in srgb, var(--money) 22%, transparent); color:var(--money); }
+.ln-nota.ok{   background:color-mix(in srgb, #2f9e5f 20%, transparent); color:#1f7a47; }
+.ln-nota.blue{ background:color-mix(in srgb, var(--blue) 20%, transparent); color:var(--blue); }
+.ln-nota.warn{ background:color-mix(in srgb, #d98324 22%, transparent); color:#a8620f; }
+.ln-nota.bad{  background:color-mix(in srgb, #c4383f 20%, transparent); color:#a52a30; }
+.ln-txt{ min-width:0; display:flex; flex-direction:column; gap:2px; }
+.ln-txt strong{ font-size:15px; }
+.ln-txt span{ font-size:12px; color:var(--muted,#6b6270); }
+.ln-txt em{ font-size:13px; line-height:1.45; opacity:.9; }
+
+/* selo de distância — cor própria, para não se confundir com "não confirmado" */
+.tag.dist{
+  background:color-mix(in srgb, var(--gold) 14%, transparent);
+  color:var(--gold); border-color:color-mix(in srgb, var(--gold) 34%, transparent);
+  font-variant-numeric:tabular-nums;
+}

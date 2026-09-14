@@ -91,6 +91,40 @@ var HERO_ARTE = (function () {
         '#ff9ec4', '#7a3f8c', '#f7c9dc', '#8a5aa8');
     },
 
+    /* Europa 2023 — cúpula toscana, ciprestes e colinas */
+    eu23: function () {
+      var colinas = '';
+      for (var i = 0; i < 3; i++) {
+        var y = 132 + i * 14;
+        colinas += '<path d="M0 ' + y + ' Q80 ' + (y - 16) + ' 160 ' + y + ' T320 ' + (y - 6) +
+                   ' L320 200 L0 200 Z" fill="#8a9a58" opacity="' + (0.3 + i * 0.18) + '"/>';
+      }
+      var cip = '';
+      [[24, 1], [42, .78], [270, .9], [292, .7], [306, 1.05]].forEach(function (c) {
+        cip += '<path d="M' + c[0] + ' 150 C' + (c[0] - 7 * c[1]) + ' 130 ' + (c[0] - 5 * c[1]) + ' ' +
+               (150 - 52 * c[1]) + ' ' + c[0] + ' ' + (150 - 62 * c[1]) + ' C' + (c[0] + 5 * c[1]) + ' ' +
+               (150 - 52 * c[1]) + ' ' + (c[0] + 7 * c[1]) + ' 130 ' + c[0] + ' 150 Z" fill="#3f5730" opacity=".88"/>';
+      });
+      return moldura(
+        '<circle cx="238" cy="60" r="24" fill="%SOL%" opacity=".7"/>' +
+        colinas +
+        /* a cúpula */
+        '<g>' +
+        '<rect x="128" y="104" width="64" height="48" fill="#e8d6bc"/>' +
+        '<path d="M130 104 Q160 50 190 104 Z" fill="#b8532f"/>' +
+        '<path d="M156 50 h8 v-12 h-8 z" fill="#c9b08a"/>' +
+        '<circle cx="160" cy="36" r="4" fill="#e8d6bc"/>' +
+        '<rect x="196" y="72" width="16" height="80" fill="#e0cdb2"/>' +
+        '<path d="M194 72 h20 l-10 -14 z" fill="#b8532f"/>' +
+        '<g fill="#9a7f5e" opacity=".8">' +
+        '<rect x="138" y="118" width="8" height="14" rx="4"/><rect x="156" y="118" width="8" height="14" rx="4"/>' +
+        '<rect x="174" y="118" width="8" height="14" rx="4"/><rect x="200" y="96" width="8" height="12" rx="4"/></g>' +
+        '</g>' +
+        cip +
+        '<path d="M0 168 Q90 160 180 170 T320 166 L320 200 L0 200 Z" fill="#c2a86c" opacity=".5"/>',
+        '#f2c179', '#c9713f', '#fbe7c6', '#e6a86f');
+    },
+
     /* Índia — Taj Mahal */
     india: function () {
       return moldura(
