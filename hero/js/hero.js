@@ -168,6 +168,9 @@
     vis.style.setProperty('--g1', p[0]); vis.style.setProperty('--g2', p[1]);
     vis.appendChild(el('div', 'em', EMOJI[v]));
     if (r.destaque) vis.appendChild(el('div', 'badge', esc(r.destaque)));
+    if (r.alcool === true) vis.appendChild(el('div', 'selo', '🍷 Serve álcool'));
+    else if (r.alcool === false) vis.appendChild(el('div', 'selo seco', '🚫 Sem álcool'));
+    else vis.appendChild(el('div', 'selo seco', '? Álcool não confirmado'));
     c.appendChild(vis);
 
     var b = el('div', 'card-body');
@@ -378,8 +381,10 @@
     try { history.replaceState(null, '', '#r/' + r.id); } catch (e) { }
   }
   function fechar() {
+    maisAberto = false;
     $('#sheetBg').classList.remove('on'); $('#sheet').classList.remove('on');
     document.body.style.overflow = '';
+    if ($('#botnav')) pintaNav();
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { }
   }
 
@@ -401,6 +406,18 @@
     { id: 'ivoos', l: '✈️ Voos' },
     { id: 'ihoteis', l: '🏨 Hotéis' }
   ];
+  var ICONES = {
+    destinos:'🌍', lista:'🍽️', curadoria:'⭐', roteiros:'🗓️', souq:'🕌', escala:'✈️',
+    beber:'🍷', hoteis:'🏨', reservaria:'✅', avisos:'📖', cambio:'💱',
+    iroteiro:'🗓️', ivoos:'✈️', ihoteis:'🏨'
+  };
+  var CURTO = {
+    destinos:'Destinos', lista:'Comer', curadoria:'Curadoria', roteiros:'Roteiros',
+    souq:'Souq', escala:'A escala', beber:'Beber', hoteis:'Hotéis',
+    reservaria:'Reservar', avisos:'Saber', cambio:'Moedas',
+    iroteiro:'Roteiro', ivoos:'Voos', ihoteis:'Hotéis'
+  };
+  var PRIMARIAS = { doha: ['lista', 'roteiros', 'escala', 'beber'], india: ['iroteiro', 'ivoos', 'ihoteis', 'cambio'] };
   var ABA_HOME = { id: 'destinos', l: '← Destinos' };
   var ABA_CAMBIO = { id: 'cambio', l: '💱 Moedas' };
   function abasAtuais() {
@@ -420,6 +437,61 @@
     return b;
   }
 
+
+  /* ---------- navegação inferior ---------- */
+  function vaiPara(id) {
+    if (id === 'destinos') { destino = ''; pref.destino = ''; save(LS_PREF, pref); aba = 'destinos'; }
+    else aba = id;
+    fecharMais(); render();
+  }
+  function pintaNav() {
+    var nav = $('#botnav'); nav.innerHTML = '';
+    var itens;
+    if (!destino) {
+      itens = [{ id: 'destinos', l: 'Destinos' }, { id: 'cambio', l: 'Moedas' }];
+    } else {
+      itens = (PRIMARIAS[destino] || []).map(function (id) { return { id: id, l: CURTO[id] }; });
+      itens.push({ id: '__mais', l: 'Mais' });
+    }
+    itens.forEach(function (it) {
+      var b = el('button');
+      b.setAttribute('role', 'tab');
+      var ativo = it.id === '__mais' ? maisAberto : (it.id === aba);
+      b.setAttribute('aria-selected', ativo ? 'true' : 'false');
+      b.appendChild(el('i', null, it.id === '__mais' ? '☰' : (ICONES[it.id] || '•')));
+      b.appendChild(el('span', null, esc(it.l)));
+      b.onclick = function () { it.id === '__mais' ? abrirMais() : vaiPara(it.id); };
+      nav.appendChild(b);
+    });
+  }
+
+  var maisAberto = false;
+  function fecharMais() {
+    maisAberto = false;
+    $('#sheetBg').classList.remove('on'); $('#sheet').classList.remove('on');
+    document.body.style.overflow = '';
+  }
+  function abrirMais() {
+    maisAberto = true;
+    $('#sheetTitle').textContent = 'Todas as seções';
+    $('#sheetSub').textContent = destino === 'india' ? 'Índia' : C.cidade;
+    var body = $('#sheetBody'); body.innerHTML = '';
+    var sec = el('div', 'sec');
+    var g = el('div', 'mais');
+    abasAtuais().forEach(function (a) {
+      var b = el('button');
+      b.setAttribute('aria-selected', a.id === aba ? 'true' : 'false');
+      b.appendChild(el('i', null, ICONES[a.id] || '•'));
+      b.appendChild(el('span', null, esc(CURTO[a.id] || a.l)));
+      b.onclick = function () { vaiPara(a.id); };
+      g.appendChild(b);
+    });
+    sec.appendChild(g);
+    body.appendChild(sec);
+    $('#sheetBg').classList.add('on'); $('#sheet').classList.add('on');
+    document.body.style.overflow = 'hidden';
+    pintaNav();
+  }
 
   /* ---------- cabeçalho por destino ---------- */
   function pintaCabecalho() {
@@ -1053,18 +1125,7 @@
   /* ---------- render ---------- */
   function render(mantemFoco) {
     var root = $('#app'); root.innerHTML = '';
-    var tabs = $('#tabs'); tabs.innerHTML = '';
-    abasAtuais().forEach(function (a) {
-      var b = el('button', null, a.l);
-      b.dataset.id = a.id; b.setAttribute('role', 'tab');
-      b.setAttribute('aria-selected', a.id === aba ? 'true' : 'false');
-      b.onclick = function () {
-        if (a.id === 'destinos') { destino = ''; pref.destino = ''; save(LS_PREF, pref); aba = 'destinos'; }
-        else aba = a.id;
-        render();
-      };
-      tabs.appendChild(b);
-    });
+    pintaNav();
     pintaCabecalho();
     if (aba === 'destinos' || !destino) { viewDestinos(root); return; }
     if (aba === 'cambio') viewCambio(root);
@@ -1131,10 +1192,26 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fechar(); });
 
     render();
+    registrarSW();
 
     var h = location.hash.match(/^#r\/(.+)$/);
     if (h && byId[h[1]]) abrir(h[1]);
   }
+
+  function registrarSW() {
+    if (!('serviceWorker' in navigator)) return;
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
+    navigator.serviceWorker.register('sw.js', { scope: './' }).then(function () {
+      pref.swOk = true; save(LS_PREF, pref);
+    }).catch(function () {});
+  }
+
+  function avisoOffline() {
+    var t = el('div', 'offline-tag', '📴 sem internet — usando o app salvo');
+    document.body.appendChild(t);
+    setTimeout(function () { t.remove(); }, 4000);
+  }
+  window.addEventListener('offline', avisoOffline);
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', montar);
   else montar();

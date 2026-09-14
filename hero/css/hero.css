@@ -92,11 +92,13 @@ nav.tabs button:not([aria-selected="true"]):hover{border-color:var(--line);color
 
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
   box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;text-align:left}
-.card-visual{height:76px;position:relative;display:flex;align-items:flex-end;padding:10px 12px;
+.card-visual{height:92px;position:relative;
   background:linear-gradient(135deg,var(--g1,#d8c39a),var(--g2,#b08a4e))}
 .card-visual .em{position:absolute;right:10px;top:8px;font-size:30px;opacity:.9;filter:saturate(1.1)}
-.card-visual .badge{background:rgba(20,15,8,.72);color:#fff;font-size:10.5px;font-weight:800;
-  letter-spacing:.04em;text-transform:uppercase;padding:4px 8px;border-radius:6px}
+.card-visual .badge{position:absolute;left:10px;top:10px;max-width:calc(100% - 58px);
+  background:rgba(20,15,8,.78);color:#fff;font-size:10px;font-weight:800;
+  letter-spacing:.03em;text-transform:uppercase;padding:4px 8px;border-radius:6px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .card-body{padding:12px 13px 13px;display:flex;flex-direction:column;gap:7px;flex:1}
 .card h3{margin:0;font-size:16.5px;letter-spacing:-.01em;line-height:1.25}
 .card .sub{font-size:12.5px;color:var(--ink-3);font-weight:600}
@@ -253,3 +255,43 @@ footer.foot b{color:var(--ink-2)}
   letter-spacing:-.01em;padding:2px 0}
 .conv-row input:focus{outline:none}
 .conv-row:focus-within{border-color:var(--gold);background:var(--gold-soft)}
+
+/* ---------- navegação inferior, estilo app ---------- */
+body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+nav.tabs{display:none}
+.botnav{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;
+  background:var(--card);border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  box-shadow:0 -2px 16px rgba(60,45,20,.08)}
+.botnav button{flex:1;background:none;border:none;color:var(--ink-3);
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:9px 2px 8px;font-size:10.5px;font-weight:700;letter-spacing:.01em;
+  min-width:0;line-height:1.2}
+.botnav button i{font-style:normal;font-size:20px;line-height:1}
+.botnav button span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.botnav button[aria-selected="true"]{color:var(--gold)}
+.botnav button:active{background:var(--sand-2)}
+
+/* menu "Mais" */
+.mais{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mais button{display:flex;align-items:center;gap:11px;text-align:left;
+  background:var(--sand-2);border:1px solid var(--line);border-radius:12px;
+  padding:13px 14px;color:var(--ink);font-size:14px;font-weight:700}
+.mais button:hover{border-color:var(--gold);color:var(--gold)}
+.mais button i{font-style:normal;font-size:21px;line-height:1}
+.mais button[aria-selected="true"]{background:var(--gold-soft);border-color:var(--gold);color:var(--gold)}
+
+/* ---------- selo de bebida no card ---------- */
+.selo{position:absolute;left:10px;bottom:10px;display:inline-flex;align-items:center;gap:5px;
+  background:rgba(255,255,255,.95);color:#1c1a17;font-size:10.5px;font-weight:800;
+  letter-spacing:.03em;text-transform:uppercase;padding:5px 9px;border-radius:999px;
+  box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.selo.seco{background:rgba(28,26,23,.82);color:#fff}
+
+/* ---------- faixa de instalação ---------- */
+.instalar{background:var(--gold-soft);border:1px solid var(--gold);border-radius:12px;
+  padding:12px 14px;margin-bottom:14px;font-size:13.2px;color:var(--gold);font-weight:600;line-height:1.5}
+.instalar b{display:block;font-size:14.5px;margin-bottom:3px}
+.offline-tag{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(72px + env(safe-area-inset-bottom,0px));
+  background:var(--ink);color:var(--sand);font-size:12px;font-weight:700;padding:7px 14px;
+  border-radius:999px;z-index:55;box-shadow:var(--shadow)}
