@@ -156,6 +156,37 @@ var HERO_ARTE = (function () {
         '#ffd9a8', '#c96f9a', '#dfe7f5', '#a88bc4');
     },
 
+    /* Boston 2024 — a cúpula dourada, tijolo e neve */
+    bos: function () {
+      var flocos = '';
+      for (var i = 0; i < 34; i++) {
+        flocos += '<circle cx="' + (i * 61 % 320) + '" cy="' + ((i * 37 % 130) + 6) + '" r="' + (1 + (i % 3) * .5) +
+                  '" fill="#fff" opacity="' + (0.3 + (i % 4) * 0.13) + '"/>';
+      }
+      var casario = '';
+      [[6,126,30],[40,118,26],[70,132,24],[252,128,26],[282,116,24],[308,130,22]].forEach(function (b) {
+        casario += '<rect x="' + b[0] + '" y="' + b[1] + '" width="' + b[2] + '" height="' + (158 - b[1]) + '" fill="#8c4b3a" opacity=".72"/>' +
+                   '<path d="M' + (b[0] - 2) + ' ' + b[1] + ' L' + (b[0] + b[2] / 2) + ' ' + (b[1] - 9) + ' L' + (b[0] + b[2] + 2) + ' ' + b[1] + ' Z" fill="#5f3327" opacity=".85"/>';
+      });
+      return moldura(
+        '<circle cx="256" cy="54" r="20" fill="%SOL%" opacity=".5"/>' + flocos + casario +
+        /* Massachusetts State House */
+        '<g>' +
+        '<rect x="118" y="106" width="84" height="52" fill="#b2352f"/>' +
+        '<rect x="112" y="100" width="96" height="8" fill="#e8ddcb"/>' +
+        '<g fill="#e8ddcb"><rect x="126" y="116" width="9" height="20" rx="4"/><rect x="146" y="116" width="9" height="20" rx="4"/>' +
+        '<rect x="166" y="116" width="9" height="20" rx="4"/><rect x="186" y="116" width="9" height="20" rx="4"/></g>' +
+        '<rect x="142" y="88" width="36" height="14" fill="#c9b08a"/>' +
+        '<path d="M142 88 Q160 58 178 88 Z" fill="#e0a92a"/>' +
+        '<rect x="158" y="46" width="4" height="12" fill="#e0a92a"/>' +
+        '<circle cx="160" cy="43" r="4" fill="#e0a92a"/>' +
+        '</g>' +
+        /* neve no chão */
+        '<path d="M0 158 L320 158 L320 200 L0 200 Z" fill="#eef2f7" opacity=".85"/>' +
+        '<path d="M0 166 Q90 156 180 166 T320 162 L320 200 L0 200 Z" fill="#fff" opacity=".7"/>',
+        '#ffd9a0', '#9c5b7a', '#dbe6f2', '#8fa8c9');
+    },
+
     /* Índia — Taj Mahal */
     india: function () {
       return moldura(

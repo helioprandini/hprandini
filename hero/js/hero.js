@@ -483,18 +483,19 @@
     euroteiro:'A viagem', eunotas:'As notas', eureparos:'Reparos', mapa:'Mapa'
   };
   var PRIMARIAS = { doha: ['lista', 'mapa', 'roteiros', 'beber'], india: ['iroteiro', 'ivoos', 'ihoteis', 'cambio'], ny: ['nyroteiro', 'nymudou', 'nylugares', 'mapa'], eu23: ['euroteiro', 'eunotas', 'mapa', 'eureparos'],
-                   eu25: ['euroteiro', 'eunotas', 'mapa', 'eureparos'] };
+                   eu25: ['euroteiro', 'eunotas', 'mapa', 'eureparos'],
+                   bos: ['euroteiro', 'eunotas', 'mapa', 'eureparos'] };
   var ABA_HOME = { id: 'destinos', l: '← Destinos' };
   var ABA_CAMBIO = { id: 'cambio', l: '💱 Moedas' };
   function abasAtuais() {
     if (!destino) return [ABA_CAMBIO];
     var base = destino === 'india' ? ABAS_INDIA : destino === 'ny' ? ABAS_NY :
-      (destino === 'eu23' || destino === 'eu25') ? ABAS_EU23 : ABAS_DOHA.concat([ABA_MAPA]);
+      ehArquivo() ? ABAS_EU23 : ABAS_DOHA.concat([ABA_MAPA]);
     return [ABA_HOME].concat(base, [ABA_CAMBIO]);
   }
   function primeiraAba() {
     return destino === 'india' ? 'iroteiro' : destino === 'ny' ? 'nyroteiro' :
-      (destino === 'eu23' || destino === 'eu25') ? 'euroteiro' : destino === 'doha' ? 'lista' : 'destinos';
+      ehArquivo() ? 'euroteiro' : destino === 'doha' ? 'lista' : 'destinos';
   }
   function irPara(d) {
     destino = d; pref.destino = d; save(LS_PREF, pref);
@@ -574,7 +575,7 @@
       h.appendChild(el('p', null, 'O guia de viagens do Helio e da Roberta. Escolha um destino.'));
       return;
     }
-    if (destino === 'eu23' || destino === 'eu25') {
+    if (ehArquivo()) {
       var E = dadosEu();
       h.appendChild(el('h1', null, E.cidade));
       h.appendChild(el('p', null, esc(E.rota)));
@@ -1654,7 +1655,7 @@
       });
     } else if (destino === 'ny') {
       HERO_NY.lugares.forEach(function (x) { if (x.lat) p.push({ n: x.n, lat: x.lat, lng: x.lng, prec: x.prec, conf: x.conf, nota: null, sub: x.z + ' · ' + x.tipo }); });
-    } else if (destino === 'eu23' || destino === 'eu25') {
+    } else if (ehArquivo()) {
       dadosEu().paradas.forEach(function (q) {
         if (mapaCidade !== 'todas' && q.id !== mapaCidade) return;
         q.lugares.forEach(function (l) {
@@ -1730,10 +1731,10 @@
     p0.appendChild(el('h2', null, 'Mapa'));
     p0.appendChild(el('div', 'lead', pts.length + ' lugares no mapa. Toque num pino para ver o nome. ' +
       'A cor diz o estado: verde é confirmado, vermelho fechou, laranja mudou, azul não confirmado' +
-      ((destino === 'eu23' || destino === 'eu25') ? ' — e onde houve nota de vocês, a cor segue a nota.' : '.')));
+      (ehArquivo() ? ' — e onde houve nota de vocês, a cor segue a nota.' : '.')));
     root.appendChild(p0);
 
-    if (destino === 'eu23' || destino === 'eu25') {
+    if (ehArquivo()) {
       var ch = el('div', 'chips');
       var op = [{ id: 'todas', l: 'A viagem toda' }].concat(dadosEu().paradas.map(function (q) { return { id: q.id, l: q.nome }; }));
       op.forEach(function (o) {
@@ -1760,7 +1761,7 @@
       lg.appendChild(r);
     });
     leg.appendChild(lg);
-    if (destino === 'eu23' || destino === 'eu25') {
+    if (ehArquivo()) {
       leg.appendChild(el('div', 'note', 'Nos roteiros com nota, o pino usa a NOTA de vocês: dourado é 10 ou mais, ' +
         'verde de 8 a 9, azul de 6 a 7, vermelho abaixo de 6. Pino apagado é o que ficou de fora.'));
     }
@@ -1860,7 +1861,11 @@
     return p;
   }
 
-  function dadosEu() { return destino === 'eu25' ? HERO_EU25 : HERO_EU23; }
+  function dadosEu() {
+    return destino === 'eu25' ? HERO_EU25 : destino === 'bos' ? HERO_BOS : HERO_EU23;
+  }
+  /* Roteiros de arquivo: mesma estrutura (paradas/lugares/reparos), mesmas telas. */
+  function ehArquivo() { return destino === 'eu23' || destino === 'eu25' || destino === 'bos'; }
 
   function viewEuRoteiro(root) {
     var E = dadosEu();
@@ -1911,12 +1916,19 @@
     todos.sort(function (a, b) { return b.l.nota - a.l.nota; });
 
     var p0 = el('div', 'panel');
-    p0.appendChild(el('h2', null, 'As notas de vocês, do topo ao fundo'));
-    p0.appendChild(el('div', 'lead', 'Esta é a informação que nenhum guia tem: o que VOCÊS acharam. ' +
-      'Nada aqui foi recalculado — só ordenado.'));
+    if (todos.length) {
+      p0.appendChild(el('h2', null, 'As notas de vocês, do topo ao fundo'));
+      p0.appendChild(el('div', 'lead', 'Esta é a informação que nenhum guia tem: o que VOCÊS acharam. ' +
+        'Nada aqui foi recalculado — só ordenado.'));
+    } else {
+      p0.appendChild(el('h2', null, 'O que aconteceu, e o que não'));
+      p0.appendChild(el('div', 'lead', 'Este roteiro não tem notas — tem ✓ e ◦. Então, em vez de ranking, ' +
+        'o que interessa é a lista do que ficou de fora. É ali que mora a informação.'));
+    }
     root.appendChild(p0);
 
     var g = el('div', 'panel');
+    if (!todos.length) g.style.display = 'none';
     todos.forEach(function (t) {
       var r = el('div', 'linha-nota');
       var b = el('div', 'ln-nota ' + corNota(t.l.nota), t.l.nota === 11 ? '11' : String(t.l.nota));

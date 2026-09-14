@@ -209,7 +209,7 @@ const HERO_NY = {
       f: [{ t: 'Commercial Observer — renovação do contrato', u: 'https://commercialobserver.com/2024/01/del-friscos-renews-double-eagle-lease-at-1221-avenue-of-the-americas/' },
            { t: 'Rockefeller Center', u: 'https://www.rockefellercenter.com/dine/del-friscos-double-eagle-steak-house' }] },
     { n: 'Carmine’s', lat: 40.7576, lng: -73.9873, prec: 'end', z: 'Midtown / Broadway', tipo: 'restaurante', conf: 'nao-confirmado',
-      d: 'Não consegui confirmar o funcionamento em fonte primária. Italiano tradicional, porções family style, perto da Broadway — precisa reservar. Checar no OpenTable ou no Resy antes de contar com ele.', f: [] },
+      d: 'Não consegui confirmar em fonte primária de 2026. MAS: VOCÊS JANTARAM AQUI em 23/01/2024, depois do Harry Potter na Broadway (está no roteiro de Boston). Existia com certeza naquela data. Italiano tradicional, porções family style, perto da Broadway — precisa reservar. Checar no OpenTable ou no Resy antes de contar com ele.', f: [] },
     { n: 'Smith & Wollensky', lat: 40.7562, lng: -73.97, prec: 'end', z: 'Midtown', tipo: 'restaurante', conf: 'nao-confirmado',
       d: 'Não confirmado em fonte primária. Steakhouse tradicional e formal.', f: [] },
     { n: 'Serafina', lat: 40.7645, lng: -73.972, prec: 'bairro', z: 'vários', tipo: 'restaurante', conf: 'nao-confirmado',
@@ -264,7 +264,7 @@ const HERO_NY = {
       d: 'O que sobrou do Momofuku em Nova York: 171 1st Ave (East Village) e 10 Columbus Circle. O Ssäm Bar, o Nishi e o Kawi fecharam.',
       f: [{ t: 'Momofuku — Noodle Bar East Village', u: 'https://www.momofuku.com/restaurants/noodle-bar-east-village' }] },
     { n: 'HaSalon', lat: 40.762, lng: -73.993, prec: 'bairro', z: 'Hell’s Kitchen', tipo: 'restaurante', conf: 'nao-confirmado',
-      d: 'Não consegui confirmar. Sua dica é forte ("MELHOR BALADA DA VIDA", reserva às 21h, vira night às 22h30) — mas casa de reserva difícil também fecha. Cheque no Resy antes de contar com ela.', f: [] },
+      d: 'Não consegui confirmar em fonte primária de 2026. MAS a sua dica não é de ouvir falar: VOCÊS FORAM em 24/01/2024, às 21h — exatamente o horário que você recomenda ("reserva para as 21h, por volta das 22:30 vira night"). Está no roteiro de Boston. Ainda assim, casa de reserva difícil também fecha: cheque no Resy antes de contar com ela.', f: [] },
     { n: 'The River Cafe', lat: 40.7036, lng: -73.9934, prec: 'end', z: 'Brooklyn (Dumbo)', tipo: 'restaurante', conf: 'nao-confirmado',
       d: 'Não confirmado. Vale lembrar sua ressalva: você achou caro e turístico, e a mamãe amou.', f: [] },
 
