@@ -390,7 +390,8 @@
     { id: 'curadoria', l: 'Curadoria' },
     { id: 'roteiros', l: 'Roteiros' },
     { id: 'souq', l: 'Souq Waqif' },
-    { id: 'alcool', l: '🍷 Álcool' },
+    { id: 'beber', l: '🍷 Onde beber' },
+    { id: 'hoteis', l: '🏨 Hotéis' },
     { id: 'reservaria', l: 'Eu reservaria' },
     { id: 'avisos', l: 'Saber antes' }
   ];
@@ -558,7 +559,56 @@
     root.appendChild(p);
   }
 
-  function viewAlcool(root) {
+  function viewBeber(root) {
+    var B = (typeof HERO_BARES !== 'undefined') ? HERO_BARES : null;
+    if (B) {
+      var pb = el('div', 'panel');
+      pb.appendChild(el('h2', null, 'Os bares'));
+      pb.appendChild(el('div', 'lead', 'Ordenados por distância do Souq Waqif. Você NÃO precisa estar hospedado para entrar.'));
+      B.lista.forEach(function (x) {
+        var n = el('div', 'night');
+        if (!x.destaque) n.style.borderLeftColor = 'var(--line)';
+        n.appendChild(el('div', 'nl', esc(x.h) + ' · ' + esc(x.b)));
+        var nn = el('div', 'nn');
+        nn.appendChild(document.createTextNode(x.n));
+        nn.appendChild(el('span', 'nh', esc(x.dist)));
+        if (x.andar) nn.appendChild(el('span', 'tag', esc(x.andar)));
+        if (x.destaque) nn.appendChild(el('span', 'tag gold', 'destaque'));
+        n.appendChild(nn);
+        n.appendChild(el('div', 'nx', esc(x.d)));
+        n.appendChild(el('div', 'nx', '<b>Por quê:</b> ' + esc(x.porque)));
+        if (x.hora) n.appendChild(el('div', 'nx', '<b>Horário:</b> ' + esc(x.hora)));
+        var br = el('div', 'btnrow'); br.style.marginTop = '8px';
+        var m = el('a', 'btn sec', '📍 Mapa');
+        m.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(x.n + ' ' + x.h + ' Doha');
+        m.target = '_blank'; m.rel = 'noopener'; br.appendChild(m);
+        if (x.u) { var a = el('a', 'btn sec', '🌐 Site oficial'); a.href = x.u; a.target = '_blank'; a.rel = 'noopener'; br.appendChild(a); }
+        n.appendChild(br);
+        pb.appendChild(n);
+      });
+      root.appendChild(pb);
+
+      var pp = el('div', 'panel');
+      pp.appendChild(el('h2', null, 'Quanto custa um drink'));
+      pp.appendChild(el('div', 'lead', esc(B.precos.intro)));
+      var dlp = el('dl', 'kv');
+      B.precos.itens.forEach(function (x) {
+        dlp.appendChild(el('dt', null, esc(x.o)));
+        dlp.appendChild(el('dd', null, esc(x.d) + ' · <b>' + esc(x.brl) + '</b>'));
+      });
+      pp.appendChild(dlp);
+      root.appendChild(pp);
+
+      var pr = el('div', 'panel');
+      pr.appendChild(el('h2', null, 'Cinco regras que evitam problema'));
+      B.regras.forEach(function (t, i) {
+        var row = el('div', 'pick');
+        row.appendChild(el('div', 'rank', String(i + 1)));
+        var b2 = el('div', 'pb'); b2.appendChild(el('div', 'px', esc(t)));
+        row.appendChild(b2); pr.appendChild(row);
+      });
+      root.appendChild(pr);
+    }
     var A = (typeof HERO_ALCOOL !== 'undefined') ? HERO_ALCOOL : null;
     if (!A) { root.appendChild(el('div', 'panel', '<p>Guia de álcool indisponível.</p>')); return; }
 
@@ -656,6 +706,62 @@
     root.appendChild(p6);
   }
 
+  function viewHoteis(root) {
+    var H = (typeof HERO_HOTEIS !== 'undefined') ? HERO_HOTEIS : null;
+    if (!H) { root.appendChild(el('div', 'panel', '<p>Dados de hotéis indisponíveis.</p>')); return; }
+
+    var pv = el('div', 'panel');
+    pv.appendChild(el('h2', null, esc(H.veredito.titulo)));
+    H.veredito.texto.forEach(function (t) {
+      pv.appendChild(el('p', null, esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')));
+    });
+    root.appendChild(pv);
+
+    var pc = el('div', 'panel');
+    pc.appendChild(el('h2', null, 'De onde vêm estes números'));
+    pc.appendChild(el('div', 'note', '<b>' + esc(H.contexto.datas) + '</b><br>' + esc(H.contexto.origem)));
+    pc.appendChild(el('div', 'note ok', esc(H.contexto.pesquisei)));
+    root.appendChild(pc);
+
+    var ordenado = H.lista.slice().sort(function (a, b) { return a.noite - b.noite; });
+    var p = el('div', 'panel');
+    p.appendChild(el('h2', null, 'Os ' + H.lista.length + ' hotéis, do mais barato ao mais caro'));
+    ordenado.forEach(function (x) {
+      var n = el('div', 'night');
+      if (!x.vencedor) n.style.borderLeftColor = x.seco === true ? 'var(--red)' : 'var(--line)';
+      n.appendChild(el('div', 'nl', esc(x.b) + ' · ' + esc(x.dist)));
+      var nn = el('div', 'nn');
+      nn.appendChild(document.createTextNode(x.n));
+      nn.appendChild(el('span', 'nh', 'R$ ' + x.noite + '/noite'));
+      nn.appendChild(el('span', 'tag', 'R$ ' + x.total.toLocaleString('pt-BR') + ' as 2 noites'));
+      nn.appendChild(el('span', 'tag blue', String(x.nota).replace('.', ',') + ' · ' + x.aval + ' aval.'));
+      if (x.seco === true) nn.appendChild(el('span', 'tag bad', '🚫 SECO'));
+      else if (x.seco === false) nn.appendChild(el('span', 'tag ok', '🍷 tem bar'));
+      else nn.appendChild(el('span', 'tag warn', 'bar não confirmado'));
+      if (x.vencedor) nn.appendChild(el('span', 'tag gold', '★ ' + x.vencedor));
+      n.appendChild(nn);
+      n.appendChild(el('div', 'nx', '<b>Bar:</b> ' + esc(x.bar)));
+      n.appendChild(el('div', 'nx', esc(x.d)));
+      var br = el('div', 'btnrow'); br.style.marginTop = '8px';
+      var m = el('a', 'btn sec', '📍 Mapa');
+      m.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(x.n + ' Doha');
+      m.target = '_blank'; m.rel = 'noopener'; br.appendChild(m);
+      n.appendChild(br);
+      p.appendChild(n);
+    });
+    root.appendChild(p);
+
+    var pf = el('div', 'panel');
+    pf.appendChild(el('h2', null, 'Fontes'));
+    var box = el('div', 'srcs');
+    H.fontes.forEach(function (f) {
+      var a = el('a', null, '↗ ' + esc(f.t)); a.href = f.u; a.target = '_blank'; a.rel = 'noopener';
+      box.appendChild(a);
+    });
+    pf.appendChild(box);
+    root.appendChild(pf);
+  }
+
   function viewReservaria(root) {
     var p = el('div', 'panel');
     p.appendChild(el('h2', null, K.reservaria.titulo));
@@ -720,7 +826,8 @@
     else if (aba === 'curadoria') viewCuradoria(root);
     else if (aba === 'roteiros') viewRoteiros(root);
     else if (aba === 'souq') viewSouq(root);
-    else if (aba === 'alcool') viewAlcool(root);
+    else if (aba === 'beber') viewBeber(root);
+    else if (aba === 'hoteis') viewHoteis(root);
     else if (aba === 'reservaria') viewReservaria(root);
     else viewAvisos(root);
     if (!mantemFoco) window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
