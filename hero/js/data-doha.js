@@ -16,9 +16,15 @@ const HERO_CIDADE = {
   periodo: 'Setembro de 2026',
   pesquisadoEm: '2026-09-11',
   base: {
-    nome: 'Souq Waqif Boutique Hotels by Tivoli',
-    lat: 25.2867, lng: 51.5333,
-    mapsQuery: 'Souq Waqif Boutique Hotels by Tivoli, Doha'
+    nome: 'Park Hyatt Doha',
+    bairro: 'Msheireb Downtown',
+    lat: 25.2880, lng: 51.5245,
+    mapsQuery: 'Park Hyatt Doha Msheireb',
+    nota: 'Reservado. As distâncias das fichas continuam medidas a partir do SOUQ WAQIF, ' +
+          'porque é o ponto de referência da cidade e foi assim que a pesquisa foi feita. ' +
+          'Do Park Hyatt até o Souq é cerca de 1 km, uns 10 a 12 minutos a pé — some isso ' +
+          'às distâncias do Souq, ou use o botão de rota, que já sai do hotel.',
+    bar: 'Sora Rooftop no 21º andar (japonês com bar e vista do Souq Waqif), Opus (francês-qatari), Anis e lounge bar.'
   },
   cambio: {
     par: 'QAR/BRL',
@@ -59,7 +65,7 @@ const HERO_RESTAURANTES = [
   statusNota: 'MICHELIN Bib Gourmand, mantido na edição Doha 2026. Aberto 12h30–23h30.',
   cozinha: 'Marroquina',
   categorias: ['arabe', 'alta-acessivel'],
-  destaque: 'BIB GOURMAND · dentro do seu hotel',
+  destaque: 'BIB GOURMAND · no Souq Waqif',
   local: 'Souq Waqif Boutique Hotels by Tivoli — Al Jasra St',
   bairro: 'Souq Waqif',
   lat: 25.2869, lng: 51.5330,
@@ -84,7 +90,7 @@ const HERO_RESTAURANTES = [
     { nome: 'Harira', qar: null, porque: 'Sopa marroquina de grão-de-bico e tomate; abre bem a refeição e mostra o tempero da casa.' },
     { nome: 'Pastilla', qar: null, porque: 'Doce-salgado com canela — o prato que mais divide e mais marca numa mesa de casal.' }
   ],
-  porque: 'É a melhor relação esforço/retorno da viagem inteira: você desce do quarto e come num Bib Gourmand do MICHELIN. Marroquino não é qatari, mas é a cozinha árabe mais elaborada disponível a pé do Souq — e não há filial disso no Brasil.',
+  porque: 'Bib Gourmand do MICHELIN dentro do Souq Waqif, a uns 12 minutos a pé do Park Hyatt ou 5 de táxi. Marroquino não é qatari, mas é a cozinha árabe mais elaborada do Souq — e não há filial disso no Brasil. Fica no hotel-boutique do Tivoli; você não precisa estar hospedado lá para jantar.',
   tel: '+97444336872',
   site: 'https://www.tivolihotels.com/en/souq-waqif-doha/restaurants/argan',
   reservaUrl: 'https://www.tivolihotels.com/en/souq-waqif-doha/restaurants/argan',
@@ -121,7 +127,7 @@ const HERO_RESTAURANTES = [
     { nome: 'Baid o tomate', qar: null, porque: 'Ovos com tomate; o prato mais simples e o melhor termômetro do tempero da cozinha.' },
     { nome: 'Karak', qar: null, porque: 'O chá nacional. Pedir aqui é obrigatório.' }
   ],
-  porque: 'Dona Shams Al Qassabi abriu isso em 2014 e virou símbolo da independência financeira das mulheres qataris. Você come comida qatari de casa, feita por qatari, no Souq — a 4 minutos a pé do hotel. É o oposto exato de restaurante de hotel.',
+  porque: 'Dona Shams Al Qassabi abriu isso em 2014 e virou símbolo da independência financeira das mulheres qataris. Você come comida qatari de casa, feita por qatari, no Souq. É o oposto exato de restaurante de hotel, e vale a caminhada de 10 minutos do Park Hyatt.',
   tel: null,
   site: null,
   reservaUrl: null,
@@ -1262,7 +1268,7 @@ const HERO_RESTAURANTES = [
     { nome: 'Khoresh (ensopados persas)', qar: null, porque: 'A parte da carta que quase ninguém pede e que é a alma da cozinha persa.' },
     { nome: 'Pães frescos', qar: null, porque: 'Feitos na casa, citados nominalmente pelo guia.' }
   ],
-  porque: 'Se você quer persa, a pergunta é: Parisa (a pé do hotel, salão espetacular, comida boa) ou Berenjak (27 min de carro, Bib Gourmand, comida melhor)? Para uma viagem curta, Parisa ganha pela logística.',
+  porque: 'Se você quer persa, a pergunta é: Parisa (no Souq, a pé do hotel, salão espetacular, comida boa) ou Berenjak (27 min de carro, Bib Gourmand, comida melhor)? Para uma viagem curta, Parisa ganha pela logística.',
   tel: null,
   site: 'https://berenjak.com/locations/al-maha-island/',
   reservaUrl: 'https://berenjak.com/locations/al-maha-island/',

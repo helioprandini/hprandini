@@ -177,7 +177,7 @@
     b.appendChild(el('h3', null, esc(r.nome)));
     var d = distDaqui(r);
     var dist = d != null ? d.toFixed(1) + ' km de você'
-      : (r.aPe ? 'a pé do hotel' : r.distKm + ' km · ' + r.tempoMin + ' min do Souq');
+      : (r.aPe ? 'a pé dentro do Souq' : r.distKm + ' km · ' + r.tempoMin + ' min do Souq');
     b.appendChild(el('div', 'sub', esc(r.cozinha) + ' · ' + esc(dist)));
     b.appendChild(el('div', 'price-line', faixa(r) + ' <span>/ pessoa</span>'));
     if (r.porque) {
@@ -227,6 +227,7 @@
     var linhas = [
       ['Local', r.local + (r.bairro ? ' — ' + r.bairro : '')],
       ['Do Souq Waqif', r.aPe ? (r.distKm + ' km · ' + r.tempoMin + ' min a pé') : (r.distKm + ' km · ~' + r.tempoMin + ' min de carro')],
+      ['Do Park Hyatt', r.aPe ? '~1,1 km · 10–12 min a pé' : 'some ~1 km à linha acima, ou use o botão de rota'],
       d != null ? ['De você agora', d.toFixed(2) + ' km em linha reta'] : null,
       ['Preço / pessoa', faixa(r)],
       ['Estimativa p/ dois', faixa(r, true)],
@@ -518,7 +519,7 @@
     h.appendChild(el('p', null, 'Curadoria gastronômica para um casal brasileiro. Alta gastronomia, cozinha qatari, ' +
       'árabe do Golfo e as casas locais que um turista não acha sozinho — com o que é confirmado separado do que é estimativa.'));
     var mr = el('div', 'meta-row');
-    mr.appendChild(el('span', 'chip', 'Base: <b>' + esc(C.base.nome) + '</b>'));
+    mr.appendChild(el('span', 'chip', 'Base: <b>' + esc(C.base.nome) + '</b> ✅'));
     mr.appendChild(el('span', 'chip', '1 QAR = <b>R$ ' + taxa.toFixed(2).replace('.', ',') + '</b>'));
     mr.appendChild(el('span', 'chip', '<b>' + R.length + '</b> lugares avaliados'));
     h.appendChild(mr);
@@ -917,6 +918,51 @@
     ps.appendChild(br);
     root.appendChild(ps);
 
+    if (typeof HERO_STOPOVER !== 'undefined') {
+      var S = HERO_STOPOVER;
+      var pn2 = el('div', 'panel');
+      pn2.appendChild(el('h2', null, 'Os quatro níveis do Stopover'));
+      pn2.appendChild(el('div', 'note bad', esc(S.honestidade)));
+      S.niveis.forEach(function (x) {
+        var n = el('div', 'night');
+        if (!x.destaque) n.style.borderLeftColor = 'var(--line)';
+        n.appendChild(el('div', 'nl', 'US$ ' + x.usd + ' por pessoa/noite'));
+        var nn = el('div', 'nn');
+        nn.appendChild(document.createTextNode(x.n));
+        nn.appendChild(el('span', 'nh', 'R$ ' + x.casalNoite + ' o casal/noite'));
+        nn.appendChild(el('span', 'tag', 'R$ ' + x.casal3.toLocaleString('pt-BR') + ' as 3 noites'));
+        if (x.destaque) nn.appendChild(el('span', 'tag gold', 'o mais interessante'));
+        n.appendChild(nn);
+        n.appendChild(el('div', 'nx', '<b>Marcas:</b> ' + esc(x.marcas)));
+        n.appendChild(el('div', 'nx', '<b>Exemplos citados:</b> ' + esc(x.exemplos)));
+        n.appendChild(el('div', 'nx', esc(x.d)));
+        pn2.appendChild(n);
+      });
+      var dlc = el('dl', 'kv'); dlc.style.marginTop = '14px';
+      S.comparativo.linhas.forEach(function (l) {
+        dlc.appendChild(el('dt', null, esc(l.o)));
+        dlc.appendChild(el('dd', null, '<b>' + esc(l.v) + '</b> — ' + esc(l.obs)));
+      });
+      pn2.appendChild(el('h3', null, esc(S.comparativo.t)));
+      pn2.appendChild(dlc);
+      pn2.appendChild(el('h3', null, 'As regras'));
+      S.regras.forEach(function (t, i) {
+        var row = el('div', 'pick');
+        row.appendChild(el('div', 'rank', String(i + 1)));
+        var bb = el('div', 'pb'); bb.appendChild(el('div', 'px', esc(t)));
+        row.appendChild(bb); pn2.appendChild(row);
+      });
+      pn2.appendChild(el('h3', null, 'Como ver a lista real, em 10 minutos'));
+      S.comoVer.forEach(function (t, i) {
+        var row = el('div', 'pick');
+        row.appendChild(el('div', 'rank', String(i + 1)));
+        var bb = el('div', 'pb'); bb.appendChild(el('div', 'px', esc(t)));
+        row.appendChild(bb); pn2.appendChild(row);
+      });
+      pn2.appendChild(el('div', 'note ok', '<b>Meu voto:</b> ' + esc(S.veredito)));
+      root.appendChild(pn2);
+    }
+
     var th = E.travaHorario;
     var pt = el('div', 'panel');
     pt.appendChild(el('h2', null, '⏱ ' + esc(th.t)));
@@ -1107,6 +1153,13 @@
     var H = (typeof HERO_HOTEIS !== 'undefined') ? HERO_HOTEIS : null;
     if (!H) { root.appendChild(el('div', 'panel', '<p>Dados de hotéis indisponíveis.</p>')); return; }
 
+    if (H.decidido) {
+      var pd = el('div', 'panel');
+      pd.appendChild(el('h2', null, '✅ ' + esc(H.decidido.t)));
+      pd.appendChild(el('p', null, esc(H.decidido.d)));
+      pd.appendChild(el('div', 'note warn', esc(H.decidido.falta)));
+      root.appendChild(pd);
+    }
     var pv = el('div', 'panel');
     pv.appendChild(el('h2', null, esc(H.veredito.titulo)));
     H.veredito.texto.forEach(function (t) {

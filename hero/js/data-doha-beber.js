@@ -147,8 +147,8 @@ const HERO_HOTEIS = {
     { n: 'Park Hyatt Doha', b: 'Msheireb', nota: 9.6, aval: 149,
       noite: 565, total: 1131, dist: '~1 km · 10 min a pé', seco: false,
       bar: 'Sora Rooftop (21º andar, japonês com bar e vista do Souq), Opus (francês-qatari), Anis e lounge bar.',
-      d: 'O equilíbrio mais inteligente da lista: nota 9,6, a pé do Souq, e um rooftop no prédio que olha para o Souq Waqif, a Mesquita Verde e West Bay. Custa R$ 183/noite a mais que o Tivoli.',
-      vencedor: 'CUSTO-BENEFÍCIO GERAL' },
+      d: 'O equilíbrio mais inteligente da lista: nota 9,6, a pé do Souq, e um rooftop no prédio que olha para o Souq Waqif, a Mesquita Verde e West Bay.',
+      vencedor: '✅ RESERVADO', reservado: true },
 
     { n: 'DoubleTree by Hilton Old Town', b: 'As Salatah', nota: 9.0, aval: 1001,
       noite: 418, total: 836, dist: '~2 km · 7 min de carro', seco: false,
@@ -229,8 +229,17 @@ const HERO_HOTEIS = {
       d: 'Caro e longe do eixo Souq/museus.' }
   ],
 
+  decidido: {
+    t: 'Decidido: Park Hyatt Doha',
+    d: 'R$ 565 a diária, nota 9,6, em Msheireb. Fica a 10–12 minutos a pé do Souq Waqif e ' +
+       'tem o Sora no 21º andar — bar e japonês com vista do próprio Souq, da Mesquita Verde e de West Bay. ' +
+       'Ou seja: o problema do álcool no hotel deixou de existir, porque agora o bar está no prédio.',
+    falta: 'Falta decidir o número de noites. A reserva atual cobre 28→30/09, mas o voo de volta ' +
+           'sai 1º/10 às 00h05. Veja a aba "A escala".'
+  },
+
   veredito: {
-    titulo: 'A decisão, em uma frase',
+    titulo: 'Como eu cheguei nessa decisão',
     texto: [
       'A tensão real da sua lista é esta: **os três hotéis mais bem posicionados e mais baratos perto do Souq são secos.** Tivoli Souq Waqif (R$ 382), Al Najada Tivoli (R$ 450) e Shaza (R$ 405) — nenhum serve álcool, e o Shaza nem poderia, é uma rede que só opera hotéis sem álcool.',
       'Então a pergunta não é "qual o melhor custo-benefício", é **"beber no hotel vale R$ 183 por noite?"**',
@@ -254,4 +263,58 @@ const HERO_HOTEIS = {
     { t: 'Time Out Doha — melhores bares', u: 'https://www.timeoutdoha.com/food-drink/best-bars-in-doha-qatar' },
     { t: 'Time Out Doha — happy hours 2026', u: 'https://www.timeoutdoha.com/food-drink/doha-happy-hours-bars-2026' }
   ]
+};
+
+/* Os quatro níveis do programa Stopover — pesquisados em 14/09/2026.
+   A lista de hotéis de cada nível NÃO é pública: ela só aparece depois de
+   entrar na Discover Qatar com o localizador do voo, e varia por data. */
+const HERO_STOPOVER = {
+  regras: [
+    'Trânsito em Doha entre 12 e 96 horas. O de vocês tem 54 — está dentro.',
+    'Até 4 noites por sentido. Ou seja: dá para fazer as TRÊS noites de Doha pelo programa, não só a terceira.',
+    'Todos os hotéis do programa têm check-in 24 horas. Importa: vocês pousam às 17h45.',
+    'Preço por PESSOA, por noite, em quarto duplo. Reserva em discoverqatar.qa com o localizador do voo.'
+  ],
+  niveis: [
+    { n: 'Standard — 4 estrelas', usd: 14, casalNoite: 143, casal3: 428,
+      marcas: 'IHG, Hilton, Marriott',
+      exemplos: 'Marriott Courtyard, Holiday Inn',
+      d: 'O piso do programa. Hotel correto de rede, sem charme.' },
+    { n: 'Premium — 5 estrelas', usd: 24, casalNoite: 245, casal3: 734,
+      marcas: 'IHG, Hyatt, Hilton, Marriott, Dusit, Accor, Tivoli',
+      exemplos: 'Marriott Marquis City Center, Alwadi Hotel MGallery, dusitD2 Salwa, Grand Hyatt, Mondrian Doha',
+      d: 'O nível interessante. Entre os exemplos citados pela imprensa de viagem está o ALWADI MGALLERY — nota 9,6, em Msheireb, e dono do Infinity Rooftop, que eu apontei como o melhor bar perto do Souq.',
+      destaque: true },
+    { n: 'Premium com praia — 5 estrelas', usd: 31, casalNoite: 316, casal3: 949,
+      marcas: 'Marriott, Dusit, Le Méridien, IHG, Tivoli',
+      exemplos: 'inclui acesso à Doha Sands Beach',
+      d: 'Mesmo nível do Premium, com praia. Em setembro, com 40 °C, a praia é mais ideia do que uso.' },
+    { n: 'Luxury — 5 estrelas com café', usd: 83, casalNoite: 847, casal3: 2540,
+      marcas: 'Westin, Hyatt, Fairmont, Rixos, Hilton, Dusit, InterContinental',
+      exemplos: 'os hotéis de topo, café da manhã incluído',
+      d: 'ATENÇÃO: aqui o programa deixa de ser barganha. Três noites saem por R$ 2.540 — mais caro que reservar o Park Hyatt direto (R$ 1.695).' }
+  ],
+  comparativo: {
+    t: 'Contra o Park Hyatt que você reservou',
+    linhas: [
+      { o: 'Park Hyatt, 3 noites, reserva direta', v: 'R$ 1.695', obs: 'o hotel que você escolheu, nota 9,6' },
+      { o: 'Stopover Premium 5★, 3 noites', v: 'R$ 734', obs: 'mas você escolhe da lista deles' },
+      { o: 'Stopover Standard 4★, 3 noites', v: 'R$ 428', obs: 'rede sem charme' },
+      { o: 'Stopover Luxury 5★, 3 noites', v: 'R$ 2.540', obs: 'mais caro que o Park Hyatt direto' }
+    ]
+  },
+  honestidade: 'Eu NÃO consigo te mostrar a lista de hotéis com fotos e descrição. O site da ' +
+    'Discover Qatar está bloqueado neste ambiente, e mesmo aberto a lista só aparece depois de ' +
+    'entrar com o localizador do voo — ela muda conforme as datas e a disponibilidade. Os preços ' +
+    'e as marcas acima vêm da imprensa de viagem, não da página oficial. Tudo aqui é "a partir de".',
+  comoVer: [
+    'Entre em discoverqatar.qa e vá em Stopover.',
+    'Informe o localizador do voo Qatar Airways e o sobrenome.',
+    'O site mostra os níveis disponíveis PARA AS SUAS DATAS, com o hotel, foto, descrição e o preço final.',
+    'Compare com os R$ 565 por noite do Park Hyatt antes de mexer em qualquer coisa.'
+  ],
+  veredito: 'Vale os 10 minutos de consulta, por um motivo específico: se o Alwadi MGallery estiver ' +
+    'no nível Premium nas suas datas, você paga cerca de R$ 245 a noite em vez de R$ 632, num hotel ' +
+    'nota 9,6 que tem o melhor rooftop perto do Souq. Se não estiver, mantenha o Park Hyatt — ele é ' +
+    'a escolha certa e o Sora resolve a bebida no próprio prédio.'
 };

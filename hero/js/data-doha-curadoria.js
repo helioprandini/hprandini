@@ -11,7 +11,7 @@ const HERO_CURADORIA = {
       itens: [
         { r: 'jiwan',    nota: 'Cozinha qatari contemporânea levada a sério, no museu de Jean Nouvel, com vista da baía. QAR 300 com bebidas é barato para o que entrega — por isso tem Bib Gourmand. Reabriu dia 30/08.' },
         { r: 'idam',     nota: 'A única alta gastronomia de Doha que usa o Golfo como matéria-prima (bacon de camelo, peixe local) em vez de importar um cardápio pronto. Estrela MICHELIN, prédio de I. M. Pei, 6 min do hotel. Reabriu dia 03/09.' },
-        { r: 'argan',    nota: 'Bib Gourmand a um minuto a pé do seu quarto. Tagine e cuscuz marroquinos de verdade. Nenhum outro restaurante da lista tem esse atrito zero.' },
+        { r: 'argan',    nota: 'Bib Gourmand dentro do Souq Waqif, 10 a 12 minutos a pé do Park Hyatt. Tagine e cuscuz marroquinos de verdade — a cozinha árabe que o Brasil não tem.' },
         { r: 'bandar-aden', nota: 'Cordeiro mandi desfiando no arroz, sentado no chão, dentro do Souq. É a comida que os moradores do Golfo procuram, não a que se vende ao turista.' },
         { r: 'shay-al-shomous', nota: 'Café da manhã qatari de casa, feito por uma qatari, num canto do Souq. Custa quase nada e é a memória que sobra.' }
       ]
@@ -64,7 +64,7 @@ const HERO_CURADORIA = {
         { r: 'idam',   nota: '1º lugar. Mesa alta sobre a baía, skyline inteiro na janela, serviço de estrela. Peça mesa na janela ao reservar. Sem álcool — se a noite pede vinho, o Alba assume o posto.' },
         { r: 'la-mar', nota: 'Se o critério for pôr do sol e pés quase na areia, ganha do IDAM. Reserve para 40 min antes do sunset.' },
         { r: 'jiwan',  nota: 'Vista de baía mais silenciosa e cardápio mais interessante. Sem álcool — o que para alguns casais é melhor, não pior.' },
-        { r: 'parisa', nota: 'O salão de espelhos. A dois, à noite, a pé do hotel. Espetáculo visual.' },
+        { r: 'parisa', nota: 'O salão de espelhos. A dois, à noite, no Souq. Espetáculo visual, e a caminhada do hotel faz parte.' },
         { r: 'bayt-sharq', nota: 'Romântico de outro tipo: jardim de casa antiga, luz baixa, sem música alta.' }
       ]
     },
@@ -80,7 +80,7 @@ const HERO_CURADORIA = {
     {
       id: 'H', titulo: 'H. Melhor cozinha árabe',
       itens: [
-        { r: 'argan',       nota: 'VENCEDOR. Marroquino Bib Gourmand dentro do seu hotel. Tagine e cuscuz são cozinhas árabes que o Brasil não tem.' },
+        { r: 'argan',       nota: 'VENCEDOR. Marroquino Bib Gourmand no Souq Waqif. Tagine e cuscuz são cozinhas árabes que o Brasil não tem.' },
         { r: 'bandar-aden', nota: 'Melhor árabe popular: iemenita, mandi, chão e tapete.' },
         { r: 'sawa',        nota: 'Melhor levantino contemporâneo — maqlooba palestina e bolinhas de madrouba.' },
         { r: 'em-sherif',   nota: 'Melhor libanês tecnicamente. Mas libanês é a cozinha árabe que o Brasil faz melhor — é a menos necessária aqui.' }
@@ -145,7 +145,7 @@ const HERO_CURADORIA = {
       grupo: 'Árabes: Em Sherif × Argan × SAWA × Bandar Aden × Damasca One × Parisa',
       diagnostico: 'A maior aglomeração da sua lista. Mas aqui a redundância é aparente: são cozinhas árabes DIFERENTES (libanesa, marroquina, levantina moderna, iemenita, síria, persa), e isso é uma vantagem.',
       escolha: 'argan',
-      porque: 'Argan vence porque entrega a cozinha árabe menos disponível no Brasil (marroquina) com selo MICHELIN, a um minuto do seu quarto. Bandar Aden fica como o árabe popular obrigatório. SAWA fica como a joia escondida se sobrar noite. Em Sherif SAI: libanês de alto nível é justamente o que o Brasil tem de melhor em cozinha árabe — você não precisa gastar QAR 400 e 27 minutos de carro para comer o que come bem em São Paulo. Parisa entra só pelo salão, não pelo prato. Damasca One é o plano B do Souq.'
+      porque: 'Argan vence porque entrega a cozinha árabe menos disponível no Brasil (marroquina) com selo MICHELIN, a uma caminhada curta do hotel. Bandar Aden fica como o árabe popular obrigatório. SAWA fica como a joia escondida se sobrar noite. Em Sherif SAI: libanês de alto nível é justamente o que o Brasil tem de melhor em cozinha árabe — você não precisa gastar QAR 400 e 27 minutos de carro para comer o que come bem em São Paulo. Parisa entra só pelo salão, não pelo prato. Damasca One é o plano B do Souq.'
     },
     {
       grupo: 'Restaurantes de hotel em geral',
@@ -242,7 +242,7 @@ const HERO_CURADORIA = {
       },
       {
         r: 'argan', papel: 'Árabe regional',
-        vale: 'Bib Gourmand MICHELIN dentro do seu hotel. Cozinha marroquina — a cozinha árabe que menos existe no Brasil. Atrito zero: você desce do quarto.',
+        vale: 'Bib Gourmand MICHELIN dentro do Souq Waqif. Cozinha marroquina — a cozinha árabe que menos existe no Brasil. 12 minutos a pé do Park Hyatt, ou 5 de táxi.',
         pedir: 'Tagine de cordeiro, cuscuz, harira para abrir, pastilha para fechar.',
         brl: 'R$ 400–670 para dois (estimativa — preço não confirmado por fonte oficial).',
         hora: '20h', reserva: 'Recomendável — peça na recepção do hotel.', tempo: '2 horas'
@@ -311,7 +311,7 @@ const HERO_ALCOOL = {
   ],
 
   secas: [
-    { l: 'Souq Waqif inteiro', d: 'Área seca por completo, incluindo o Souq Waqif Boutique Hotels by Tivoli, onde vocês vão ficar. Argan, Parisa, Bandar Aden, Danat Al Bahar, Damasca One, Abo Shariha, Shay Al Shomous: nenhum serve.', forca: 'confirmado' },
+    { l: 'Souq Waqif inteiro', d: 'Área seca por completo. Argan, Parisa, Bandar Aden, Danat Al Bahar, Damasca One, Abo Shariha, Shay Al Shomous: nenhum serve. O hotel de vocês, o Park Hyatt, fica FORA do Souq, em Msheireb, e tem bar — o Sora, no 21º andar.', forca: 'confirmado' },
     { l: 'Katara Cultural Village', d: 'A vila inteira é seca. Vale para o Saffron Lounge e para o Chapati & Karak.', forca: 'confirmado' },
     { l: 'Museu Nacional do Catar (Jiwan, Desert Rose)', d: 'Museu público. O Jiwan serve mocktails, não álcool.', forca: 'confirmado' },
     { l: 'Museum of Islamic Art (IDAM)', d: 'O IDAM NÃO serve álcool — e isso é escolha de projeto do Alain Ducasse, não falta de licença. O menu foi desenhado para funcionar sem álcool, com um mixologista de mocktails criando uma bebida para responder a cada prato.', forca: 'confirmado' },
@@ -350,7 +350,7 @@ const HERO_ALCOOL = {
       'Se estiver tudo bem assim, nada muda: o Jiwan inclui mocktails no menu de QAR 300, e o IDAM faz harmonização de mocktail prato a prato, que é uma experiência em si e bem mais rara do que uma carta de vinhos.',
       'Se vocês quiserem vinho em pelo menos uma das noites, há dois caminhos limpos:',
       '**Trocar a noite 3 do IDAM para o ALBA**, no Raffles (Lusail). É a estrela MICHELIN nova de 2026, é licenciada, e você janta com vinho. Custo: 25 minutos de carro em vez de 6, e italiano em vez de cozinha do Golfo.',
-      '**Manter o roteiro e beber fora dele.** Um drink no Infinity Rooftop (5 a 7 minutos a pé do hotel) antes ou depois do jantar resolve, sem sacrificar nenhum dos três restaurantes. É o que eu faria.',
+      '**Manter o roteiro e beber no hotel.** Com o Park Hyatt reservado, o Sora está no 21º andar do próprio prédio, com vista do Souq Waqif e de West Bay. Um drink antes ou depois do jantar resolve, sem sacrificar nenhum dos três restaurantes. É o que eu faria. O Infinity Rooftop, no Alwadi, fica a 5 minutos e é a alternativa.',
       'E há a terceira opção, que é mover o álcool para o almoço: o "Sunset Hours" do La Mar tem coquetéis a partir de QAR 35 com cebiche do Gastón Acurio e o sol caindo sobre o Golfo. Como programa de fim de tarde a dois, é melhor que a maioria dos jantares da lista.'
     ]
   },
