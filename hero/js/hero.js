@@ -1803,8 +1803,26 @@
           .addTo(mapa).bindPopup('Você está aqui');
         grupo.push([minhaPos.lat, minhaPos.lng]);
       }
-      mapa.fitBounds(grupo, { padding: [26, 26] });
-      setTimeout(function () { mapa.invalidateSize(); }, 120);
+      /* A ORDEM IMPORTA: o Leaflet precisa saber o tamanho real do container
+         ANTES de calcular o enquadramento. Fazendo ao contrario, ele enquadra
+         num tamanho errado e depois so estica - foi o que cortou metade dos
+         pinos de Doha na primeira versao. */
+      function enquadra() {
+        mapa.invalidateSize(true);
+        mapa.fitBounds(grupo, { padding: [30, 30], maxZoom: 16 });
+      }
+      enquadra();
+      setTimeout(enquadra, 250);
+      if (window.ResizeObserver) {
+        var ro = new ResizeObserver(function () { mapa.invalidateSize(false); });
+        ro.observe(d);
+      }
+      window.addEventListener('orientationchange', function () { setTimeout(enquadra, 300); });
+
+      /* Botao para reenquadrar depois de arrastar o mapa. */
+      var bz = el('button', 'btn sec mapa-fit', 'ver tudo');
+      bz.onclick = function () { mapa.fitBounds(grupo, { padding: [30, 30], maxZoom: 16 }); };
+      cx.appendChild(bz);
     });
   }
 
