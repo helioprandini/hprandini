@@ -10,7 +10,5 @@ ios/*.xcodeproj/
 # Log do backup automatico (launchd)
 research/scripts/backup.log
 
-# Fotos pessoais do HeRo. Este repositorio e PUBLICO; a foto de capa e os
-# icones recortados dela sao do Helio e da Roberta e vivem so no Artifact
-# privado. Se um dia forem publicados, e por decisao explicita dos dois.
-hero/img/
+# hero/img/ ficou de fora do Git ate 14/09/2026, quando o Helio decidiu
+# publicar a capa e os icones. A regra saiu; os arquivos estao versionados.
