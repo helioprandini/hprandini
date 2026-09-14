@@ -1338,6 +1338,25 @@
 
     aba = primeiraAba();
 
+    $('#btnAtualizar').onclick = function () {
+      var b = $('#btnAtualizar');
+      b.textContent = '…';
+      var fim = function () { location.reload(true); };
+      try {
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage('limpar');
+        }
+        var p1 = ('caches' in window) ? caches.keys().then(function (ks) {
+          return Promise.all(ks.map(function (k) { return caches.delete(k); }));
+        }) : Promise.resolve();
+        var p2 = (navigator.serviceWorker) ? navigator.serviceWorker.getRegistrations().then(function (rs) {
+          return Promise.all(rs.map(function (r) { return r.unregister(); }));
+        }) : Promise.resolve();
+        Promise.all([p1, p2]).then(fim, fim);
+        setTimeout(fim, 2500);
+      } catch (e) { fim(); }
+    };
+
     $('#btnTema').onclick = function () {
       var cur = document.documentElement.getAttribute('data-theme');
       var novo = cur === 'dark' ? 'light' : 'dark';
@@ -1349,6 +1368,13 @@
     $('#sheetBg').onclick = fechar;
     $('#sheetClose').onclick = fechar;
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fechar(); });
+
+    var v = (typeof HERO_VERSAO !== 'undefined') ? HERO_VERSAO : null;
+    if (v && $('#versao')) {
+      $('#versao').innerHTML = 'Versão <b>' + esc(v.n) + '</b> · ' +
+        new Date(v.data + 'T12:00:00').toLocaleDateString('pt-BR') +
+        '. Se uma seção nova não aparecer, toque em ⟳ no topo — isso limpa o app salvo e recarrega.';
+    }
 
     render();
     registrarSW();

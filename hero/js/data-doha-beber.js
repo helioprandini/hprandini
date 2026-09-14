@@ -273,7 +273,7 @@ const HERO_STOPOVER = {
     'Trânsito em Doha entre 12 e 96 horas. O de vocês tem 54 — está dentro.',
     'Até 4 noites por sentido. Ou seja: dá para fazer as TRÊS noites de Doha pelo programa, não só a terceira.',
     'Todos os hotéis do programa têm check-in 24 horas. Importa: vocês pousam às 17h45.',
-    'Preço por PESSOA, por noite, em quarto duplo. Reserva em discoverqatar.qa com o localizador do voo.'
+    'Preço por PESSOA, por noite, em quarto duplo. Reserva pelo site da Qatar Airways, em Ofertas → Qatar Stopover, com o localizador do voo.'
   ],
   niveis: [
     { n: 'Standard — 4 estrelas', usd: 14, casalNoite: 143, casal3: 428,
@@ -308,7 +308,7 @@ const HERO_STOPOVER = {
     'entrar com o localizador do voo — ela muda conforme as datas e a disponibilidade. Os preços ' +
     'e as marcas acima vêm da imprensa de viagem, não da página oficial. Tudo aqui é "a partir de".',
   comoVer: [
-    'Entre em discoverqatar.qa e vá em Stopover. (O outro caminho é qatarairways.com → Stopover/Packages, mas como o voo já está comprado, a Discover Qatar é o atalho.)',
+    'Entre em qatarairways.com → Ofertas → Qatar Stopover. É o caminho oficial e o que funciona: o endereço discoverqatar.qa sozinho pode não abrir, e a reserva exige o localizador de qualquer forma.',
     'Informe o localizador do voo Qatar Airways e o sobrenome.',
     'Escolha o NÍVEL (Standard, Premium, Premium com praia, Luxury). Dentro do nível, você escolhe o hotel numa lista — não é sorteio nem atribuição.',
     'O site mostra o que está disponível PARA AS SUAS DATAS, com foto, descrição e preço final. É aí que se descobre se o Alwadi está lá.',
@@ -320,7 +320,8 @@ const HERO_STOPOVER = {
     itens: [
       { o: 'Até quando dá para reservar', d: 'Até 72 horas antes do check-in. Para vocês, isso é 25 de setembro.' },
       { o: 'Por que não esperar até lá', d: 'A própria Qatar Airways avisa que os melhores hotéis e as tarifas mais baixas esgotam rápido, sobretudo na alta temporada — que vai de OUTUBRO A ABRIL. As datas de vocês, 28/09 a 1º/10, caem exatamente na virada para a alta.' },
-      { o: 'A ordem certa', d: 'Consulte o Stopover ANTES de cancelar qualquer coisa. Só cancele o Park Hyatt depois de ter a reserva do Stopover confirmada e o hotel escolhido.' }
+      { o: 'A ordem certa', d: 'Consulte o Stopover ANTES de cancelar qualquer coisa. Só cancele o Park Hyatt depois de ter a reserva do Stopover confirmada e o hotel escolhido.' },
+      { o: 'Se o site não cooperar', d: 'Escreva para dqstopover@qatarairways.com.qa com o localizador. É o canal oficial do programa.' }
     ]
   },
 

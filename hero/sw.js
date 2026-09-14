@@ -1,8 +1,14 @@
 /* HeRo — service worker.
- * Motivo de existir: vocês vão usar isto em Doha e na Índia, provavelmente
- * sem dados. Depois da primeira visita, o app inteiro funciona sem internet.
+ *
+ * ESTRATEGIA: rede primeiro, cache como rede de segurança.
+ *
+ * A versão anterior era "cache primeiro" e causou um problema real: quem
+ * tinha o app instalado continuava vendo a versão antiga mesmo online, e
+ * abas novas simplesmente não apareciam. Agora, com internet, você sempre
+ * recebe a versão mais recente; sem internet, recebe a última que funcionou.
+ * O custo é alguns kilobytes por abertura — barato perto de ver conteúdo velho.
  */
-var CACHE = 'hero-v7';
+var CACHE = 'hero-v9';
 var ARQUIVOS = [
   './', './index.html', './css/hero.css', './icon.svg', './manifest.webmanifest',
   './js/arte.js', './js/data-destinos.js', './js/data-india.js',
@@ -25,24 +31,40 @@ self.addEventListener('activate', function (e) {
   );
 });
 
+self.addEventListener('message', function (e) {
+  if (e.data === 'limpar') {
+    caches.keys().then(function (ks) { return Promise.all(ks.map(function (k) { return caches.delete(k); })); });
+  }
+});
+
 self.addEventListener('fetch', function (e) {
   var r = e.request;
   if (r.method !== 'GET') return;
   var u = new URL(r.url);
   if (u.origin !== self.location.origin) return;   /* mapas e sites oficiais passam direto */
+
+  /* cache: 'no-store' é o detalhe que faz a diferença: sem ele, o fetch do
+     service worker ainda é atendido pelo cache HTTP do navegador, e conteúdo
+     novo demora a aparecer mesmo com a estratégia de rede primeiro. */
+  var pedido = new Request(r.url, {
+    cache: 'no-store',
+    credentials: 'same-origin',
+    headers: r.headers,
+    mode: r.mode === 'navigate' ? 'same-origin' : r.mode,
+    redirect: 'follow'
+  });
+
   e.respondWith(
-    caches.match(r).then(function (hit) {
-      if (hit) {
-        /* revalida em segundo plano, mas entrega o cache na hora */
-        fetch(r).then(function (res) {
-          if (res && res.ok) caches.open(CACHE).then(function (c) { c.put(r, res.clone()); });
-        }).catch(function () {});
-        return hit;
+    fetch(pedido).then(function (res) {
+      if (res && res.ok) {
+        var cp = res.clone();
+        caches.open(CACHE).then(function (c) { c.put(r, cp); });
       }
-      return fetch(r).then(function (res) {
-        if (res && res.ok) { var cp = res.clone(); caches.open(CACHE).then(function (c) { c.put(r, cp); }); }
-        return res;
-      }).catch(function () { return caches.match('./index.html'); });
+      return res;
+    }).catch(function () {
+      return caches.match(r).then(function (hit) {
+        return hit || caches.match('./index.html');
+      });
     })
   );
 });

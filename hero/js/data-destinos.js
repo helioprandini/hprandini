@@ -2,6 +2,8 @@
  * Cidade nova = um objeto aqui + um arquivo de dados. A interface não muda.
  */
 
+const HERO_VERSAO = { n: 'v9', data: '2026-09-14' };
+
 const HERO_MOEDAS = {
   base: 'BRL',
   atualizado: '2026-09-14',
@@ -107,7 +109,7 @@ const HERO_ESCALA = {
       { n: '5 estrelas com praia', usd: 31, brl: 316 }
     ],
     nota: 'Preços por pessoa, por noite, em quarto duplo. Os valores em BRL são para o CASAL, ao câmbio de R$ 5,10 por dólar.',
-    comoFazer: 'Reserve o voo primeiro (já está), depois entre em discoverqatar.qa com o localizador da reserva e escolha a categoria.',
+    comoFazer: 'Reserve o voo primeiro (já está). Depois entre em qatarairways.com → Ofertas → Qatar Stopover, com o localizador da reserva, e escolha a categoria.',
     ressalva: 'Estes preços vêm de veículos de viagem, não da página oficial — eu não consegui abrir o site da Discover Qatar deste ambiente. A lista de hotéis do programa é fechada e pode não incluir o Park Hyatt. Confirme antes de cancelar qualquer coisa.'
   },
 
@@ -130,7 +132,9 @@ const HERO_ESCALA = {
   fontes: [
     { t: 'Hamad International Airport — informações de check-in (oficial)', u: 'https://dohahamadairport.com/airport-guide/at-the-airport/check-in-info' },
     { t: 'Qatar Airways — serviços Al Maha (oficial)', u: 'https://www.qatarairways.com/en-us/hia-hamad-international-airport/al-maha-services.html' },
-    { t: 'Visit Qatar — programa Qatar Stopover (oficial)', u: 'https://visitqatar.com/intl-en/qatar-stopover' },
+    { t: 'Qatar Airways — Qatar Stopover (oficial, é por aqui que se reserva)', u: 'https://www.qatarairways.com/en-us/offers/qatar-stopover.html' },
+    { t: 'Discover Qatar — termos do Stopover', u: 'https://www.discoverqatar.qa/stopover-terms/' },
+    { t: 'Visit Qatar — programa Qatar Stopover', u: 'https://visitqatar.com/intl-en/qatar-stopover' },
     { t: 'Upgraded Points — review do Al Maha Lounge', u: 'https://upgradedpoints.com/travel/airports/al-maha-lounge-doha-doh-review/' },
     { t: 'LoungePair — Al Maha, preços de acesso avulso', u: 'https://www.loungepair.com/at/DOH/al-maha-lounge-doha-international-airport/' },
     { t: 'Doha Guides — armazenamento de bagagem no aeroporto', u: 'https://www.dohaguides.com/luggage-storage-at-doha-airport/' },
