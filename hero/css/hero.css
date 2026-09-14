@@ -313,3 +313,17 @@ nav.tabs{display:none}
   .kv dt{margin-top:8px}
   .kv dt:first-of-type{margin-top:0}
 }
+
+/* o logo é um botão de voltar para os destinos */
+.brand{cursor:pointer;user-select:none;border-radius:8px;padding:2px 4px;margin-left:-4px;
+  transition:background .15s}
+.brand:hover{background:var(--card)}
+.brand:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* cabeçalho acima do painel: o logo tem que continuar clicável com o menu aberto.
+   Em troca, o painel para logo abaixo do cabeçalho, para nada ficar escondido. */
+header.top{z-index:72}
+.sheet{max-height:calc(100vh - 62px)}
+@media(min-width:820px){
+  .sheet{max-height:100vh;top:62px}
+}

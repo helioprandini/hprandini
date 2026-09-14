@@ -390,7 +390,9 @@
   }
 
   /* ---------- abas ---------- */
-  var destino = pref.destino || '';
+  /* o app SEMPRE abre na tela de destinos — a viagem tem dois, e decidir
+     para onde olhar é a primeira coisa que a pessoa faz. */
+  var destino = '';
   var aba = 'lista';
   var ABAS_DOHA = [
     { id: 'lista', l: 'Restaurantes' },
@@ -1380,6 +1382,20 @@
     if (pref.tema) document.documentElement.setAttribute('data-theme', pref.tema);
 
     aba = primeiraAba();
+
+    var brand = $('.brand');
+    if (brand) {
+      brand.setAttribute('role', 'button');
+      brand.setAttribute('tabindex', '0');
+      brand.title = 'Voltar para os destinos';
+      var irHome = function () {
+        destino = ''; pref.destino = ''; save(LS_PREF, pref);
+        aba = 'destinos'; fecharMais(); render();
+        window.scrollTo(0, 0);
+      };
+      brand.onclick = irHome;
+      brand.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); irHome(); } };
+    }
 
     $('#btnAtualizar').onclick = function () {
       var b = $('#btnAtualizar');
