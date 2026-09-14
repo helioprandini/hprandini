@@ -481,3 +481,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
 }
 .toast.on{ opacity:1; transform:translateY(0); }
 @media (prefers-reduced-motion:reduce){ .toast{ transition:none; } }
+
+/* ---------- fontes citadas nas fichas antigas ---------- */
+.fontes{ display:flex; flex-wrap:wrap; gap:6px 10px; align-items:baseline; margin-top:10px; font-size:12px; }
+.fontes .fl{ color:var(--muted,#6b6270); text-transform:uppercase; letter-spacing:.09em; font-size:10px; }
+.fontes a{ color:var(--blue); text-decoration:none; border-bottom:1px solid color-mix(in srgb, var(--blue) 40%, transparent); overflow-wrap:anywhere; }
+.fontes a:hover{ border-bottom-color:var(--blue); }

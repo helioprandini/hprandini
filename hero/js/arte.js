@@ -55,6 +55,42 @@ var HERO_ARTE = (function () {
         '#ffd27a', '#f08a3c', '#f6e3c4', '#e9b27a');
     },
 
+    /* Nova York — o skyline de Midtown ao anoitecer */
+    ny: function () {
+      var torres = '';
+      var esp = [[8,104,16],[28,88,14],[46,116,12],[62,96,18],[84,124,13],[100,108,15],
+                 [214,110,14],[232,92,17],[252,120,12],[268,100,16],[288,86,13],[304,114,14]];
+      for (var i = 0; i < esp.length; i++) {
+        var x = esp[i][0], y = esp[i][1], w = esp[i][2];
+        torres += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + (160 - y) + '" fill="#2b2436" opacity=".82"/>';
+        for (var j = y + 6; j < 154; j += 11) {
+          torres += '<rect x="' + (x + 3) + '" y="' + j + '" width="' + (w - 6) + '" height="4" fill="#ffd27a" opacity=".55"/>';
+        }
+      }
+      return moldura(
+        '<circle cx="250" cy="70" r="26" fill="%SOL%" opacity=".55"/>' +
+        torres +
+        /* Empire State ao centro, com a antena */
+        '<g fill="#3a3048">' +
+        '<rect x="140" y="62" width="34" height="98"/>' +
+        '<rect x="146" y="44" width="22" height="20"/>' +
+        '<rect x="152" y="32" width="10" height="14"/>' +
+        '<rect x="155" y="14" width="4" height="20"/>' +
+        '</g>' +
+        '<g fill="#ffd27a" opacity=".7">' +
+        '<rect x="145" y="74" width="24" height="4"/><rect x="145" y="86" width="24" height="4"/>' +
+        '<rect x="145" y="98" width="24" height="4"/><rect x="145" y="110" width="24" height="4"/>' +
+        '<rect x="145" y="122" width="24" height="4"/><rect x="145" y="134" width="24" height="4"/>' +
+        '</g>' +
+        '<circle cx="157" cy="12" r="3" fill="#ff5f8f"/>' +
+        /* rio e reflexo */
+        '<path d="M0 160 L320 160 L320 200 L0 200 Z" fill="#1d2b3a" opacity=".8"/>' +
+        '<g fill="#ffd27a" opacity=".22">' +
+        '<rect x="148" y="162" width="18" height="30"/><rect x="34" y="164" width="8" height="22"/>' +
+        '<rect x="238" y="164" width="9" height="24"/></g>',
+        '#ff9ec4', '#7a3f8c', '#f7c9dc', '#8a5aa8');
+    },
+
     /* Índia — Taj Mahal */
     india: function () {
       return moldura(

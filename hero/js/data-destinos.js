@@ -2,7 +2,7 @@
  * Cidade nova = um objeto aqui + um arquivo de dados. A interface não muda.
  */
 
-const HERO_VERSAO = { n: 'v15', data: '2026-09-14' };
+const HERO_VERSAO = { n: 'v16', data: '2026-09-14' };
 
 const HERO_MOEDAS = {
   base: 'BRL',
@@ -36,6 +36,11 @@ const HERO_DESTINOS = [
     id: 'india', nome: 'Índia', pais: 'Delhi · Agra · Jaipur · Mumbai', arte: 'india',
     periodo: '18 a 28 de setembro de 2026', resumo: '10 dias · 4 cidades · 6 hotéis',
     moeda: 'INR', pronto: true
+  },
+  {
+    id: 'ny', nome: 'Nova York', pais: 'Estados Unidos', arte: 'ny',
+    periodo: 'Roteiro do Helio · conferido em set/2026', resumo: '6 regiões · 38 lugares checados um a um',
+    moeda: 'USD', pronto: true, arquivo: true
   }
 ];
 

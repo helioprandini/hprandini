@@ -424,6 +424,12 @@
     { id: 'reservaria', l: 'Eu reservaria' },
     { id: 'avisos', l: 'Saber antes' }
   ];
+  var ABAS_NY = [
+    { id: 'nyroteiro', l: 'Roteiro' },
+    { id: 'nymudou', l: 'O que mudou' },
+    { id: 'nylugares', l: 'Lugares' },
+    { id: 'nyouro', l: 'Continua valendo' }
+  ];
   var ABAS_INDIA = [
     { id: 'iroteiro', l: 'Roteiro' },
     { id: 'ivoos', l: '✈️ Voos' },
@@ -450,23 +456,30 @@
     mais:     ico('<path d="M4 7h16M4 12h16M4 17h16"/>'),
     iroteiro: ico('<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="8.5" cy="14" r="1.1" fill="currentColor" stroke="none"/>'),
     ivoos:    ico('<path d="M3 15.5l18-6.6M5.5 12.2L3.2 9.4l1.9-.7 3.3 1.6M9 19.6l-1.3-3.1 1.8-.7 2.2 2.1"/>'),
-    ihoteis:  ico('<path d="M3 19V7M3 12h18v7M21 19v-3"/><path d="M6.5 12V9.5h5V12"/><circle cx="16.5" cy="9.5" r="1.6"/>')
+    ihoteis:  ico('<path d="M3 19V7M3 12h18v7M21 19v-3"/><path d="M6.5 12V9.5h5V12"/><circle cx="16.5" cy="9.5" r="1.6"/>'),
+    nyroteiro:ico('<path d="M9 19.5l-5.5 2V5.5L9 3.5m0 16V3.5m0 16l6-2m-6-14l6 2m0 12V5.5m0 12l5.5 2V5.5L15 3.5"/>'),
+    nymudou:  ico('<path d="M20.5 11.5A8.5 8.5 0 1 0 19 16.5"/><path d="M20.5 6.5v5h-5"/>'),
+    nylugares:ico('<path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>'),
+    nyouro:   ico('<path d="M12 3.5l2.5 5.3 5.5.8-4 4 .95 5.7L12 16.6l-4.95 2.7L8 13.6l-4-4 5.5-.8z"/>')
   };
   var CURTO = {
     destinos:'Destinos', lista:'Comer', curadoria:'Curadoria', roteiros:'Roteiros',
     souq:'Souq', escala:'A escala', beber:'Beber', hoteis:'Hotéis',
     reservaria:'Reservar', avisos:'Saber', cambio:'Moedas',
-    iroteiro:'Roteiro', ivoos:'Voos', ihoteis:'Hotéis'
+    iroteiro:'Roteiro', ivoos:'Voos', ihoteis:'Hotéis',
+    nyroteiro:'Roteiro', nymudou:'Mudou', nylugares:'Lugares', nyouro:'Ouro'
   };
-  var PRIMARIAS = { doha: ['lista', 'roteiros', 'escala', 'beber'], india: ['iroteiro', 'ivoos', 'ihoteis', 'cambio'] };
+  var PRIMARIAS = { doha: ['lista', 'roteiros', 'escala', 'beber'], india: ['iroteiro', 'ivoos', 'ihoteis', 'cambio'], ny: ['nyroteiro', 'nymudou', 'nylugares', 'nyouro'] };
   var ABA_HOME = { id: 'destinos', l: '← Destinos' };
   var ABA_CAMBIO = { id: 'cambio', l: '💱 Moedas' };
   function abasAtuais() {
     if (!destino) return [ABA_CAMBIO];
-    var base = destino === 'india' ? ABAS_INDIA : ABAS_DOHA;
+    var base = destino === 'india' ? ABAS_INDIA : destino === 'ny' ? ABAS_NY : ABAS_DOHA;
     return [ABA_HOME].concat(base, [ABA_CAMBIO]);
   }
-  function primeiraAba() { return destino === 'india' ? 'iroteiro' : destino === 'doha' ? 'lista' : 'destinos'; }
+  function primeiraAba() {
+    return destino === 'india' ? 'iroteiro' : destino === 'ny' ? 'nyroteiro' : destino === 'doha' ? 'lista' : 'destinos';
+  }
   function irPara(d) {
     destino = d; pref.destino = d; save(LS_PREF, pref);
     aba = primeiraAba(); render();
@@ -542,6 +555,21 @@
     if (!destino) {
       h.appendChild(el('h1', null, 'Para onde a gente vai'));
       h.appendChild(el('p', null, 'O guia de viagens do Helio e da Roberta. Escolha um destino.'));
+      return;
+    }
+    if (destino === 'ny') {
+      var N = HERO_NY;
+      h.appendChild(el('h1', null, 'Nova York'));
+      h.appendChild(el('p', null, 'Seu roteiro, do jeito que voc\u00ea escreveu \u2014 com cada lugar conferido em ' +
+        'setembro de 2026. O que fechou est\u00e1 marcado, o que mudou de endere\u00e7o est\u00e1 corrigido, e o que ' +
+        'eu n\u00e3o consegui confirmar diz isso com todas as letras.'));
+      var mn = el('div', 'meta-row');
+      var fech = N.lugares.filter(function (x) { return x.conf === 'fechado'; }).length;
+      var mud = N.lugares.filter(function (x) { return x.conf === 'mudou'; }).length;
+      mn.appendChild(el('span', 'chip', '<b>' + N.lugares.length + '</b> lugares checados'));
+      mn.appendChild(el('span', 'chip', '<b>' + fech + '</b> fecharam'));
+      mn.appendChild(el('span', 'chip', '<b>' + mud + '</b> mudaram'));
+      h.appendChild(mn);
       return;
     }
     if (destino === 'india') {
@@ -1377,6 +1405,138 @@
 
   /* ---------- render ---------- */
 
+
+  /* ---------- Nova York: um roteiro antigo, conferido ---------- */
+  var SELO_NY = {
+    aberto:          { c: 'ok',   l: 'confirmado aberto' },
+    fechado:         { c: 'bad',  l: 'FECHOU' },
+    mudou:           { c: 'warn', l: 'mudou' },
+    'nao-confirmado':{ c: 'blue', l: 'não confirmado' }
+  };
+
+  function fontesDe(lista) {
+    if (!lista || !lista.length) return null;
+    var w = el('div', 'fontes');
+    w.appendChild(el('span', 'fl', 'Fonte:'));
+    lista.forEach(function (f) {
+      var a = el('a', null, esc(f.t)); a.href = f.u; a.target = '_blank'; a.rel = 'noopener';
+      w.appendChild(a);
+    });
+    return w;
+  }
+
+  function viewNyRoteiro(root) {
+    var N = HERO_NY;
+    var p0 = el('div', 'panel');
+    p0.appendChild(el('h2', null, 'O roteiro, como você escreveu'));
+    p0.appendChild(el('div', 'lead', esc(N.autoria)));
+    p0.appendChild(el('div', 'note', 'Seu texto está inteiro. O que eu acrescentei aparece sempre ' +
+      'separado, marcado como <b>reparo de 2026</b> — para você ver na hora o que é seu e o que é meu.'));
+    root.appendChild(p0);
+
+    N.dias.forEach(function (d) {
+      var p = el('div', 'panel');
+      p.appendChild(el('h2', null, esc(d.nome)));
+      var dl = el('dl', 'kv');
+      if (d.manha) { dl.appendChild(el('dt', null, 'Manhã')); dl.appendChild(el('dd', null, esc(d.manha))); }
+      if (d.tarde) { dl.appendChild(el('dt', null, 'Tarde')); dl.appendChild(el('dd', null, esc(d.tarde))); }
+      if (d.noite) { dl.appendChild(el('dt', null, 'Noite')); dl.appendChild(el('dd', null, esc(d.noite))); }
+      p.appendChild(dl);
+      (d.voce || []).forEach(function (t) { p.appendChild(el('div', 'note', '“' + esc(t) + '”')); });
+      (d.meus || []).forEach(function (m) {
+        p.appendChild(el('div', 'note warn', '<b>Reparo de 2026 · ' + esc(m.t) + '</b><br>' + esc(m.d)));
+      });
+      root.appendChild(p);
+    });
+  }
+
+  function viewNyMudou(root) {
+    var N = HERO_NY;
+    var p0 = el('div', 'panel');
+    p0.appendChild(el('h2', null, 'O que mudou desde que você escreveu'));
+    p0.appendChild(el('div', 'lead', 'Conferido em ' +
+      new Date(N.conferidoEm + 'T12:00:00').toLocaleDateString('pt-BR') +
+      '. Cada item tem a fonte do lado — se eu não achei fonte, eu digo que não achei.'));
+    root.appendChild(p0);
+
+    N.mudou.forEach(function (m) {
+      var p = el('div', 'panel');
+      var sel = SELO_NY[m.grau] || SELO_NY['nao-confirmado'];
+      var h = el('h2', null, esc(m.t));
+      p.appendChild(h);
+      var tg = el('div', 'tagrow');
+      tg.appendChild(el('span', 'tag ' + sel.c, sel.l));
+      p.appendChild(tg);
+      p.appendChild(el('div', 'note', '<b>Você escreveu:</b> ' + esc(m.antes)));
+      p.appendChild(el('div', 'note ' + (m.grau === 'fechado' ? 'bad' : 'warn'), '<b>Hoje:</b> ' + esc(m.agora)));
+      var f = fontesDe(m.fontes); if (f) p.appendChild(f);
+      root.appendChild(p);
+    });
+
+    var pc = el('div', 'panel');
+    pc.appendChild(el('h2', null, 'Correções de fato'));
+    pc.appendChild(el('div', 'lead', 'Isto não é casa que fechou — é informação que estava errada no texto.'));
+    N.correcoes.forEach(function (c) {
+      pc.appendChild(el('div', 'note warn', '<b>' + esc(c.t) + '</b><br>' + esc(c.d)));
+      var f = fontesDe(c.fontes); if (f) pc.appendChild(f);
+    });
+    root.appendChild(pc);
+  }
+
+  var nyFiltro = 'todos';
+  function viewNyLugares(root) {
+    var N = HERO_NY;
+    var p0 = el('div', 'panel');
+    p0.appendChild(el('h2', null, 'Os lugares, um a um'));
+    p0.appendChild(el('div', 'lead', 'Todos os lugares citados no seu roteiro, com carimbo de conferência.'));
+    root.appendChild(p0);
+
+    var FN = [
+      { id: 'todos', l: 'Todos' },
+      { id: 'fechado', l: '⚠️ Fecharam' },
+      { id: 'mudou', l: 'Mudaram' },
+      { id: 'aberto', l: '✅ Confirmados' },
+      { id: 'nao-confirmado', l: 'Não confirmados' }
+    ];
+    var fb = el('div', 'chips');
+    FN.forEach(function (f) {
+      var b = el('button', 'chip' + (nyFiltro === f.id ? ' on' : ''), f.l);
+      b.onclick = function () { nyFiltro = f.id; render(true); };
+      fb.appendChild(b);
+    });
+    root.appendChild(fb);
+
+    var ordem = { fechado: 0, mudou: 1, aberto: 2, 'nao-confirmado': 3 };
+    var lista = N.lugares.filter(function (x) { return nyFiltro === 'todos' || x.conf === nyFiltro; })
+      .slice().sort(function (a, b) { return ordem[a.conf] - ordem[b.conf]; });
+
+    var cnt = el('div', 'count', lista.length + ' de ' + N.lugares.length + ' lugares');
+    cnt.style.margin = '10px 0'; root.appendChild(cnt);
+
+    lista.forEach(function (x) {
+      var sel = SELO_NY[x.conf];
+      var p = el('div', 'panel');
+      p.appendChild(el('h2', null, esc(x.n)));
+      var tg = el('div', 'tagrow');
+      tg.appendChild(el('span', 'tag ' + sel.c, sel.l));
+      tg.appendChild(el('span', 'tag', esc(x.z)));
+      tg.appendChild(el('span', 'tag', esc(x.tipo)));
+      p.appendChild(tg);
+      if (x.d) p.appendChild(el('p', null, esc(x.d)));
+      var f = fontesDe(x.f); if (f) p.appendChild(f);
+      root.appendChild(p);
+    });
+  }
+
+  function viewNyOuro(root) {
+    var N = HERO_NY;
+    var p = el('div', 'panel');
+    p.appendChild(el('h2', null, 'O que você escreveu e continua valendo inteiro'));
+    p.appendChild(el('div', 'lead', 'Nada aqui envelheceu. É o julgamento, não a informação — e julgamento não fecha por falência.'));
+    N.ouro.forEach(function (t) { p.appendChild(el('div', 'note ok', esc(t))); });
+    root.appendChild(p);
+  }
+
   /* ---------- botao do Theo ----------
      Junta em texto o que esta na tela agora (destino, aba, ficha aberta,
      filtro, busca) e entrega isso junto com a pergunta. Texto, nao print:
@@ -1467,6 +1627,10 @@
     pintaCabecalho();
     if (aba === 'destinos' || !destino) { viewDestinos(root); return; }
     if (aba === 'cambio') viewCambio(root);
+    else if (aba === 'nyroteiro') viewNyRoteiro(root);
+    else if (aba === 'nymudou') viewNyMudou(root);
+    else if (aba === 'nylugares') viewNyLugares(root);
+    else if (aba === 'nyouro') viewNyOuro(root);
     else if (aba === 'iroteiro') viewIndiaRoteiro(root);
     else if (aba === 'ivoos') viewIndiaVoos(root);
     else if (aba === 'ihoteis') viewIndiaHoteis(root);
