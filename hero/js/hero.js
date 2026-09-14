@@ -392,12 +392,14 @@
     addRow.appendChild(add);
     sc.appendChild(addRow);
 
+    fichaAberta = r; atualizaClaude();
     bg.classList.add('on'); sh.classList.add('on');
     body.scrollTop = 0;
     document.body.style.overflow = 'hidden';
     try { history.replaceState(null, '', '#r/' + r.id); } catch (e) { }
   }
   function fechar() {
+    fichaAberta = null; atualizaClaude();
     maisAberto = false;
     $('#sheetBg').classList.remove('on'); $('#sheet').classList.remove('on');
     document.body.style.overflow = '';
@@ -409,6 +411,7 @@
   /* o app SEMPRE abre na tela de destinos — a viagem tem dois, e decidir
      para onde olhar é a primeira coisa que a pessoa faz. */
   var destino = '';
+  var fichaAberta = null;
   var aba = 'lista';
   var ABAS_DOHA = [
     { id: 'lista', l: 'Restaurantes' },
@@ -1373,6 +1376,91 @@
   }
 
   /* ---------- render ---------- */
+
+  /* ---------- botao do Theo ----------
+     Junta em texto o que esta na tela agora (destino, aba, ficha aberta,
+     filtro, busca) e entrega isso junto com a pergunta. Texto, nao print:
+     um print eu teria que ler de volta; o texto eu ja entendo, chega inteiro
+     e nao depende de voce salvar e anexar nada. */
+  var NOME_ABA = {
+    destinos: 'a tela inicial de destinos', lista: 'a lista de restaurantes de Doha',
+    curadoria: 'a curadoria de Doha (os topos e as categorias)', roteiros: 'os roteiros de Doha',
+    souq: 'a secao do Souq Waqif', escala: 'a aba "A escala" (o dia 30/09 e o aeroporto)',
+    beber: 'a aba "Onde beber" de Doha', hoteis: 'a comparacao de hoteis de Doha',
+    reservaria: 'a aba "Eu reservaria"', avisos: 'a aba "Saber antes"',
+    cambio: 'o conversor de moedas', iroteiro: 'o roteiro da India',
+    ivoos: 'os voos da India', ihoteis: 'os hoteis da India'
+  };
+
+  function contextoAtual() {
+    var L = [];
+    L.push('Estou no HeRo (nosso guia de viagens), versao ' + HERO_VERSAO.n + '.');
+    if (!destino || aba === 'destinos') { L.push('Estou vendo ' + NOME_ABA.destinos + '.'); return L.join(' '); }
+    var d = HERO_DESTINOS.filter(function (x) { return x.id === destino; })[0];
+    L.push('Estou no destino ' + (d ? d.nome + ' (' + d.periodo + ')' : destino) + ', vendo ' + (NOME_ABA[aba] || aba) + '.');
+    if (fichaAberta) {
+      var r = fichaAberta, db = daBase(r);
+      L.push('A ficha aberta na tela e a do ' + r.nome + ' — ' + r.cozinha + ', ' + r.local + '.');
+      L.push('O app mostra: ' + (db ? db.km.toFixed(1).replace('.', ',') + ' km / ' + db.min + ' min ' + (db.aPe ? 'a pe' : 'de carro') + ' do ' + C.base.nome + '; ' : '') +
+             'preco ' + faixaTexto(r) + ' por pessoa (' +
+             (r.precoNota === 'confirmado' ? 'confirmado' : r.precoNota === 'parcial' ? 'parcialmente confirmado' : 'NAO confirmado, faixa estimada') + '); ' +
+             'alcool ' + (r.alcool === true ? 'sim' : r.alcool === false ? 'nao' : 'nao confirmado') + '; ' +
+             'reserva ' + (r.reserva === 'obrigatoria' ? 'obrigatoria' : r.reserva === 'recomendavel' ? 'recomendavel' : 'nao precisa') + '.');
+    } else if (aba === 'lista') {
+      if (filtroAtivo && filtroAtivo !== 'todos') L.push('Filtro ativo: "' + filtroAtivo + '".');
+      if (busca) L.push('Busquei por "' + busca + '".');
+    }
+    return L.join(' ');
+  }
+
+  function faixaTexto(r) {
+    if (!r.precoQar) return 'sem faixa';
+    return 'QAR ' + r.precoQar[0] + '–' + r.precoQar[1] +
+           ' (R$ ' + Math.round(r.precoQar[0] * taxa) + '–' + Math.round(r.precoQar[1] * taxa) + ')';
+  }
+
+  function textoParaOTheo() {
+    return 'Theo, estou com uma duvida usando o app.\n\nCONTEXTO (gerado pelo proprio HeRo, nao precisa perguntar de novo):\n' +
+           contextoAtual() + '\n\nMINHA PERGUNTA:\n';
+  }
+
+  function atualizaClaude() {
+    var a = $('#btnClaude'); if (!a) return;
+    var q = textoParaOTheo();
+    a.href = 'https://claude.ai/new?q=' + encodeURIComponent(q);
+    a.dataset.txt = q;
+  }
+
+  function copia(txt) {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt); return true; }
+    } catch (e) { /* segue para o plano B */ }
+    try {
+      var t = document.createElement('textarea');
+      t.value = txt; t.setAttribute('readonly', '');
+      t.style.position = 'fixed'; t.style.top = '-1000px';
+      document.body.appendChild(t); t.select(); t.setSelectionRange(0, 99999);
+      var ok = document.execCommand('copy'); document.body.removeChild(t); return ok;
+    } catch (e2) { return false; }
+  }
+
+  function montaBotaoClaude() {
+    if ($('#btnClaude')) return;
+    var a = el('a', 'fab-claude');
+    a.id = 'btnClaude'; a.target = '_blank'; a.rel = 'noopener';
+    a.setAttribute('aria-label', 'Perguntar ao Theo com o contexto desta tela');
+    a.innerHTML = '<span class="fab-ico" aria-hidden="true">✨</span><span class="fab-l">Perguntar<br><b>ao Theo</b></span>';
+    a.onclick = function () {
+      copia(a.dataset.txt || textoParaOTheo());
+      var t = el('div', 'toast', 'Contexto copiado. Se o Claude abrir em branco, é só colar e escrever a pergunta.');
+      document.body.appendChild(t);
+      setTimeout(function () { t.classList.add('on'); }, 10);
+      setTimeout(function () { t.classList.remove('on'); setTimeout(function () { t.remove(); }, 400); }, 4200);
+    };
+    document.body.appendChild(a);
+    atualizaClaude();
+  }
+
   function render(mantemFoco) {
     var root = $('#app'); root.innerHTML = '';
     pintaNav();
@@ -1392,6 +1480,7 @@
     else if (aba === 'reservaria') viewReservaria(root);
     else viewAvisos(root);
     if (!mantemFoco) window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+    montaBotaoClaude(); atualizaClaude();
   }
 
   /* ---------- exportar / importar comentários ---------- */
