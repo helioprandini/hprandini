@@ -8,7 +8,7 @@
  * recebe a versão mais recente; sem internet, recebe a última que funcionou.
  * O custo é alguns kilobytes por abertura — barato perto de ver conteúdo velho.
  */
-var CACHE = 'hero-v11';
+var CACHE = 'hero-v12';
 var ARQUIVOS = [
   './', './index.html', './css/hero.css', './icon.svg', './manifest.webmanifest',
   './js/arte.js', './js/data-destinos.js', './js/data-india.js',
@@ -41,7 +41,21 @@ self.addEventListener('fetch', function (e) {
   var r = e.request;
   if (r.method !== 'GET') return;
   var u = new URL(r.url);
-  if (u.origin !== self.location.origin) return;   /* mapas e sites oficiais passam direto */
+  /* as fontes do Google entram no cache: sem isso, offline a tipografia cai
+     para a fonte do sistema e o app muda de cara justamente na viagem */
+  var fonte = (u.host === 'fonts.googleapis.com' || u.host === 'fonts.gstatic.com');
+  if (u.origin !== self.location.origin && !fonte) return;   /* mapas e sites oficiais passam direto */
+  if (fonte) {
+    e.respondWith(caches.match(r).then(function (hit) {
+      return hit || fetch(r).then(function (res) {
+        if (res && (res.ok || res.type === 'opaque')) {
+          var c2 = res.clone(); caches.open(CACHE).then(function (c) { c.put(r, c2); });
+        }
+        return res;
+      }).catch(function () { return hit; });
+    }));
+    return;
+  }
 
   /* cache: 'no-store' é o detalhe que faz a diferença: sem ele, o fetch do
      service worker ainda é atendido pelo cache HTTP do navegador, e conteúdo

@@ -410,10 +410,28 @@
     { id: 'ivoos', l: '✈️ Voos' },
     { id: 'ihoteis', l: '🏨 Hotéis' }
   ];
+  /* Ícones desenhados, não emoji: emoji muda de forma em cada aparelho
+     e denuncia protótipo. Traço de 1.7 para ficar nítido em tela retina. */
+  function ico(d, extra) {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + (extra || '') + '</svg>';
+  }
   var ICONES = {
-    destinos:'🌍', lista:'🍽️', curadoria:'⭐', roteiros:'🗓️', souq:'🕌', escala:'✈️',
-    beber:'🍷', hoteis:'🏨', reservaria:'✅', avisos:'📖', cambio:'💱',
-    iroteiro:'🗓️', ivoos:'✈️', ihoteis:'🏨'
+    destinos: ico('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/>'),
+    lista:    ico('<path d="M6 3v8a2 2 0 0 0 4 0V3M8 11v10"/><path d="M17 3c-1.6 1.4-2.2 3.4-2.2 5.6 0 1.6.7 2.6 2.2 2.9V21"/>'),
+    curadoria:ico('<path d="M12 3.5l2.5 5.3 5.5.8-4 4 .95 5.7L12 16.6l-4.95 2.7L8 13.6l-4-4 5.5-.8z"/>'),
+    roteiros: ico('<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="8.5" cy="14" r="1.1" fill="currentColor" stroke="none"/>'),
+    souq:     ico('<path d="M4 20.5V10.5C4 6.9 7.6 4 12 4s8 2.9 8 6.5v10"/><path d="M2.5 20.5h19M9.5 20.5v-5a2.5 2.5 0 0 1 5 0v5"/>'),
+    escala:   ico('<path d="M3 15.5l18-6.6M5.5 12.2L3.2 9.4l1.9-.7 3.3 1.6M9 19.6l-1.3-3.1 1.8-.7 2.2 2.1"/>'),
+    beber:    ico('<path d="M7 4h10l-1 6.2a4 4 0 0 1-8 0z"/><path d="M12 14.2V20M8.5 20h7"/>'),
+    hoteis:   ico('<path d="M3 19V7M3 12h18v7M21 19v-3"/><path d="M6.5 12V9.5h5V12"/><circle cx="16.5" cy="9.5" r="1.6"/>'),
+    reservaria:ico('<path d="M4.5 12.5l5 5 10-11"/>'),
+    avisos:   ico('<path d="M4 5.5A2 2 0 0 1 6 3.5h5v17H6a2 2 0 0 0-2 2z"/><path d="M20 5.5a2 2 0 0 0-2-2h-5v17h5a2 2 0 0 1 2 2z"/>'),
+    cambio:   ico('<ellipse cx="12" cy="6.5" rx="7.5" ry="3"/><path d="M4.5 6.5v11c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-11M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/>'),
+    mais:     ico('<path d="M4 7h16M4 12h16M4 17h16"/>'),
+    iroteiro: ico('<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="8.5" cy="14" r="1.1" fill="currentColor" stroke="none"/>'),
+    ivoos:    ico('<path d="M3 15.5l18-6.6M5.5 12.2L3.2 9.4l1.9-.7 3.3 1.6M9 19.6l-1.3-3.1 1.8-.7 2.2 2.1"/>'),
+    ihoteis:  ico('<path d="M3 19V7M3 12h18v7M21 19v-3"/><path d="M6.5 12V9.5h5V12"/><circle cx="16.5" cy="9.5" r="1.6"/>')
   };
   var CURTO = {
     destinos:'Destinos', lista:'Comer', curadoria:'Curadoria', roteiros:'Roteiros',
@@ -462,7 +480,7 @@
       b.setAttribute('role', 'tab');
       var ativo = it.id === '__mais' ? maisAberto : (it.id === aba);
       b.setAttribute('aria-selected', ativo ? 'true' : 'false');
-      b.appendChild(el('i', null, it.id === '__mais' ? '☰' : (ICONES[it.id] || '•')));
+      b.appendChild(el('i', null, it.id === '__mais' ? ICONES.mais : (ICONES[it.id] || ICONES.destinos)));
       b.appendChild(el('span', null, esc(it.l)));
       b.onclick = function () { it.id === '__mais' ? abrirMais() : vaiPara(it.id); };
       nav.appendChild(b);
@@ -486,7 +504,7 @@
     abasAtuais().forEach(function (a) {
       var b = el('button');
       b.setAttribute('aria-selected', a.id === aba ? 'true' : 'false');
-      b.appendChild(el('i', null, ICONES[a.id] || '•'));
+      b.appendChild(el('i', null, ICONES[a.id] || ICONES.destinos));
       b.appendChild(el('span', null, esc(CURTO[a.id] || a.l)));
       b.onclick = function () { vaiPara(a.id); };
       g.appendChild(b);

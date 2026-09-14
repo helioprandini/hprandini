@@ -1,42 +1,50 @@
-/* HeRo — guia de viagens. Mobile-first, tema claro/escuro. */
-
 :root{
-  --sand:#f7f3ec; --sand-2:#efe8dc; --ink:#1c1a17; --ink-2:#4a443c;
-  --ink-3:#7d7568; --line:#e2d8c8; --card:#fffdf9;
-  --gold:#a8761f; --gold-soft:#f0e2c6;
-  --green:#2f6b46; --green-soft:#dcece1;
-  --red:#9d3a2c; --red-soft:#f6ddd8;
-  --amber:#8a6412; --amber-soft:#f7ecd0;
-  --blue:#2b5878; --blue-soft:#dde8f1;
-  --r:14px; --shadow:0 1px 2px rgba(60,45,20,.06),0 8px 24px rgba(60,45,20,.06);
+  /* areia com viés rosado — não é bege de guia de viagem */
+  --sand:#faf4ee; --sand-2:#f2e8e0; --card:#fffbf7;
+  /* preto-ameixa, o céu noturno do pôster */
+  --ink:#1b1420; --ink-2:#584a5c; --ink-3:#8b7d8e; --line:#e8dbd2;
+  /* magenta e ciano do pôster, calibrados para leitura */
+  --gold:#c81e64; --gold-soft:#fbe4ee;
+  --blue:#0e8c96; --blue-soft:#d9f0f1;
+  /* açafrão: só dinheiro */
+  --money:#a1690f;
+  /* semânticos, separados do acento */
+  --green:#2c6b4a; --green-soft:#dcefe3;
+  --red:#a8322c; --red-soft:#f8e0dd;
+  --amber:#8a6412; --amber-soft:#f8eed4;
+  --r:14px; --shadow:0 1px 2px rgba(40,20,35,.05),0 10px 28px rgba(40,20,35,.07);
   --max:1180px;
+  --disp:"Fraunces","Iowan Old Style",Georgia,serif;
+  --body:"Figtree","Helvetica Neue",Arial,sans-serif;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --sand:#14120f; --sand-2:#1c1916; --ink:#f2ece1; --ink-2:#c3b9a8;
-    --ink-3:#8d8474; --line:#2e2922; --card:#1b1814;
-    --gold:#d9a84e; --gold-soft:#3a2d14;
-    --green:#7cc79b; --green-soft:#16301f;
-    --red:#e8907f; --red-soft:#3a1c16;
-    --amber:#dfb455; --amber-soft:#342a12;
-    --blue:#8dbcdd; --blue-soft:#14242f;
-    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+    --sand:#150f19; --sand-2:#1e1624; --card:#1c1421;
+    --ink:#f6eef2; --ink-2:#c5b3c4; --ink-3:#8d7d91; --line:#33263a;
+    --gold:#ff6fa5; --gold-soft:#3d1428;
+    --blue:#4fd6dd; --blue-soft:#0d3034;
+    --money:#e0ad4c;
+    --green:#7ad3a3; --green-soft:#13301f;
+    --red:#f09189; --red-soft:#3a1714;
+    --amber:#e5bc5c; --amber-soft:#342a12;
+    --shadow:0 1px 2px rgba(0,0,0,.5),0 10px 28px rgba(0,0,0,.4);
   }
 }
 :root[data-theme="dark"]{
-  --sand:#14120f; --sand-2:#1c1916; --ink:#f2ece1; --ink-2:#c3b9a8;
-  --ink-3:#8d8474; --line:#2e2922; --card:#1b1814;
-  --gold:#d9a84e; --gold-soft:#3a2d14;
-  --green:#7cc79b; --green-soft:#16301f;
-  --red:#e8907f; --red-soft:#3a1c16;
-  --amber:#dfb455; --amber-soft:#342a12;
-  --blue:#8dbcdd; --blue-soft:#14242f;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  --sand:#150f19; --sand-2:#1e1624; --card:#1c1421;
+  --ink:#f6eef2; --ink-2:#c5b3c4; --ink-3:#8d7d91; --line:#33263a;
+  --gold:#ff6fa5; --gold-soft:#3d1428;
+  --blue:#4fd6dd; --blue-soft:#0d3034;
+  --money:#e0ad4c;
+  --green:#7ad3a3; --green-soft:#13301f;
+  --red:#f09189; --red-soft:#3a1714;
+  --amber:#e5bc5c; --amber-soft:#342a12;
+  --shadow:0 1px 2px rgba(0,0,0,.5),0 10px 28px rgba(0,0,0,.4);
 }
 
 *{box-sizing:border-box}
 body{margin:0;background:var(--sand);color:var(--ink);
-  font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  font:15.5px/1.6 var(--body);font-optical-sizing:auto;
   -webkit-text-size-adjust:100%}
 img{max-width:100%}
 a{color:var(--gold)}
@@ -327,3 +335,78 @@ header.top{z-index:72}
 @media(min-width:820px){
   .sheet{max-height:100vh;top:62px}
 }
+
+/* ============================================================
+   REDESENHO — tipografia, cabeçalho, destinos, navegação
+   ============================================================ */
+
+h1,h2,h3,.brand,.destino-txt strong,.score .n{
+  font-family:var(--disp);font-optical-sizing:auto;
+  font-variation-settings:"SOFT" 30,"WONK" 1;text-wrap:balance}
+h1{font-weight:600;letter-spacing:-.018em;line-height:1.08}
+h2{font-weight:600;letter-spacing:-.012em}
+h3{font-weight:600;letter-spacing:-.008em}
+.hero h1{font-size:clamp(30px,7.5vw,44px)}
+.panel h2{font-size:clamp(20px,4.6vw,25px)}
+.panel h3{font-size:16.5px;margin-top:20px}
+.panel p{max-width:66ch}
+.lead{font-family:var(--body)}
+.nl{font-family:var(--body);letter-spacing:.07em}
+
+/* cabeçalho: faixa de pôr do sol, o único gesto do pôster de 1985 */
+header.top{background:color-mix(in srgb,var(--sand-2) 88%,transparent);
+  border-bottom:none;position:relative}
+header.top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;
+  background:linear-gradient(90deg,var(--gold),var(--money) 48%,var(--blue))}
+.brand{font-size:22px;font-weight:700;letter-spacing:-.03em;gap:9px}
+.brand .he{color:var(--gold)}
+.brand small{font-family:var(--body);font-size:10px;letter-spacing:.14em;font-weight:700}
+
+/* destinos: o herói do app */
+.destinos{gap:16px}
+.destino{border:none;box-shadow:var(--shadow);position:relative;border-radius:18px}
+.destino-arte{height:190px}
+.destino-arte svg{height:190px}
+.destino::after{content:"";position:absolute;inset:0;border-radius:18px;pointer-events:none;
+  background:linear-gradient(180deg,transparent 34%,rgba(22,13,25,.30) 58%,rgba(22,13,25,.80) 100%)}
+.destino-txt{position:absolute;left:0;right:0;bottom:0;padding:14px 16px 15px;z-index:2;gap:1px}
+.destino-txt strong{font-size:27px;color:#fff;letter-spacing:-.02em;
+  text-shadow:0 1px 12px rgba(20,12,22,.5)}
+.destino-txt span{color:rgba(255,255,255,.82)}
+.destino-txt em{color:#ffd9ea;font-size:12px;letter-spacing:.03em}
+.destino-txt small{color:rgba(255,255,255,.76)}
+.destino:hover{transform:translateY(-3px)}
+
+/* navegação inferior com ícones desenhados */
+.botnav{background:color-mix(in srgb,var(--card) 96%,transparent);
+  backdrop-filter:saturate(1.3) blur(10px)}
+.botnav button{gap:4px;font-family:var(--body);font-size:10px;letter-spacing:.015em}
+.botnav button i{display:block;width:23px;height:23px}
+.botnav button i svg{width:23px;height:23px;display:block}
+.botnav button[aria-selected="true"] i{filter:drop-shadow(0 2px 6px color-mix(in srgb,var(--gold) 45%,transparent))}
+.mais button i{width:22px;height:22px}
+.mais button i svg{width:22px;height:22px;display:block}
+
+/* preço em açafrão — a única cor reservada a dinheiro */
+.price-line,.dish .pr{color:var(--money)}
+.score .n{color:var(--ink);font-weight:600}
+.bar i{background:var(--gold)}
+
+/* hierarquia: nem todo bloco é um card */
+.panel{border-radius:16px}
+.night{border-left-width:3px}
+.chip{border-radius:999px;font-family:var(--body)}
+.tag{letter-spacing:.02em}
+
+/* foco visível em tudo que é operável */
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+
+/* o subtítulo do logo nunca quebra linha */
+.brand small{white-space:nowrap}
+@media(max-width:400px){.brand small{display:none}}
+.top-in{gap:10px}
+.icon-btn{flex:0 0 auto}
