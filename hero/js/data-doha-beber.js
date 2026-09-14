@@ -340,8 +340,43 @@ const HERO_STOPOVER = {
        'você entrar com o localizador. O que dá para afirmar: se ele estiver lá, você escolhe — ' +
        'a mecânica é escolher o nível e depois o hotel dentro dele.'
   },
-  veredito: 'Vale os 10 minutos de consulta, por um motivo específico: se o Alwadi MGallery estiver ' +
-    'no nível Premium nas suas datas, você paga cerca de R$ 245 a noite em vez de R$ 632, num hotel ' +
-    'nota 9,6 que tem o melhor rooftop perto do Souq. Se não estiver, mantenha o Park Hyatt — ele é ' +
-    'a escolha certa e o Sora resolve a bebida no próprio prédio.'
+  valeAPena: {
+    t: 'Antes de gastar mais energia nisso: vale a pena?',
+    contas: [
+      { o: 'Park Hyatt, 3 noites, reserva direta', v: 'R$ 1.695' },
+      { o: 'Stopover Premium, melhor caso possível', v: 'R$ 735' },
+      { o: 'Economia MÁXIMA', v: 'R$ 960' }
+    ],
+    texto: [
+      'R$ 960 é dinheiro. Mas põe na escala da viagem: é **menos de meio jantar no IDAM** (R$ 2.000 a 2.400 para vocês dois) e mais ou menos **um jantar no Jiwan**.',
+      'E essa é a economia no MELHOR caso — supondo que o Alwadi, ou outro hotel tão bom quanto, esteja disponível nas suas datas, o que ninguém sabe até você consultar.',
+      'Do outro lado da balança: o risco de mexer numa reserva do Park Hyatt que pode não ser reembolsável, o tempo que você já gastou tentando entender o programa, e a chance de acabar num hotel pior para economizar o equivalente a um jantar.',
+      '**Minha recomendação:** pare de perseguir o Stopover. Fique no Park Hyatt, acrescente a terceira noite, e gaste a energia decidindo os três jantares — que é onde essa viagem realmente se ganha ou se perde.',
+      'Se ainda quiser tentar, não navegue no site: **mande um e-mail**. Um texto, uma resposta, zero cliques. O modelo está aqui embaixo.'
+    ]
+  },
+
+  email: {
+    t: 'E-mail pronto para o canal oficial',
+    para: 'dqstopover@qatarairways.com.qa',
+    assunto: 'Stopover request — Doha, 28 Sep to 1 Oct 2026 — 2 adults',
+    corpo: 'Hello,\n\n' +
+      'I would like to check the Qatar Stopover packages available for my booking.\n\n' +
+      'Booking reference (PNR): [COLE O LOCALIZADOR AQUI]\n' +
+      'Passengers: 2 adults\n' +
+      'Arrival in Doha: 28 September 2026, 17:45 (from Delhi)\n' +
+      'Departure from Doha: 1 October 2026, 00:05 (to Sao Paulo)\n' +
+      'Transit time: approximately 54 hours\n' +
+      'Nights required: 3 (28, 29 and 30 September)\n\n' +
+      'Could you please confirm:\n' +
+      '1. Which hotels are available in the Premium 5-star tier for these exact dates?\n' +
+      '2. The total price for 2 adults for the 3 nights, all taxes included.\n' +
+      '3. Whether Alwadi Hotel Doha - MGallery is among the available options.\n' +
+      '4. The cancellation policy of the stopover booking.\n\n' +
+      'Thank you.',
+    nota: 'Só falta colar o localizador do voo. Tudo o mais já está preenchido com os seus dados reais.'
+  },
+
+  veredito: 'Se for tentar, tente pelo e-mail e sem pressa: a economia máxima é de R$ 960, ' +
+    'menos de meio jantar no IDAM. Não vale cancelar nada antes de ter resposta por escrito.'
 };

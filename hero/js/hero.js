@@ -959,6 +959,49 @@
         var bb = el('div', 'pb'); bb.appendChild(el('div', 'px', esc(t)));
         row.appendChild(bb); pn2.appendChild(row);
       });
+      if (S.valeAPena) {
+        var pw = el('div', 'panel');
+        pw.appendChild(el('h2', null, '⚖️ ' + esc(S.valeAPena.t)));
+        var dlw = el('dl', 'kv');
+        S.valeAPena.contas.forEach(function (c) {
+          dlw.appendChild(el('dt', null, esc(c.o)));
+          dlw.appendChild(el('dd', null, '<b>' + esc(c.v) + '</b>'));
+        });
+        pw.appendChild(dlw);
+        S.valeAPena.texto.forEach(function (t) {
+          pw.appendChild(el('p', null, esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')));
+        });
+        root.insertBefore(pw, root.firstChild.nextSibling);
+      }
+      if (S.email) {
+        var pe = el('div', 'panel');
+        pe.appendChild(el('h2', null, '✉️ ' + esc(S.email.t)));
+        pe.appendChild(el('div', 'lead', esc(S.email.nota)));
+        var dle = el('dl', 'kv');
+        dle.appendChild(el('dt', null, 'Para')); dle.appendChild(el('dd', null, esc(S.email.para)));
+        dle.appendChild(el('dt', null, 'Assunto')); dle.appendChild(el('dd', null, esc(S.email.assunto)));
+        pe.appendChild(dle);
+        var pre = el('div', 'note');
+        pre.style.whiteSpace = 'pre-wrap';
+        pre.style.fontSize = '12.5px';
+        pre.textContent = S.email.corpo;
+        pe.appendChild(pre);
+        var bre = el('div', 'btnrow'); bre.style.marginTop = '10px';
+        var ml = el('a', 'btn gold', '✉️ Abrir no e-mail');
+        ml.href = 'mailto:' + S.email.para + '?subject=' + encodeURIComponent(S.email.assunto) +
+                  '&body=' + encodeURIComponent(S.email.corpo);
+        bre.appendChild(ml);
+        var cp = el('button', 'btn sec', '📋 Copiar o texto');
+        cp.onclick = function () {
+          if (navigator.clipboard) navigator.clipboard.writeText(S.email.corpo).then(
+            function () { cp.textContent = '✓ Copiado'; },
+            function () { prompt('Copie:', S.email.corpo); });
+          else prompt('Copie:', S.email.corpo);
+        };
+        bre.appendChild(cp);
+        pe.appendChild(bre);
+        root.appendChild(pe);
+      }
       if (S.alwadiResposta) {
         pn2.appendChild(el('h3', null, esc(S.alwadiResposta.t)));
         pn2.appendChild(el('p', null, esc(S.alwadiResposta.d)));

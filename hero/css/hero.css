@@ -300,3 +300,16 @@ nav.tabs{display:none}
   .sheet-body{padding-bottom:16px}
   .botnav{max-width:560px;right:auto;border-right:1px solid var(--line)}
 }
+
+/* bloco de texto pré-formatado (e-mail pronto) não pode vazar */
+.note[style*="pre-wrap"]{overflow-wrap:anywhere;word-break:break-word;overflow-x:auto}
+
+/* listas rótulo/valor: rótulo longo não pode esticar a grade */
+.kv{grid-template-columns:minmax(0,max-content) minmax(0,1fr)}
+.kv dt{white-space:normal;overflow-wrap:anywhere}
+.kv dd{overflow-wrap:anywhere;min-width:0}
+@media(max-width:520px){
+  .kv{grid-template-columns:1fr;gap:2px 0}
+  .kv dt{margin-top:8px}
+  .kv dt:first-of-type{margin-top:0}
+}
