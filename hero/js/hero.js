@@ -396,6 +396,7 @@
     { id: 'curadoria', l: 'Curadoria' },
     { id: 'roteiros', l: 'Roteiros' },
     { id: 'souq', l: 'Souq Waqif' },
+    { id: 'escala', l: '✈️ A escala' },
     { id: 'beber', l: '🍷 Onde beber' },
     { id: 'hoteis', l: '🏨 Hotéis' },
     { id: 'reservaria', l: 'Eu reservaria' },
@@ -865,6 +866,95 @@
     root.appendChild(p);
   }
 
+  function viewEscala(root) {
+    var E = HERO_ESCALA;
+    var p0 = el('div', 'panel');
+    p0.appendChild(el('h2', null, esc(E.pergunta)));
+    p0.appendChild(el('p', null, '<b>' + esc(E.resposta) + '</b>'));
+    root.appendChild(p0);
+
+    var pv = el('div', 'panel');
+    pv.appendChild(el('h2', null, 'O veredito'));
+    E.veredito.forEach(function (t) {
+      pv.appendChild(el('p', null, esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')));
+    });
+    root.appendChild(pv);
+
+    var pc = el('div', 'panel');
+    pc.appendChild(el('h2', null, 'As contas, lado a lado'));
+    pc.appendChild(el('div', 'lead', 'Tudo para o casal, no dia 30/09.'));
+    var dl = el('dl', 'kv');
+    E.contas.forEach(function (c) {
+      dl.appendChild(el('dt', null, esc(c.o)));
+      dl.appendChild(el('dd', null, '<b>' + esc(c.v) + '</b> — ' + esc(c.obs)));
+    });
+    pc.appendChild(dl);
+    root.appendChild(pc);
+
+    var st = E.stopover;
+    var ps = el('div', 'panel');
+    ps.appendChild(el('h2', null, '⭐ ' + esc(st.t)));
+    ps.appendChild(el('p', null, esc(st.d)));
+    var g = el('div', 'scores');
+    st.precos.forEach(function (x) {
+      var b = el('div', 'score');
+      b.appendChild(el('div', 'n', 'R$ ' + x.brl));
+      b.appendChild(el('div', 'l', esc(x.n) + ' · US$ ' + x.usd + '/pessoa'));
+      g.appendChild(b);
+    });
+    ps.appendChild(g);
+    ps.appendChild(el('div', 'note', esc(st.nota)));
+    ps.appendChild(el('div', 'note ok', '<b>Como fazer:</b> ' + esc(st.comoFazer)));
+    ps.appendChild(el('div', 'note warn', esc(st.ressalva)));
+    var br = el('div', 'btnrow'); br.style.marginTop = '10px';
+    var a1 = el('a', 'btn gold', '🔗 Discover Qatar');
+    a1.href = 'https://www.discoverqatar.qa/'; a1.target = '_blank'; a1.rel = 'noopener';
+    br.appendChild(a1);
+    var a2 = el('a', 'btn sec', '🔗 Visit Qatar — Stopover');
+    a2.href = 'https://visitqatar.com/intl-en/qatar-stopover'; a2.target = '_blank'; a2.rel = 'noopener';
+    br.appendChild(a2);
+    ps.appendChild(br);
+    root.appendChild(ps);
+
+    var th = E.travaHorario;
+    var pt = el('div', 'panel');
+    pt.appendChild(el('h2', null, '⏱ ' + esc(th.t)));
+    pt.appendChild(el('p', null, esc(th.d)));
+    pt.appendChild(el('div', 'note bad', esc(th.agravante)));
+    pt.appendChild(el('div', 'note warn', '<b>Possível saída:</b> ' + esc(th.saida)));
+    root.appendChild(pt);
+
+    var pa = el('div', 'panel');
+    pa.appendChild(el('h2', null, '🍷 ' + esc(E.alcool.t)));
+    pa.appendChild(el('p', null, esc(E.alcool.d)));
+    root.appendChild(pa);
+
+    var pl = el('div', 'panel');
+    pl.appendChild(el('h2', null, 'Os lounges'));
+    E.lounges.forEach(function (l) {
+      var n = el('div', 'night');
+      n.appendChild(el('div', 'nl', esc(l.a)));
+      var nn = el('div', 'nn');
+      nn.appendChild(document.createTextNode(l.n));
+      nn.appendChild(el('span', 'nh', esc(l.p)));
+      n.appendChild(nn);
+      n.appendChild(el('div', 'nx', esc(l.d)));
+      if (l.alerta) n.appendChild(el('div', 'note warn', esc(l.alerta)));
+      pl.appendChild(n);
+    });
+    root.appendChild(pl);
+
+    var pf = el('div', 'panel');
+    pf.appendChild(el('h2', null, 'Fontes'));
+    var box = el('div', 'srcs');
+    E.fontes.forEach(function (f) {
+      var a = el('a', null, '↗ ' + esc(f.t)); a.href = f.u; a.target = '_blank'; a.rel = 'noopener';
+      box.appendChild(a);
+    });
+    pf.appendChild(box);
+    root.appendChild(pf);
+  }
+
   function viewBeber(root) {
     var B = (typeof HERO_BARES !== 'undefined') ? HERO_BARES : null;
     if (B) {
@@ -1136,6 +1226,7 @@
     else if (aba === 'curadoria') viewCuradoria(root);
     else if (aba === 'roteiros') viewRoteiros(root);
     else if (aba === 'souq') viewSouq(root);
+    else if (aba === 'escala') viewEscala(root);
     else if (aba === 'beber') viewBeber(root);
     else if (aba === 'hoteis') viewHoteis(root);
     else if (aba === 'reservaria') viewReservaria(root);
