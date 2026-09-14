@@ -20,10 +20,12 @@ const HERO_CIDADE = {
     bairro: 'Msheireb Downtown',
     lat: 25.2880, lng: 51.5245,
     mapsQuery: 'Park Hyatt Doha Msheireb',
-    nota: 'Reservado. As distâncias das fichas continuam medidas a partir do SOUQ WAQIF, ' +
-          'porque é o ponto de referência da cidade e foi assim que a pesquisa foi feita. ' +
-          'Do Park Hyatt até o Souq é cerca de 1 km, uns 10 a 12 minutos a pé — some isso ' +
-          'às distâncias do Souq, ou use o botão de rota, que já sai do hotel.',
+    nota: 'Reservado. As distâncias e os tempos das fichas são medidos DAQUI, do hotel — ' +
+          'é o número que interessa quando você está decidindo aonde ir. São estimativas ' +
+          'calculadas por coordenada (linha reta corrigida para rua), não rota do Google: ' +
+          'para o caminho real use o botão de rota da ficha, que já sai do hotel. ' +
+          'A distância do Souq Waqif continua na ficha, na linha de baixo, porque foi ' +
+          'assim que a pesquisa foi feita e o Souq é a referência da cidade.',
     bar: 'Sora Rooftop no 21º andar (japonês com bar e vista do Souq Waqif), Opus (francês-qatari), Anis e lounge bar.'
   },
   cambio: {
@@ -211,6 +213,9 @@ const HERO_RESTAURANTES = [
   id: 'parisa',
   nome: 'Parisa Souq Waqif',
   status: 'aberto',
+  statusNota: 'Operando. Todos os dias, 13h às 22h30 (o grupo publica também 12h30–16h e 18h–23h ' +
+              'para as casas de Doha — confirme o horário na ligação). NÃO está na seleção ' +
+              'MICHELIN Doha 2026; o persa com Bib Gourmand é o Berenjak, em Al Maha.',
   cozinha: 'Persa',
   categorias: ['arabe', 'local', 'romantico'],
   destaque: 'O salão de espelhos',
@@ -221,14 +226,24 @@ const HERO_RESTAURANTES = [
   distKm: 0.2, tempoMin: 3, aPe: true,
   precoQar: [120, 220],
   precoNota: 'nao-confirmado',
-  precoDetalhe: 'Estimativa para jantar persa completo a dois no Souq. Sem tabela pública.',
+  precoDetalhe: 'PREÇO NÃO CONFIRMADO. Não há cardápio com valores publicado pela casa nem ' +
+                'pelo grupo. A faixa é estimativa para jantar persa completo, e os relatos ' +
+                'concordam em dois pontos: porções grandes e um pouco mais caro que a média do Souq. ' +
+                'Para o valor de hoje, ligue: +974 4441 1494.',
   degustacao: null, brunch: null,
   almoco: { desc: 'Almoço e jantar', qar: null },
   alcool: false,
+  alcoolNota: 'Souq Waqif é área seca — nenhuma casa do Souq serve álcool. Aqui o ritual é ' +
+              'o chá iraniano servido à moda antiga; peça, faz parte.',
   reserva: 'recomendavel',
+  reservaNota: 'Reserve. O salão principal é disputado — peça mesa NO salão dos espelhos, ' +
+               'que é o motivo de estar aqui, e não na varanda. Telefone +974 4441 1494 ou Eat App.',
   ambiente: ['romântico', 'espetacular', 'tradicional'],
-  vista: 'Interior de mosaicos e milhares de espelhos montados ao longo de 3,5 anos',
-  rede: 'local',
+  vista: 'Interior de mosaicos e milhares de espelhos escolhidos no Irã e montados em Doha ao longo de 3,5 anos',
+  rede: 'regional',
+  redeNota: 'Não é casa única: o grupo Parisa tem três endereços só em Doha (Souq Waqif, ' +
+            'Al Messila e Ritz-Carlton Sharq Village) e outros fora do Catar. O do Souq é o ' +
+            'original e o único com o salão de espelhos — se for, vá a este.',
   notas: { gastro: 7.5, autent: 7.5, custo: 8.0, doha: 9.0 },
   pratos: [
     { nome: 'Kashk-e Bademjan', qar: null, porque: 'Berinjela frita com nozes e kashk (iogurte seco). O melhor mezze persa e quase impossível de achar bem feito no Brasil.' },
@@ -236,11 +251,26 @@ const HERO_RESTAURANTES = [
     { nome: 'Kebab com arroz de açafrão', qar: null, porque: 'O teste básico de uma casa persa: o arroz tem que vir soltinho, com a crosta.' },
     { nome: 'Faloudeh Shirazi', qar: null, porque: 'Sobremesa de aletria gelada com água de rosas e limão. Não existe nada parecido.' }
   ],
-  porque: 'A comida é boa, não genial — mas o salão é uma das coisas mais bonitas de Doha, e você chega a pé. Para uma noite romântica sem sair do Souq, é imbatível visualmente. Vá pelo ambiente, peça os mezze.',
-  tel: null,
-  site: null,
-  reservaUrl: null,
-  fontes: [{ t: 'MICHELIN — melhores restaurantes perto do Souq Waqif', u: 'https://guide.michelin.com/qa/en/best-of/best-restaurants-near-souq-waqif-doha' }]
+  porque: 'Bem indicado, e a indicação se sustenta — com uma ressalva honesta. O salão de ' +
+          'espelhos (ayeneh kari, milhares de cacos montados à mão em 3,5 anos) é uma das ' +
+          'coisas mais bonitas de Doha e não tem equivalente no Brasil. A comida é boa e ' +
+          'honesta — kebabs na brasa, arroz de açafrão, ensopados — mas não é o que ' +
+          'coloca a casa na lista: o MICHELIN Doha 2026 não a selecionou, e escolheu o ' +
+          'Berenjak como o persa da cidade. Traduzindo para a viagem de vocês: se a noite ' +
+          'for por comida persa, Berenjak; se for por uma mesa bonita de verdade a dois, a ' +
+          'pé do hotel e sem depender de táxi, Parisa ganha fácil. Peça os mezze, o ' +
+          'kebab misto e o chá no fim.',
+  tel: '+97444411494',
+  site: 'https://parisarestaurants.com/souq-waqif/',
+  reservaUrl: 'https://eatapp.co/reserve/parisa-sharq-village-spa-al-souq-street',
+  fontes: [
+    { t: 'Parisa — site oficial, Souq Waqif', u: 'https://parisarestaurants.com/souq-waqif/' },
+    { t: 'Parisa — site oficial, casas do Catar', u: 'https://parisarestaurants.com/qatar/' },
+    { t: 'MICHELIN — melhores restaurantes perto do Souq Waqif', u: 'https://guide.michelin.com/qa/en/best-of/best-restaurants-near-souq-waqif-doha' },
+    { t: 'MICHELIN Guide Doha 2026 — lista completa da seleção', u: 'https://guide.michelin.com/qa/en/article/michelin-guide-ceremony/full-list-michelin-guide-doha-selection' },
+    { t: 'Marhaba — Parisa Souq Waqif, grelhados e arroz', u: 'https://marhaba.qa/parisa-souq-waqif-a-feast-of-grilled-meats-and-aromatic-rice/' },
+    { t: 'Reserva — Eat App', u: 'https://eatapp.co/reserve/parisa-sharq-village-spa-al-souq-street' }
+  ]
 },
 {
   id: 'abo-shariha',

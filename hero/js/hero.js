@@ -45,6 +45,23 @@
     if (!minhaPos) return null;
     return hav(minhaPos.lat, minhaPos.lng, r.lat, r.lng);
   }
+
+  /* Distancia e tempo a partir da BASE (o hotel reservado).
+     Reta pelo haversine x 1,25 para virar rua. A pe ate 1,5 km.
+     Carro a 24 km/h (transito de Doha), com piso de 5 min. */
+  function daBase(r) {
+    var b = C && C.base;
+    if (!b || !b.lat || !r || !r.lat) return null;
+    var reta = hav(b.lat, b.lng, r.lat, r.lng);
+    var km = Math.round(reta * 1.25 * 10) / 10;
+    var aPe = km <= 1.5;
+    var min = aPe ? Math.max(2, Math.round(km / 0.08)) : Math.max(5, Math.round(km / 0.4));
+    return { km: km, min: min, aPe: aPe };
+  }
+  function txtBase(r) {
+    var d = daBase(r); if (!d) return '';
+    return d.km.toFixed(1).replace('.', ',') + ' km \u00b7 ' + d.min + ' min ' + (d.aPe ? 'a p\u00e9' : 'de carro');
+  }
   function pedirLocal(btn) {
     if (!navigator.geolocation) { alert('Este navegador não oferece geolocalização.'); return; }
     btn.disabled = true; btn.textContent = 'localizando…';
@@ -148,7 +165,7 @@
     }
     var f = filtroAtivo;
     if (f === 'todos') return true;
-    if (f === 'ape') return !!r.aPe;
+    if (f === 'ape') { var db = daBase(r); return !!(db && db.aPe); }
     if (f === 'romantico') return (r.ambiente || []).some(function (a) { return a.indexOf('romântic') >= 0; });
     if (f === 'barato') return r.precoQar && r.precoQar[0] <= 100;
     if (f === 'alcool') return r.alcool === true;
@@ -176,8 +193,7 @@
     var b = el('div', 'card-body');
     b.appendChild(el('h3', null, esc(r.nome)));
     var d = distDaqui(r);
-    var dist = d != null ? d.toFixed(1) + ' km de você'
-      : (r.aPe ? 'a pé dentro do Souq' : r.distKm + ' km · ' + r.tempoMin + ' min do Souq');
+    var dist = d != null ? d.toFixed(1) + ' km de você' : (txtBase(r) + ' do hotel');
     b.appendChild(el('div', 'sub', esc(r.cozinha) + ' · ' + esc(dist)));
     b.appendChild(el('div', 'price-line', faixa(r) + ' <span>/ pessoa</span>'));
     if (r.porque) {
@@ -226,8 +242,8 @@
     var d = distDaqui(r);
     var linhas = [
       ['Local', r.local + (r.bairro ? ' — ' + r.bairro : '')],
-      ['Do Souq Waqif', r.aPe ? (r.distKm + ' km · ' + r.tempoMin + ' min a pé') : (r.distKm + ' km · ~' + r.tempoMin + ' min de carro')],
-      ['Do Park Hyatt', r.aPe ? '~1,1 km · 10–12 min a pé' : 'some ~1 km à linha acima, ou use o botão de rota'],
+      ['Do ' + C.base.nome, txtBase(r) + ' (estimativa por distância; use o botão de rota para o caminho real)'],
+      ['Do Souq Waqif', r.aPe ? (String(r.distKm).replace('.', ',') + ' km · ' + r.tempoMin + ' min a pé') : (String(r.distKm).replace('.', ',') + ' km · ~' + r.tempoMin + ' min de carro')],
       d != null ? ['De você agora', d.toFixed(2) + ' km em linha reta'] : null,
       ['Preço / pessoa', faixa(r)],
       ['Estimativa p/ dois', faixa(r, true)],
@@ -547,10 +563,19 @@
 
   /* ---------- seletor de destinos ---------- */
   function viewDestinos(root) {
-    var v = el('div', 'panel');
-    v.appendChild(el('h2', null, HERO_VIAGEM.titulo));
-    v.appendChild(el('p', null, esc(HERO_VIAGEM.texto)));
-    root.appendChild(v);
+    /* Capa. Se existir hero/img/capa.jpg, ela entra; senão fica só o
+       letreiro sobre o fundo de gradiente, sem buraco na página. */
+    var capa = el('div', 'capa');
+    if (HERO_ARTE.capa) { var ca = el('div', 'capa-arte'); ca.innerHTML = HERO_ARTE.capa(); capa.appendChild(ca); }
+    var img = new Image();
+    img.alt = '';
+    img.onload = function () { capa.classList.add('tem-foto'); capa.insertBefore(img, capa.firstChild); };
+    img.src = './img/capa.jpg';
+    var ct = el('div', 'capa-txt');
+    ct.appendChild(el('strong', null, 'HeRo'));
+    ct.appendChild(el('span', null, 'guia de viagens'));
+    capa.appendChild(ct);
+    root.appendChild(capa);
 
     var g = el('div', 'destinos');
     HERO_DESTINOS.forEach(function (d) {
@@ -569,13 +594,6 @@
       g.appendChild(c);
     });
     root.appendChild(g);
-
-    var a = HERO_VIAGEM.alerta;
-    var pa = el('div', 'panel');
-    pa.appendChild(el('h2', null, '⚠️ ' + esc(a.t)));
-    pa.appendChild(el('div', 'note warn', esc(a.d)));
-    pa.appendChild(el('div', 'note ok', esc(a.d2)));
-    root.appendChild(pa);
   }
 
   /* ---------- conversor de moedas ---------- */
@@ -766,11 +784,12 @@
     if (minhaPos) lista.sort(function (a, b) { return distDaqui(a) - distDaqui(b); });
     else lista.sort(function (a, b) {
       if (a.status !== b.status) return a.status === 'aberto' ? -1 : 1;
-      return a.distKm - b.distKm;
+      var da = daBase(a), db = daBase(b);
+      return (da ? da.km : a.distKm) - (db ? db.km : b.distKm);
     });
 
     var cnt = el('div', 'count');
-    cnt.textContent = lista.length + ' de ' + R.length + ' lugares' + (minhaPos ? ' · ordenados por distância de você' : ' · ordenados por distância do Souq Waqif');
+    cnt.textContent = lista.length + ' de ' + R.length + ' lugares' + (minhaPos ? ' · ordenados por distância de você' : ' · ordenados por distância do ' + C.base.nome);
     cnt.style.margin = '0 0 10px';
     root.appendChild(cnt);
 
@@ -894,6 +913,16 @@
     p0.appendChild(el('h2', null, esc(E.pergunta)));
     p0.appendChild(el('p', null, '<b>' + esc(E.resposta) + '</b>'));
     root.appendChild(p0);
+
+    /* O aviso da noite curta mora aqui (saiu da página inicial). */
+    if (typeof HERO_VIAGEM !== 'undefined' && HERO_VIAGEM.alerta) {
+      var a = HERO_VIAGEM.alerta;
+      var pa = el('div', 'panel');
+      pa.appendChild(el('h2', null, '⚠️ ' + esc(a.t)));
+      pa.appendChild(el('div', 'note warn', esc(a.d)));
+      pa.appendChild(el('div', 'note ok', esc(a.d2)));
+      root.appendChild(pa);
+    }
 
     var pv = el('div', 'panel');
     pv.appendChild(el('h2', null, 'O veredito'));

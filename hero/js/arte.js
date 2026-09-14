@@ -149,5 +149,40 @@ var HERO_ARTE = (function () {
         '<path d="M24 150 L64 150 L58 140 L30 140 Z" fill="#2e4a52"/><rect x="42" y="118" width="3" height="22" fill="#2e4a52"/>',
         '#ffe0b0', '#e08a4c', '#f3e7d5', '#cdb493');
     }
-  };
+  ,
+  /* Capa da home: pôster de 1985 — sol listrado, grade em fuga, palmeiras.
+     Desenho original; entra só enquanto não houver hero/img/capa.jpg. */
+  capa: function () {
+    var sol = '';
+    for (var k = 0; k < 7; k++) {
+      sol += '<rect x="112" y="' + (30 + k * 9) + '" width="176" height="' + (5 - k * 0.45) + '" fill="url(#cgs)" opacity="' + (1 - k * 0.1) + '"/>';
+    }
+    var grade = '';
+    for (var i = 0; i <= 12; i++) {
+      grade += '<line x1="' + (i * 33) + '" y1="200" x2="' + (-260 + i * 154) + '" y2="130" stroke="#ff4d9d" stroke-width="1" opacity=".35"/>';
+    }
+    for (var j = 0; j < 6; j++) {
+      var y = 132 + j * j * 2.4 + j * 4;
+      grade += '<line x1="0" y1="' + y + '" x2="400" y2="' + y + '" stroke="#31d7e0" stroke-width="1" opacity="' + (0.16 + j * 0.07) + '"/>';
+    }
+    function palmeira(x, e) {
+      var f = '';
+      for (var a = 0; a < 7; a++) {
+        var ang = -150 + a * 25;
+        var rad = ang * Math.PI / 180;
+        f += '<path d="M0 0 Q' + (Math.cos(rad) * 26 * e) + ' ' + (Math.sin(rad) * 20 * e - 6) +
+             ' ' + (Math.cos(rad) * 44 * e) + ' ' + (Math.sin(rad) * 30 * e) +
+             '" fill="none" stroke="#ff8fc0" stroke-width="' + (3 * e) + '" stroke-linecap="round"/>';
+      }
+      return '<g opacity=".55" transform="translate(' + x + ',200)"><path d="M0 0 C' + (-5 * e) + ' ' + (-30 * e) +
+             ' ' + (4 * e) + ' ' + (-58 * e) + ' ' + (-2 * e) + ' ' + (-80 * e) +
+             '" fill="none" stroke="#ff8fc0" stroke-width="' + (5 * e) + '" stroke-linecap="round"/>' +
+             '<g transform="translate(' + (-2 * e) + ',' + (-80 * e) + ')">' + f + '</g></g>';
+    }
+    return '<svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMax slice" aria-hidden="true">' +
+      '<defs><linearGradient id="cgs" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="#ffd166"/><stop offset="1" stop-color="#ff4d9d"/></linearGradient></defs>' +
+      sol + grade + palmeira(48, 1) + palmeira(356, .82) + '</svg>';
+  }
+};
 })();
