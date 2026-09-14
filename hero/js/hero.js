@@ -473,6 +473,7 @@
     document.body.style.overflow = '';
   }
   function abrirMais() {
+    if (maisAberto) { fecharMais(); pintaNav(); return; }
     maisAberto = true;
     $('#sheetTitle').textContent = 'Todas as seções';
     $('#sheetSub').textContent = destino === 'india' ? 'Índia' : C.cidade;
