@@ -135,6 +135,7 @@
     { id: 'romantico', l: '🕯️ Romântico' },
     { id: 'barato', l: '💰 Até QAR 100' },
     { id: 'alcool', l: '🍷 Serve álcool' },
+    { id: 'seco', l: '🚫 Área seca' },
     { id: 'michelin', l: '⭐ MICHELIN' }
   ];
   var filtroAtivo = 'todos', busca = '', ordenaPorMim = false, mostrarFechados = false;
@@ -151,6 +152,7 @@
     if (f === 'romantico') return (r.ambiente || []).some(function (a) { return a.indexOf('romântic') >= 0; });
     if (f === 'barato') return r.precoQar && r.precoQar[0] <= 100;
     if (f === 'alcool') return r.alcool === true;
+    if (f === 'seco') return r.alcool === false;
     if (f === 'michelin') return !!r.destaque && /MICHELIN|BIB|★/i.test(r.destaque);
     return (r.categorias || []).indexOf(f) >= 0;
   }
@@ -388,6 +390,7 @@
     { id: 'curadoria', l: 'Curadoria' },
     { id: 'roteiros', l: 'Roteiros' },
     { id: 'souq', l: 'Souq Waqif' },
+    { id: 'alcool', l: '🍷 Álcool' },
     { id: 'reservaria', l: 'Eu reservaria' },
     { id: 'avisos', l: 'Saber antes' }
   ];
@@ -555,6 +558,104 @@
     root.appendChild(p);
   }
 
+  function viewAlcool(root) {
+    var A = (typeof HERO_ALCOOL !== 'undefined') ? HERO_ALCOOL : null;
+    if (!A) { root.appendChild(el('div', 'panel', '<p>Guia de álcool indisponível.</p>')); return; }
+
+    var imp = el('div', 'panel');
+    imp.appendChild(el('h2', null, esc(A.impacto.titulo)));
+    A.impacto.texto.forEach(function (t) {
+      var html = esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+      imp.appendChild(el('p', null, html));
+    });
+    root.appendChild(imp);
+
+    var p1 = el('div', 'panel');
+    p1.appendChild(el('h2', null, 'A regra no Catar'));
+    p1.appendChild(el('div', 'lead', 'Pesquisado em 14/09/2026. Nenhuma mudança na lei de álcool em 2026 — as alterações do ano foram em imóveis, trabalho, drones e aluguel.'));
+    A.lei.forEach(function (x) {
+      p1.appendChild(el('h3', null, esc(x.t)));
+      p1.appendChild(el('p', null, esc(x.d)));
+    });
+    root.appendChild(p1);
+
+    var p2 = el('div', 'panel');
+    p2.appendChild(el('h2', null, '🚫 Onde NÃO se bebe'));
+    p2.appendChild(el('div', 'lead', 'Áreas e casas secas que afetam diretamente o roteiro de vocês.'));
+    A.secas.forEach(function (x) {
+      var row = el('div', 'pick');
+      row.appendChild(el('div', 'rank', x.forca === 'confirmado' ? '✓' : '?'));
+      var pb = el('div', 'pb');
+      var pn = el('div', 'pn');
+      pn.appendChild(document.createTextNode(x.l));
+      pn.appendChild(el('span', 'tag ' + (x.forca === 'confirmado' ? 'bad' : 'warn'),
+        x.forca === 'confirmado' ? 'confirmado' : 'provável'));
+      pb.appendChild(pn);
+      pb.appendChild(el('div', 'px', esc(x.d)));
+      row.appendChild(pb); p2.appendChild(row);
+    });
+    root.appendChild(p2);
+
+    var p3 = el('div', 'panel');
+    p3.appendChild(el('h2', null, '🍷 Onde se bebe'));
+    p3.appendChild(el('div', 'lead', 'Lembre da pegadinha: a licença é por venue, não por hotel. Um prédio pode ter rooftop licenciado e restaurante seco.'));
+    var dl = el('dl', 'kv');
+    A.servem.forEach(function (x) {
+      dl.appendChild(el('dt', null, esc(x.l)));
+      dl.appendChild(el('dd', null, '<b>' + esc(x.v) + '</b> — ' + esc(x.d)));
+    });
+    p3.appendChild(dl);
+    root.appendChild(p3);
+
+    var p4 = el('div', 'panel');
+    p4.appendChild(el('h2', null, 'Um drink perto do Souq Waqif'));
+    p4.appendChild(el('div', 'lead', esc(A.pertoDoSouq.intro)));
+    A.pertoDoSouq.itens.forEach(function (x, i) {
+      var row = el('div', 'pick');
+      row.appendChild(el('div', 'rank', String(i + 1)));
+      var pb = el('div', 'pb');
+      var pn = el('div', 'pn');
+      pn.appendChild(document.createTextNode(x.n));
+      if (x.u) {
+        var a = el('a', 'pill-link', 'site oficial');
+        a.href = x.u; a.target = '_blank'; a.rel = 'noopener';
+        pn.appendChild(a);
+      }
+      pb.appendChild(pn);
+      pb.appendChild(el('div', 'px', esc(x.d)));
+      row.appendChild(pb); p4.appendChild(row);
+    });
+    p4.appendChild(el('div', 'note warn', esc(A.pertoDoSouq.aviso)));
+    root.appendChild(p4);
+
+    var p5 = el('div', 'panel');
+    p5.appendChild(el('h2', null, 'Ver na lista'));
+    p5.appendChild(el('div', 'lead', 'Cada ficha diz se a casa serve. Os filtros abaixo abrem a lista já cortada.'));
+    var br = el('div', 'btnrow');
+    [['🍷 Só os que servem', 'alcool'], ['🚫 Só os secos', 'seco'], ['Todos', 'todos']].forEach(function (b) {
+      var bt = el('button', 'btn sec', b[0]);
+      bt.onclick = function () { filtroAtivo = b[1]; aba = 'lista'; render(); };
+      br.appendChild(bt);
+    });
+    p5.appendChild(br);
+    var cont = { sim: 0, nao: 0, ind: 0 };
+    R.forEach(function (r) { if (r.status === 'fechado') return; r.alcool === true ? cont.sim++ : r.alcool === false ? cont.nao++ : cont.ind++; });
+    p5.appendChild(el('div', 'note', 'Dos ' + (cont.sim + cont.nao + cont.ind) + ' lugares abertos: <b>' + cont.sim +
+      '</b> servem álcool, <b>' + cont.nao + '</b> não servem, e <b>' + cont.ind +
+      '</b> não foi possível confirmar — nesses, a ficha diz exatamente o que falta confirmar e para quem perguntar.'));
+    root.appendChild(p5);
+
+    var p6 = el('div', 'panel');
+    p6.appendChild(el('h2', null, 'Fontes'));
+    var box = el('div', 'srcs');
+    A.fontes.forEach(function (f) {
+      var a = el('a', null, '↗ ' + esc(f.t)); a.href = f.u; a.target = '_blank'; a.rel = 'noopener';
+      box.appendChild(a);
+    });
+    p6.appendChild(box);
+    root.appendChild(p6);
+  }
+
   function viewReservaria(root) {
     var p = el('div', 'panel');
     p.appendChild(el('h2', null, K.reservaria.titulo));
@@ -619,6 +720,7 @@
     else if (aba === 'curadoria') viewCuradoria(root);
     else if (aba === 'roteiros') viewRoteiros(root);
     else if (aba === 'souq') viewSouq(root);
+    else if (aba === 'alcool') viewAlcool(root);
     else if (aba === 'reservaria') viewReservaria(root);
     else viewAvisos(root);
     if (!mantemFoco) window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });

@@ -19,8 +19,8 @@ const HERO_CURADORIA = {
     {
       id: 'B', titulo: 'B. Top 5 alta gastronomia',
       itens: [
-        { r: 'idam',    nota: '★ MICHELIN. O melhor argumento de fine dining do país. Menu novo desde 03/09/2026.' },
-        { r: 'alba',    nota: '★ MICHELIN, a única estrela NOVA de 2026. Piemonte sério no Raffles. Perde só por ser italiano.' },
+        { r: 'idam',    nota: '★ MICHELIN e nº 44 do MENA\'s 50 Best 2026 — o melhor do Catar. Menu novo desde 03/09/2026. Sem álcool: a harmonização é de mocktails, prato a prato.' },
+        { r: 'alba',    nota: '★ MICHELIN, a única estrela NOVA de 2026. Piemonte sério no Raffles. Perde só por ser italiano — mas é a ÚNICA estrela de Doha onde dá para tomar vinho no jantar.' },
         { r: 'jamavar', nota: '★ MICHELIN mantida. Indiano impecável — e com almoço de 3 tempos a QAR 149, a estrela mais barata do Golfo.' },
         { r: 'zuma',    nota: 'Sem estrela, mas o japonês contemporâneo mais consistente da cidade. Vá no almoço de QAR 139.' },
         { r: 'la-mar',  nota: 'Gastón Acurio com a melhor vista de pôr do sol da lista. O "Sunset Hours" (a partir de QAR 39) é alta gastronomia a preço de petisco.' }
@@ -61,7 +61,7 @@ const HERO_CURADORIA = {
     {
       id: 'F', titulo: 'F. Melhor experiência romântica',
       itens: [
-        { r: 'idam',   nota: '1º lugar. Mesa alta sobre a baía, skyline inteiro na janela, serviço de estrela. Peça mesa na janela ao reservar.' },
+        { r: 'idam',   nota: '1º lugar. Mesa alta sobre a baía, skyline inteiro na janela, serviço de estrela. Peça mesa na janela ao reservar. Sem álcool — se a noite pede vinho, o Alba assume o posto.' },
         { r: 'la-mar', nota: 'Se o critério for pôr do sol e pés quase na areia, ganha do IDAM. Reserve para 40 min antes do sunset.' },
         { r: 'jiwan',  nota: 'Vista de baía mais silenciosa e cardápio mais interessante. Sem álcool — o que para alguns casais é melhor, não pior.' },
         { r: 'parisa', nota: 'O salão de espelhos. A dois, à noite, a pé do hotel. Espetáculo visual.' },
@@ -177,7 +177,7 @@ const HERO_CURADORIA = {
       dias: [
         { rotulo: 'Noite 1 — chegada, comida local, a pé', r: 'bandar-aden', hora: '20h', nota: 'Mandi de cordeiro sentado no chão. Sem reserva complicada, sem carro, sem cerimônia depois do voo. Depois, caminhe pelo Souq (que só ganha vida após 20h em setembro) e termine com knafeh no Al Aker.' },
         { rotulo: 'Noite 2 — cozinha qatari com vista', r: 'jiwan', hora: '19h30', nota: 'Reserve com semanas de antecedência. Chegue cedo para o pôr do sol. QAR 300/pessoa com bebidas. Combine com a visita ao Museu Nacional durante a tarde.' },
-        { rotulo: 'Noite 3 — alta gastronomia, o fecho', r: 'idam', hora: '20h', nota: 'A noite grande. Menu de 8 tempos, mesa na janela, 3 horas. É a memória que vai embora com vocês.' }
+        { rotulo: 'Noite 3 — alta gastronomia, o fecho', r: 'idam', hora: '20h', nota: 'A noite grande. Menu de 8 tempos, mesa na janela, 3 horas. Sem álcool — o Ducasse desenhou o menu assim, e a harmonização é de mocktails prato a prato. É a memória que vai embora com vocês.' }
       ],
       extras: [
         { rotulo: 'Café da manhã (dia 1)', r: 'shay-al-shomous', nota: 'O café qatari. A pé.' },
@@ -229,7 +229,7 @@ const HERO_CURADORIA = {
       {
         r: 'idam', papel: 'Alta gastronomia',
         vale: 'Estrela MICHELIN que cozinha o Golfo em vez de importar cardápio pronto. Bacon de camelo, peixe local, dentro do museu de I. M. Pei. Reabriu em 03/09/2026 — o menu está novo.',
-        pedir: 'Menu "Ember & Tide" de 8 tempos. Peça mesa na janela ao reservar.',
+        pedir: 'Menu "Ember & Tide" de 8 tempos, com a harmonização de mocktails (a casa não serve álcool). Peça mesa na janela ao reservar.',
         brl: 'Reserve R$ 2.000–2.400 para dois (QAR 690/pessoa + bebidas + serviço). Se confirmarem os QAR 560 de 6 tempos, cai para ~R$ 1.700.',
         hora: '20h', reserva: 'Obrigatória, com semanas de antecedência.', tempo: '3 horas'
       },
@@ -284,11 +284,85 @@ const HERO_CURADORIA = {
   },
 
   avisos: [
-    { t: 'Álcool', d: 'O Souq Waqif é área SECA — nenhum restaurante de lá serve álcool, incluindo o Argan, dentro do seu hotel. Álcool só em hotéis 4 e 5 estrelas licenciados (Four Seasons, St. Regis, InterContinental, W, Mondrian, Raffles) e no IDAM. Idade mínima 21 anos, com documento original. Beber ou estar embriagado em público é crime, com multa de até QAR 3.000. Não traga álcool na bagagem: é confiscado no aeroporto, inclusive em conexão.' },
+    { t: 'Álcool', d: 'Veja a aba dedicada 🍷 Álcool — tem o mapa completo das zonas secas, onde se bebe e o impacto no roteiro. Resumo: o Souq Waqif inteiro é seco (o hotel de vocês incluído), Katara é seca, e os dois museus também — o que significa que Jiwan e IDAM, as duas melhores noites, não servem álcool. Bebida só em venue licenciado, 21 anos, com passaporte original; na rua é crime, com multa de até QAR 3.000. Não traga na mala: é confiscado no aeroporto, inclusive em conexão.' },
     { t: 'Sazonalidade — isto muda tudo em setembro', d: 'Doha fecha parte da gastronomia no verão e reabre entre o fim de agosto e outubro. Confirmados: IDAM reabriu 03/09/2026; Jiwan reabriu 30/08/2026; LPM voltou a servir almoço em 01/09/2026. Em contrapartida, Al Maha Island e o Caravan Bay só abrem a temporada em outubro. Ou seja: em 11 de setembro, os endereços de museu já estão no ar e os de Lusail ainda estão acordando. Confirme por telefone antes de cada reserva.' },
     { t: 'Reservas', d: 'IDAM, Jiwan, Alba, Zuma, LPM, Em Sherif, Jamavar, Hakkasan e SAWA pedem reserva com antecedência real. Argan, Bandar Aden, Danat Al Bahar e Parisa aceitam reserva e é recomendável. Shay Al Shomous, Abo Shariha, Gahwetna e Al Aker não trabalham com reserva — é chegar.' },
     { t: 'Horário', d: 'Em setembro Doha ainda passa de 40 °C durante o dia. O Souq só ganha vida depois das 20h. Jantar às 21h é normal e às 22h não é tarde.' },
     { t: 'Câmbio', d: 'Todas as conversões usam 1 QAR = R$ 1,40 (11/09/2026). O riyal tem paridade fixa com o dólar (3,64 QAR = 1 USD), então a única variável real é o dólar. Se o dólar se mover, ajuste a cotação no topo do app.' },
     { t: 'Gorjeta', d: 'A maioria dos restaurantes de hotel já cobra taxa de serviço. Nos endereços do Souq, arredondar para cima é o costume.' }
+  ]
+};
+
+/* ============================================================
+   GUIA DE ÁLCOOL E ZONAS SECAS — Doha, setembro/2026
+   Pesquisado em 14/09/2026. Nenhuma mudança de lei em 2026 que
+   afete álcool: as alterações do ano foram imóveis, trabalho,
+   drones e aluguel.
+   ============================================================ */
+const HERO_ALCOOL = {
+
+  lei: [
+    { t: 'Onde é permitido beber', d: 'Só em hotéis, bares, clubes e restaurantes com licença. Restaurante comum — inclusive os bons — não serve. Na prática, quase toda a vida noturna de Doha acontece dentro de hotel 4 ou 5 estrelas.' },
+    { t: 'Idade e documento', d: '21 anos. Os venues pedem passaporte ou ID do Catar original — não aceitam foto no celular. Levem o passaporte se a noite tiver bebida.' },
+    { t: 'A licença é por VENUE, não por hotel', d: 'Esta é a pegadinha que mais confunde. Um hotel pode ter um rooftop licenciado e um restaurante seco no mesmo prédio. E a licença não vale nas áreas públicas do hotel: piscina, praia e lobby não contam.' },
+    { t: 'Na rua, nunca', d: 'Beber ou estar embriagado em público é crime: detenção, multa de até QAR 3.000 (~R$ 4.200) e até 6 meses de prisão. Não existe "andar com a taça".' },
+    { t: 'Não traga na mala', d: 'Importar álcool é proibido e confiscado no aeroporto — inclusive em conexão. O free shop da ida não vale a pena.' },
+    { t: 'Ramadã', d: 'Não afeta setembro de 2026, mas fica anotado para viagens futuras: durante o Ramadã boa parte dos bares suspende o serviço nas horas de sol.' }
+  ],
+
+  secas: [
+    { l: 'Souq Waqif inteiro', d: 'Área seca por completo, incluindo o Souq Waqif Boutique Hotels by Tivoli, onde vocês vão ficar. Argan, Parisa, Bandar Aden, Danat Al Bahar, Damasca One, Abo Shariha, Shay Al Shomous: nenhum serve.', forca: 'confirmado' },
+    { l: 'Katara Cultural Village', d: 'A vila inteira é seca. Vale para o Saffron Lounge e para o Chapati & Karak.', forca: 'confirmado' },
+    { l: 'Museu Nacional do Catar (Jiwan, Desert Rose)', d: 'Museu público. O Jiwan serve mocktails, não álcool.', forca: 'confirmado' },
+    { l: 'Museum of Islamic Art (IDAM)', d: 'O IDAM NÃO serve álcool — e isso é escolha de projeto do Alain Ducasse, não falta de licença. O menu foi desenhado para funcionar sem álcool, com um mixologista de mocktails criando uma bebida para responder a cada prato.', forca: 'confirmado' },
+    { l: 'SMAT (Corniche)', d: 'Confirmado: não serve.', forca: 'confirmado' },
+    { l: 'Msheireb — as casas independentes', d: 'Bayt Sharq, Saasna, SAWA by Sanad, Hoppers e Gahwetna não ficam em hotel. Trate como secas até confirmarem o contrário.', forca: 'provavel' }
+  ],
+
+  servem: [
+    { l: 'Four Seasons Doha', v: 'Nobu', d: 'Licenciado.' },
+    { l: 'The St. Regis Doha', v: 'Hakkasan', d: 'Licenciado.' },
+    { l: 'Mondrian Doha', v: 'Morimoto', d: 'Licenciado.' },
+    { l: 'W Doha', v: 'Spice Market, COYA', d: 'Licenciado.' },
+    { l: 'InterContinental Doha Beach', v: 'La Mar, Mykonos', d: 'Licenciado. O "Sunset Hours" do La Mar tem coquetéis a partir de QAR 35.' },
+    { l: 'Sheraton Grand Doha', v: 'Jamavar', d: 'Licenciado.' },
+    { l: 'Raffles Doha (Katara Towers, Lusail)', v: 'Alba', d: 'Licenciado. É a única estrela MICHELIN de Doha onde dá para tomar vinho no jantar.' },
+    { l: 'Al Maha Island, Lusail', v: 'Zuma, LPM, Em Sherif', d: 'Licenciados. O Berenjak, na mesma ilha, não foi possível confirmar.' },
+    { l: 'GAIA (West Bay)', v: 'GAIA Doha', d: 'Bar próprio até 00h30 e carta de vinhos grega.' },
+    { l: 'Rosewood Doha', v: 'Mila', d: 'Licenciado.' }
+  ],
+
+  pertoDoSouq: {
+    intro: 'O Souq é seco, mas vocês não estão longe de um drink. Estes são os venues licenciados mais próximos com fonte oficial do próprio hotel:',
+    itens: [
+      { n: 'Infinity Rooftop Lounge — Alwadi Hotel (MGallery)', d: 'Msheireb, 20º andar. ~500 m do Souq, 5–7 minutos a pé. Coquetéis inspirados em 28 países. É a opção mais próxima e mais bem documentada.', u: 'https://www.alwadihoteldoha.com/restaurants-bars/infinity-rooftop-bar/' },
+      { n: 'Vertigo — Banyan Tree Doha', d: 'Mushaireb, 28º andar, vista de 360° do skyline. ~1,5 km, 6 minutos de carro. Uma das lounges mais altas da região.', u: 'https://www.banyantree.com/qatar/doha/dining/vertigo' },
+      { n: 'Sky View — La Cigale Hotel', d: '15º andar, terraço amplo, apontado como um dos melhores para casal. ~4 km, 10 minutos de carro.', u: null }
+    ],
+    aviso: 'Fóruns de viajantes citam bares mais baratos a pé do Souq (Horizon, Mercure, Best Western), alguns com taxa de associação de ~QAR 30. Não consegui confirmar nenhum por fonte oficial e não são o tipo de lugar que combina com a viagem de vocês — ficam registrados como existentes, não como recomendação.'
+  },
+
+  impacto: {
+    titulo: 'O que isso faz com o roteiro de 3 noites',
+    texto: [
+      'Precisa ser dito com todas as letras: **o roteiro de 3 noites que eu recomendei é inteiramente sem álcool.** Bandar Aden é no Souq (seco), Jiwan é museu (seco) e o IDAM não serve por decisão do próprio Ducasse.',
+      'Isso não foi de propósito — foi o resultado de escolher os melhores restaurantes. Mas agora vocês sabem antes, e não na mesa.',
+      'Se estiver tudo bem assim, nada muda: o Jiwan inclui mocktails no menu de QAR 300, e o IDAM faz harmonização de mocktail prato a prato, que é uma experiência em si e bem mais rara do que uma carta de vinhos.',
+      'Se vocês quiserem vinho em pelo menos uma das noites, há dois caminhos limpos:',
+      '**Trocar a noite 3 do IDAM para o ALBA**, no Raffles (Lusail). É a estrela MICHELIN nova de 2026, é licenciada, e você janta com vinho. Custo: 25 minutos de carro em vez de 6, e italiano em vez de cozinha do Golfo.',
+      '**Manter o roteiro e beber fora dele.** Um drink no Infinity Rooftop (5 a 7 minutos a pé do hotel) antes ou depois do jantar resolve, sem sacrificar nenhum dos três restaurantes. É o que eu faria.',
+      'E há a terceira opção, que é mover o álcool para o almoço: o "Sunset Hours" do La Mar tem coquetéis a partir de QAR 35 com cebiche do Gastón Acurio e o sol caindo sobre o Golfo. Como programa de fim de tarde a dois, é melhor que a maioria dos jantares da lista.'
+    ]
+  },
+
+  fontes: [
+    { t: 'Experience Doha — regras de álcool no Catar 2026', u: 'https://experiencedoha.com/blog/alcohol-guide-doha' },
+    { t: 'Doha Guides — beber álcool no Catar', u: 'https://www.dohaguides.com/drinking-alcohol-in-qatar/' },
+    { t: 'Doha News — IDAM e a abordagem sem álcool', u: 'https://dohanews.co/michelin-starred-chef-takes-no-alcohol-approach-with/' },
+    { t: 'MICHELIN — chef e mixologista do IDAM', u: 'https://guide.michelin.com/qa/en/article/people/chef-michelin-star-idam-doha' },
+    { t: 'Alwadi Hotel Doha — Infinity Rooftop (oficial)', u: 'https://www.alwadihoteldoha.com/restaurants-bars/infinity-rooftop-bar/' },
+    { t: 'Banyan Tree Doha — Vertigo (oficial)', u: 'https://www.banyantree.com/qatar/doha/dining/vertigo' },
+    { t: 'Time Out Doha — mudanças na lei do Catar em 2026', u: 'https://www.timeoutdoha.com/news/new-qatar-laws-in-2026' },
+    { t: "MENA's 50 Best Restaurants 2026", u: 'https://www.theworlds50best.com/mena/en/lists/1-50' }
   ]
 };
