@@ -331,14 +331,19 @@ const HERO_STOPOVER = {
     'ser uma alternativa e vira só uma curiosidade — e aí a decisão é apenas quantas noites manter.',
 
   alwadiResposta: {
-    t: 'Dá para ficar no Alwadi por US$ 24 por pessoa?',
-    d: 'Resposta honesta: eu não sei, e ninguém sabe sem consultar as suas datas. Três coisas ' +
-       'separam o que eu sei do que você quer saber. Primeiro: US$ 24 é "a partir de" — é o piso ' +
-       'do nível Premium, e hotel melhor dentro do mesmo nível pode custar mais. Segundo: o Alwadi ' +
-       'apareceu como EXEMPLO de hotel do nível Premium em veículos de viagem, não numa lista ' +
-       'oficial, e a composição muda. Terceiro: disponibilidade em 28/09–01/10 é uma incógnita até ' +
-       'você entrar com o localizador. O que dá para afirmar: se ele estiver lá, você escolhe — ' +
-       'a mecânica é escolher o nível e depois o hotel dentro dele.'
+    t: 'RESPONDIDO: o Alwadi NÃO está disponível',
+    d: 'A Discover Qatar respondeu em 15/09/2026, pela Pratiksha Gujrati: "Alwadi Hotel is currently ' +
+       'unavailable for the requested dates." Fim da dúvida — e ela resolveu contra.\n\n' +
+       'O que eu tinha escrito antes continua de pé como método: eu não sabia, e ninguém sabia sem ' +
+       'consultar as datas. Consultou-se. Não tem.\n\n' +
+       'O que importa agora: o Alwadi ERA o motivo. Nota 9,6, em Msheireb, dono do Infinity Rooftop ' +
+       '— o bar que este app aponta como o melhor perto do Souq. Sem ele, o Stopover vira uma troca ' +
+       'de um hotel que vocês escolheram por um desconhecido de uma lista que vocês não veem, para ' +
+       'economizar menos de meio jantar no IDAM.\n\n' +
+       'Detalhe que diz muito: das QUATRO perguntas do e-mail modelo (quais hotéis Premium estão ' +
+       'disponíveis, preço total, o Alwadi está na lista, política de cancelamento), ela respondeu ' +
+       'só a terceira — e pediu que o Helio sugerisse uma alternativa. Ou seja, devolveu a pergunta ' +
+       'que ele tinha feito. Ele não tem a lista; ela tem.'
   },
   valeAPena: {
     t: 'Antes de gastar mais energia nisso: vale a pena?',
@@ -348,6 +353,9 @@ const HERO_STOPOVER = {
       { o: 'Economia MÁXIMA', v: 'R$ 960' }
     ],
     texto: [
+      'ATUALIZAÇÃO DE 15/09/2026: a Discover Qatar confirmou que o Alwadi MGallery NÃO tem ' +
+        'disponibilidade nessas datas. A recomendação abaixo, que já era de parar, virou a única ' +
+        'resposta sensata — porque o Alwadi era o que segurava a dúvida.',
       'R$ 960 é dinheiro. Mas põe na escala da viagem: é **menos de meio jantar no IDAM** (R$ 2.000 a 2.400 para vocês dois) e mais ou menos **um jantar no Jiwan**.',
       'E essa é a economia no MELHOR caso — supondo que o Alwadi, ou outro hotel tão bom quanto, esteja disponível nas suas datas, o que ninguém sabe até você consultar.',
       'Do outro lado da balança: o risco de mexer numa reserva do Park Hyatt que pode não ser reembolsável, o tempo que você já gastou tentando entender o programa, e a chance de acabar num hotel pior para economizar o equivalente a um jantar.',
@@ -377,6 +385,8 @@ const HERO_STOPOVER = {
     nota: 'Só falta colar o localizador do voo. Tudo o mais já está preenchido com os seus dados reais.'
   },
 
-  veredito: 'Se for tentar, tente pelo e-mail e sem pressa: a economia máxima é de R$ 960, ' +
-    'menos de meio jantar no IDAM. Não vale cancelar nada antes de ter resposta por escrito.'
+  veredito: 'ENCERRADO em 15/09/2026. A resposta por escrito veio e o Alwadi não tem vaga. ' +
+    'A economia máxima era de R$ 960 — menos de meio jantar no IDAM — e dependia justamente dele. ' +
+    'Fica o Park Hyatt, que vocês escolheram: nota 9,6, em Msheireb, com o Sora Rooftop no 21º andar. ' +
+    'A energia vai para a decisão que vale mais dinheiro: a terceira noite, dia 30.'
 };
