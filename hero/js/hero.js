@@ -1070,6 +1070,39 @@
         var bb = el('div', 'pb'); bb.appendChild(el('div', 'px', esc(t)));
         row.appendChild(bb); pn2.appendChild(row);
       });
+      /* A cotacao real entra ANTES de tudo: e o unico bloco com preco confirmado. */
+      if (S.cotacaoReal) {
+        var pc = el('div', 'panel');
+        pc.appendChild(el('h2', null, '\ud83d\udcb0 ' + esc(S.cotacaoReal.t)));
+        pc.appendChild(el('div', 'lead', esc(S.cotacaoReal.quem)));
+        var dlr = el('dl', 'kv');
+        S.cotacaoReal.linhas.forEach(function (l) {
+          dlr.appendChild(el('dt', null, esc(l.o)));
+          dlr.appendChild(el('dd', null, '<b>QAR ' + l.qar.toLocaleString('pt-BR') + ' \u00b7 R$ ' +
+            l.brl.toLocaleString('pt-BR') + '</b><br>' + esc(l.obs)));
+        });
+        pc.appendChild(dlr);
+        S.cotacaoReal.conclusoes.forEach(function (t, i) {
+          pc.appendChild(el('div', 'note ' + (i === 0 ? 'bad' : i === 1 ? 'warn' : 'ok'), esc(t)));
+        });
+        root.insertBefore(pc, root.firstChild);
+      }
+      if (S.listaPremium) {
+        var pl2 = el('div', 'panel');
+        pl2.appendChild(el('h2', null, esc(S.listaPremium.t)));
+        pl2.appendChild(el('div', 'lead', esc(S.listaPremium.intro)));
+        S.listaPremium.hoteis.forEach(function (h2) {
+          var n = el('div', 'night');
+          n.appendChild(el('div', 'nl', esc(h2.onde)));
+          n.appendChild(el('div', 'nn', esc(h2.n)));
+          if (h2.bom) n.appendChild(el('div', 'note ok', esc(h2.bom)));
+          if (h2.ruim) n.appendChild(el('div', 'note warn', esc(h2.ruim)));
+          var fz = fontesDe(h2.f); if (fz) n.appendChild(fz);
+          pl2.appendChild(n);
+        });
+        pl2.appendChild(el('div', 'note', esc(S.listaPremium.contraste)));
+        root.insertBefore(pl2, root.firstChild.nextSibling);
+      }
       if (S.valeAPena) {
         var pw = el('div', 'panel');
         pw.appendChild(el('h2', null, '⚖️ ' + esc(S.valeAPena.t)));

@@ -230,12 +230,17 @@ const HERO_HOTEIS = {
   ],
 
   decidido: {
-    t: 'Decidido: Park Hyatt Doha',
-    d: 'R$ 565 a diária, nota 9,6, em Msheireb. Fica a 10–12 minutos a pé do Souq Waqif e ' +
-       'tem o Sora no 21º andar — bar e japonês com vista do próprio Souq, da Mesquita Verde e de West Bay. ' +
-       'Ou seja: o problema do álcool no hotel deixou de existir, porque agora o bar está no prédio.',
-    falta: 'Falta decidir o número de noites. A reserva atual cobre 28→30/09, mas o voo de volta ' +
-           'sai 1º/10 às 00h05. Veja a aba "A escala".'
+    t: 'A escolha: Park Hyatt Doha — ainda NÃO reservado',
+    d: 'Situação em 15/09/2026: nada está reservado. R$ 565 a diária era a cotação de AGOSTO, para ' +
+       '28→30 — precisa ser refeita hoje. Nota 9,6 no hoteis.com e #23 de 232 no Tripadvisor (4/5, ' +
+       '953 avaliações); as duas escalas são diferentes e as duas podem ser verdade. Em Msheireb, ' +
+       'a 10–12 minutos a pé do Souq Waqif, com metrô Msheireb ao lado e o Sora no 21º andar — bar ' +
+       'e japonês com robata e vista do Souq, da Mesquita Verde e de West Bay. O problema do álcool ' +
+       'no hotel deixa de existir, porque o bar fica no prédio.',
+    falta: 'DUAS COISAS FALTAM. (1) Refazer a cotação para 28/09 → 01/10, TRÊS noites — o voo sai ' +
+           '1º/10 às 00h05, então com duas noites sobram 9 horas sem quarto no dia 30, a 40 °C. ' +
+           '(2) Comparar com o que a Discover Qatar cotou: Premium só quarto, R$ 785 as três noites. ' +
+           'Veja o painel da cotação real na aba "A escala".'
   },
 
   veredito: {
@@ -393,9 +398,65 @@ const HERO_STOPOVER = {
     nota: 'Só falta colar o localizador do voo. Tudo o mais já está preenchido com os seus dados reais.'
   },
 
-  veredito: 'EM ABERTO, com prazo. O Alwadi não tem vaga — isso está respondido. Mas como NADA ' +
-    'está reservado, perguntar não custa: um e-mail pedindo a lista Premium com preço e política de ' +
-    'cancelamento, prazo até 20/09. Se vier hotel bom e mais barato, troca; se não vier, reserva o ' +
-    'Park Hyatt direto e pronto. O limite do programa é 25/09 (72h antes do check-in) e a alta ' +
-    'temporada começa em outubro — esperar demais só encarece. Três noites: 28, 29 e 30.'
+  cotacaoReal: {
+    t: 'A COTAÇÃO DE VERDADE — Discover Qatar, 15/09/2026',
+    quem: 'Nizar Abdul, Discover Qatar. Não é mais estimativa de imprensa: são os preços do programa ' +
+          'para as datas de vocês, 3 noites a partir de 28/09/2026, 1 quarto, 2 hóspedes. Câmbio 1 QAR = R$ 1,40.',
+    linhas: [
+      { o: 'Park Hyatt via Stopover (nível LUXURY, com café)', qar: 1858, brl: 2601,
+        obs: 'O Park Hyatt ESTÁ no programa — mas no nível Luxury, não no Premium.' },
+      { o: 'Park Hyatt reserva direta (sua cotação de agosto)', qar: 1211, brl: 1695,
+        obs: 'R$ 565/noite × 3. ATENÇÃO: é cotação de AGOSTO, para 28→30. Precisa ser refeita hoje.' },
+      { o: 'Premium 5★ — só o quarto', qar: 561, brl: 785,
+        obs: 'R$ 262 por noite. Escolhendo entre os 5 hotéis da lista.' },
+      { o: 'Premium 5★ — com café para 2', qar: 1051, brl: 1471,
+        obs: 'O café sai por QAR 490 = R$ 686, ou R$ 114 por pessoa por manhã.' },
+      { o: 'Traslados aeroporto, ida e volta', qar: 280, brl: 392, obs: 'Opcional, oferecido por eles.' }
+    ],
+    conclusoes: [
+      'O PARK HYATT PELO STOPOVER É MAIS CARO QUE DIRETO. R$ 2.601 contra cerca de R$ 1.695 — ' +
+        'R$ 906 a mais, e o que se ganha é o café da manhã. São R$ 151 por café. Descartado.',
+      'O CAFÉ DO PREMIUM TAMBÉM É CARO: R$ 114 por pessoa por manhã, e vocês vão estar comendo fora ' +
+        'de qualquer jeito. Peça só o quarto.',
+      'A ECONOMIA REAL: Premium só quarto (R$ 785) contra Park Hyatt direto (R$ 1.695) = R$ 910, ' +
+        'ou R$ 303 por noite. É menos de meio jantar no IDAM. A pergunta é o que esses R$ 303 compram.'
+    ]
+  },
+
+  listaPremium: {
+    t: 'Os 5 hotéis do nível Premium, e onde eles ficam',
+    intro: 'Conferi a localização de cada um, porque para 54 horas montadas em volta do Souq Waqif ' +
+           'a localização vale mais que a estrela.',
+    hoteis: [
+      { n: 'Golden Tulip Doha', onde: 'Al Salata, na Corniche', lat: 25.2895, lng: 51.5400,
+        bom: 'A 5 minutos a pé da Corniche e do Porto, estação de metrô Souq Waqif perto, 2 minutos de carro do Souq e do Museu de Arte Islâmica. 193 quartos.',
+        ruim: 'Tripadvisor 4/5, mas só #72 de 229 em Doha, com 674 avaliações — e as críticas se repetem: "não é 5 estrelas", "precisa de reforma". Bom de lugar, médio de produto.',
+        f: [{ t: 'Tripadvisor — Golden Tulip Doha', u: 'https://www.tripadvisor.com/Hotel_Review-g294009-d10632887-Reviews-Golden_Tulip_Doha-Doha.html' },
+             { t: 'Visit Qatar — Golden Tulip Doha', u: 'https://visitqatar.com/intl-en/plan-your-trip/accommodation/golden-tulip-doha' }] },
+      { n: 'Hyatt Regency Oryx Doha', onde: 'perto do aeroporto', lat: 25.2620, lng: 51.5680,
+        bom: 'METRÔ: Red Line até Msheireb em 4 minutos, com estação ao lado. É a melhor marca da lista depois do Park Hyatt.',
+        ruim: '3,8 km do Souq Waqif. Sem o metrô, é táxi para tudo — e o metrô de Doha fecha antes da madrugada.',
+        f: [{ t: 'Visit Qatar — Hyatt Regency Oryx Doha', u: 'https://visitqatar.com/intl-en/plan-your-trip/accommodation/hyatt-regency-oryx-doha' }] },
+      { n: 'Radisson Blu Hotel, Doha', onde: 'Al Muntazah', lat: 25.2760, lng: 51.5250,
+        bom: 'Próximo do Souq Waqif e do Museu de Arte Islâmica, segundo a própria rede.',
+        ruim: 'Não confirmei distância exata nem avaliação. Hotel grande e antigo de Doha.', f: [] },
+      { n: 'Crowne Plaza Doha — The Business Park', onde: 'Airport Road, distrito de negócios', lat: 25.2500, lng: 51.5540,
+        bom: '15 minutos do aeroporto, 6 restaurantes no prédio.',
+        ruim: 'É hotel de executivo em distrito de escritórios. Longe de tudo o que vocês vão fazer.', f: [] },
+      { n: 'Millennium Hotel Doha', onde: 'não confirmado', lat: null, lng: null,
+        bom: '', ruim: 'Não consegui confirmar a localização nem a avaliação. Se for a escolha, peça o endereço à Discover Qatar antes.', f: [] }
+    ],
+    contraste: 'Para comparar: o Park Hyatt é #23 de 232 no Tripadvisor (4/5, 953 avaliações), fica em ' +
+      'Msheireb, a pé do Souq Waqif, com metrô Msheireb ao lado e o Sora Rooftop no 21º andar do próprio prédio.'
+  },
+
+  veredito: 'RESPONDIDO em 15/09/2026, com preço de verdade. Duas coisas ficaram claras. ' +
+    'PRIMEIRA: o Park Hyatt pelo Stopover custa R$ 2.601 contra cerca de R$ 1.695 direto — ' +
+    'pagar R$ 906 a mais pelo mesmo quarto para ganhar café da manhã não faz sentido. Descartado. ' +
+    'SEGUNDA: o Premium só quarto sai por R$ 785 as três noites, contra R$ 1.695 do Park Hyatt. ' +
+    'A economia é de R$ 910, e o que ela custa é a localização: o melhor da lista Premium, o Golden ' +
+    'Tulip, é #72 de 229 em Doha e tem crítica de "precisa de reforma"; o Park Hyatt é #23 e fica ' +
+    'a pé do Souq. Em 54 horas montadas em volta do Souq Waqif, a base é o roteiro. ' +
+    'RECOMENDAÇÃO: Park Hyatt direto, 3 noites — depois de refazer a cotação hoje, porque a de ' +
+    'R$ 565/noite é de agosto. Recusar os traslados a QAR 280: táxi custa menos.'
 };
