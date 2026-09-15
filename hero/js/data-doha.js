@@ -20,13 +20,15 @@ const HERO_CIDADE = {
     bairro: 'Msheireb Downtown',
     lat: 25.2880, lng: 51.5245,
     mapsQuery: 'Park Hyatt Doha Msheireb',
-    nota: 'Reservado. As distâncias e os tempos das fichas são medidos DAQUI, do hotel — ' +
+    nota: 'ESCOLHIDO, AINDA NÃO RESERVADO (situação em 15/09/2026). As distâncias e os tempos das fichas são medidos DAQUI, do hotel — ' +
           'é o número que interessa quando você está decidindo aonde ir. São estimativas ' +
           'calculadas por coordenada (linha reta corrigida para rua), não rota do Google: ' +
           'para o caminho real use o botão de rota da ficha, que já sai do hotel. ' +
           'A distância do Souq Waqif continua na ficha, na linha de baixo, porque foi ' +
           'assim que a pesquisa foi feita e o Souq é a referência da cidade.',
-    bar: 'Sora Rooftop no 21º andar (japonês com bar e vista do Souq Waqif), Opus (francês-qatari), Anis e lounge bar.'
+    bar: 'Sora Rooftop no 21º andar — japonês com robata, e a varanda olha o Souq Waqif, a Corniche, o Doha Palace e a Mesquita Verde. O Opus é o mediterrâneo do térreo, aberto o dia todo. '
+         + '187 quartos, spa, piscina descoberta e academia (uma mista e uma só para mulheres). '
+         + 'A estação de metrô Msheireb fica ao lado.'
   },
   cambio: {
     par: 'QAR/BRL',

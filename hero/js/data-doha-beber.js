@@ -148,7 +148,7 @@ const HERO_HOTEIS = {
       noite: 565, total: 1131, dist: '~1 km · 10 min a pé', seco: false,
       bar: 'Sora Rooftop (21º andar, japonês com bar e vista do Souq), Opus (francês-qatari), Anis e lounge bar.',
       d: 'O equilíbrio mais inteligente da lista: nota 9,6, a pé do Souq, e um rooftop no prédio que olha para o Souq Waqif, a Mesquita Verde e West Bay.',
-      vencedor: '✅ RESERVADO', reservado: true },
+      vencedor: '⭐ A ESCOLHA — ainda não reservado', reservado: false },
 
     { n: 'DoubleTree by Hilton Old Town', b: 'As Salatah', nota: 9.0, aval: 1001,
       noite: 418, total: 836, dist: '~2 km · 7 min de carro', seco: false,
@@ -295,7 +295,7 @@ const HERO_STOPOVER = {
       d: 'ATENÇÃO: aqui o programa deixa de ser barganha. Três noites saem por R$ 2.540 — mais caro que reservar o Park Hyatt direto (R$ 1.695).' }
   ],
   comparativo: {
-    t: 'Contra o Park Hyatt que você reservou',
+    t: 'Contra o Park Hyatt, que é a sua escolha (mas ainda não está reservado)',
     linhas: [
       { o: 'Park Hyatt, 3 noites, reserva direta', v: 'R$ 1.695', obs: 'o hotel que você escolheu, nota 9,6' },
       { o: 'Stopover Premium 5★, 3 noites', v: 'R$ 734', obs: 'mas você escolhe da lista deles' },
@@ -353,13 +353,21 @@ const HERO_STOPOVER = {
       { o: 'Economia MÁXIMA', v: 'R$ 960' }
     ],
     texto: [
-      'ATUALIZAÇÃO DE 15/09/2026: a Discover Qatar confirmou que o Alwadi MGallery NÃO tem ' +
-        'disponibilidade nessas datas. A recomendação abaixo, que já era de parar, virou a única ' +
-        'resposta sensata — porque o Alwadi era o que segurava a dúvida.',
+      'ATUALIZAÇÃO DE 15/09/2026, EM DUAS PARTES. Primeira: a Discover Qatar confirmou que o ' +
+        'Alwadi MGallery NÃO tem disponibilidade nessas datas. Segunda, e mais importante: o Helio ' +
+        'me corrigiu — ele NÃO reservou o Park Hyatt. Nada está reservado.',
+      'ISSO INVERTE METADE DO MEU ARGUMENTO, e eu prefiro dizer isso do que fingir coerência. ' +
+        'A minha recomendação de parar tinha duas pernas: (a) a economia é pequena, e (b) mexer numa ' +
+        'reserva do Park Hyatt que pode não ser reembolsável é risco. A perna (b) caiu. Sem nada ' +
+        'reservado, perguntar à Discover Qatar custa um e-mail e não arrisca nada.',
+      'A perna (a) continua de pé: a economia máxima é de R$ 960. Mas "pequena e sem risco" é uma ' +
+        'conta diferente de "pequena e com risco". Recomendação nova: MANDE O E-MAIL, dê prazo até ' +
+        '20/09, e reserve direto se não vier resposta boa. O limite do programa é 72h antes do ' +
+        'check-in, ou seja 25/09 — e a alta temporada começa em outubro, o que só encarece a espera.',
       'R$ 960 é dinheiro. Mas põe na escala da viagem: é **menos de meio jantar no IDAM** (R$ 2.000 a 2.400 para vocês dois) e mais ou menos **um jantar no Jiwan**.',
       'E essa é a economia no MELHOR caso — supondo que o Alwadi, ou outro hotel tão bom quanto, esteja disponível nas suas datas, o que ninguém sabe até você consultar.',
       'Do outro lado da balança: o risco de mexer numa reserva do Park Hyatt que pode não ser reembolsável, o tempo que você já gastou tentando entender o programa, e a chance de acabar num hotel pior para economizar o equivalente a um jantar.',
-      '**Minha recomendação:** pare de perseguir o Stopover. Fique no Park Hyatt, acrescente a terceira noite, e gaste a energia decidindo os três jantares — que é onde essa viagem realmente se ganha ou se perde.',
+      '**Minha recomendação ANTERIOR (agosto), que ficou datada:** pare de perseguir o Stopover, fique no Park Hyatt. Ela supunha que o hotel já estivesse reservado. Não estava.',
       'Se ainda quiser tentar, não navegue no site: **mande um e-mail**. Um texto, uma resposta, zero cliques. O modelo está aqui embaixo.'
     ]
   },
@@ -385,8 +393,9 @@ const HERO_STOPOVER = {
     nota: 'Só falta colar o localizador do voo. Tudo o mais já está preenchido com os seus dados reais.'
   },
 
-  veredito: 'ENCERRADO em 15/09/2026. A resposta por escrito veio e o Alwadi não tem vaga. ' +
-    'A economia máxima era de R$ 960 — menos de meio jantar no IDAM — e dependia justamente dele. ' +
-    'Fica o Park Hyatt, que vocês escolheram: nota 9,6, em Msheireb, com o Sora Rooftop no 21º andar. ' +
-    'A energia vai para a decisão que vale mais dinheiro: a terceira noite, dia 30.'
+  veredito: 'EM ABERTO, com prazo. O Alwadi não tem vaga — isso está respondido. Mas como NADA ' +
+    'está reservado, perguntar não custa: um e-mail pedindo a lista Premium com preço e política de ' +
+    'cancelamento, prazo até 20/09. Se vier hotel bom e mais barato, troca; se não vier, reserva o ' +
+    'Park Hyatt direto e pronto. O limite do programa é 25/09 (72h antes do check-in) e a alta ' +
+    'temporada começa em outubro — esperar demais só encarece. Três noites: 28, 29 e 30.'
 };

@@ -350,7 +350,7 @@ const HERO_ALCOOL = {
       'Se estiver tudo bem assim, nada muda: o Jiwan inclui mocktails no menu de QAR 300, e o IDAM faz harmonização de mocktail prato a prato, que é uma experiência em si e bem mais rara do que uma carta de vinhos.',
       'Se vocês quiserem vinho em pelo menos uma das noites, há dois caminhos limpos:',
       '**Trocar a noite 3 do IDAM para o ALBA**, no Raffles (Lusail). É a estrela MICHELIN nova de 2026, é licenciada, e você janta com vinho. Custo: 25 minutos de carro em vez de 6, e italiano em vez de cozinha do Golfo.',
-      '**Manter o roteiro e beber no hotel.** Com o Park Hyatt reservado, o Sora está no 21º andar do próprio prédio, com vista do Souq Waqif e de West Bay. Um drink antes ou depois do jantar resolve, sem sacrificar nenhum dos três restaurantes. É o que eu faria. O Infinity Rooftop, no Alwadi, fica a 5 minutos e é a alternativa.',
+      '**Manter o roteiro e beber no hotel.** Se ficarem no Park Hyatt, o Sora está no 21º andar do próprio prédio, com vista do Souq Waqif e de West Bay. Um drink antes ou depois do jantar resolve, sem sacrificar nenhum dos três restaurantes. É o que eu faria. O Infinity Rooftop, no Alwadi, fica a 5 minutos e é a alternativa.',
       'E há a terceira opção, que é mover o álcool para o almoço: o "Sunset Hours" do La Mar tem coquetéis a partir de QAR 35 com cebiche do Gastón Acurio e o sol caindo sobre o Golfo. Como programa de fim de tarde a dois, é melhor que a maioria dos jantares da lista.'
     ]
   },
