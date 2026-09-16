@@ -986,6 +986,49 @@
       root.appendChild(pa);
     }
 
+    /* A escala da IDA vem primeiro: e a que acontece em dois dias. */
+    if (E.ida) {
+      var I2 = E.ida;
+      var pi = el('div', 'panel');
+      pi.appendChild(el('h2', null, '\u2708\ufe0f ' + esc(I2.t)));
+      pi.appendChild(el('div', 'lead', esc(I2.voos)));
+      pi.appendChild(el('div', 'note warn', '<b>Tempo real:</b> ' + esc(I2.janela)));
+      pi.appendChild(el('div', 'note ok', esc(I2.veredito)));
+      I2.linha.forEach(function (x) {
+        var n = el('div', 'night');
+        n.appendChild(el('div', 'nl', esc(x.h)));
+        n.appendChild(el('div', 'nx', esc(x.o)));
+        pi.appendChild(n);
+      });
+      root.insertBefore(pi, root.firstChild);
+
+      var pcz = el('div', 'panel');
+      pcz.appendChild(el('h2', null, '\ud83d\udcb3 ' + esc(I2.cartoes.t)));
+      pcz.appendChild(el('div', 'note bad', esc(I2.cartoes.aviso)));
+      var dlz = el('dl', 'kv');
+      I2.cartoes.linhas.forEach(function (l) {
+        dlz.appendChild(el('dt', null, esc(l.prog)));
+        dlz.appendChild(el('dd', null, '<b>' + esc(l.abre) + '</b><br>' + esc(l.d)));
+      });
+      pcz.appendChild(dlz);
+      pcz.appendChild(el('div', 'note ok', esc(I2.cartoes.apps)));
+      root.insertBefore(pcz, pi.nextSibling);
+
+      var ancora = pcz;
+      [I2.gratis, I2.pagos].forEach(function (bl, i) {
+        var pb2 = el('div', 'panel');
+        pb2.appendChild(el('h2', null, (i === 0 ? '\ud83c\udd93 ' : '\ud83d\udcb0 ') + esc(bl.t)));
+        bl.itens.forEach(function (x) {
+          var n = el('div', 'night');
+          n.appendChild(el('div', 'nn', esc(x.n)));
+          n.appendChild(el('div', 'nx', esc(x.d)));
+          pb2.appendChild(n);
+        });
+        root.insertBefore(pb2, ancora.nextSibling);
+        ancora = pb2;
+      });
+    }
+
     var pv = el('div', 'panel');
     pv.appendChild(el('h2', null, 'O veredito'));
     E.veredito.forEach(function (t) {

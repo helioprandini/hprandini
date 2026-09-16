@@ -2,7 +2,7 @@
  * Cidade nova = um objeto aqui + um arquivo de dados. A interface não muda.
  */
 
-const HERO_VERSAO = { n: 'v23', data: '2026-09-15' };
+const HERO_VERSAO = { n: 'v24', data: '2026-09-16' };
 
 const HERO_MOEDAS = {
   base: 'BRL',
@@ -101,6 +101,64 @@ const HERO_ESCALA = {
     d: 'O Al Maha serve bebida alcoólica, inclusive espumante. Detalhe prático relatado por quem esteve lá: ' +
        'o álcool não fica exposto no balcão principal — cerveja e vinho ficam em geladeiras no fundo do salão. ' +
        'É só pedir. A única exceção do ano é o Ramadã, que não afeta setembro.'
+  },
+
+  ida: {
+    t: 'A ESCALA DA IDA — 18/09, 22h15 às 02h25',
+    voos: 'QR774 chega de Guarulhos às 22h15 do dia 18. QR570 sai para Delhi às 02h25 do dia 19.',
+    janela: '4 horas e 10 minutos no papel. Na prática, tire 30 minutos para desembarcar e caminhar, e ' +
+            'esteja no portão às 01h40: sobram cerca de TRÊS HORAS úteis.',
+    veredito: 'Esta não é uma escala de passear, é uma escala de DORMIR. Vocês vêm de 14h20 de voo, ' +
+              'chegam quase meia-noite e pousam em Delhi às 08h45 com o roteiro começando. O objetivo é ' +
+              'banho, comida leve e descanso — e dormir no voo de 3h50 para Delhi.',
+    linha: [
+      { h: '22h15', o: 'Pouso. Conexão internacional: NÃO passa pela imigração do Catar.' },
+      { h: '22h45', o: 'Já no lounge ou na sala de descanso. Banho primeiro — é o que mais rende depois de 14 horas.' },
+      { h: '23h30', o: 'Comer leve. Evitem álcool e comida pesada: vocês precisam dormir no próximo voo.' },
+      { h: '00h30', o: 'Descanso. Se for Quiet Room, escolham a de terminal menos movimentado (A ou D).' },
+      { h: '01h40', o: 'No portão. O QR570 embarca antes das 02h25.' }
+    ],
+    cartoes: {
+      t: 'O que os seus cartões abrem em Doha — e a armadilha',
+      aviso: 'ATENÇÃO, e isto é o mais importante desta página: o programa NÃO depende de o cartão ser ' +
+             'Black ou Infinite. Depende do BANCO EMISSOR. O mesmo Visa Infinite pode vir com LoungeKey, ' +
+             'com Priority Pass ou com DragonPass, conforme o banco. Você TEM de conferir no aplicativo ' +
+             'antes de viajar — é lá que aparece qual programa você tem e quantos acessos restam.',
+      linhas: [
+        { prog: 'LoungeKey', abre: 'AL MAHA — sim', d: 'Funciona. É o caminho bom.' },
+        { prog: 'DragonPass (Mastercard Travel Pass / Visa Airport Companion)', abre: 'AL MAHA — sim, com 6 horas',
+          d: 'Funciona, e dá SEIS HORAS de acesso. Mais que suficiente.' },
+        { prog: 'Priority Pass', abre: 'AL MAHA — NÃO',
+          d: 'Os três lounges Al Maha SAÍRAM do Priority Pass em 15 de maio de 2026. Mas o cartão ainda abre ' +
+             'os SLEEP \u2019N FLY (North e South Node) — que são cápsulas de dormir. Para uma escala de ' +
+             'madrugada, isso pode ser MELHOR que um lounge comum.' }
+      ],
+      apps: 'Baixe e confira ANTES de sair de casa: Mastercard Airport Experiences ou Mastercard Travel Pass ' +
+            '(para o Black) e Visa Airport Companion (para o Infinite). Os dois mostram o programa e o saldo ' +
+            'de acessos grátis. Não descubra isso no balcão, à meia-noite, com sono.'
+    },
+    gratis: {
+      t: 'De graça, sem cartão nenhum',
+      itens: [
+        { n: 'Quiet Rooms', d: 'Salas de descanso gratuitas espalhadas pelo terminal, com poltronas reclináveis e ' +
+          'luz baixa. Há salas separadas para homens, mulheres e famílias. Nos terminais A e D existem salas ' +
+          'silenciosas com espreguiçadeiras, e essas costumam ser as menos cheias.' },
+        { n: 'The Orchard', d: 'O jardim tropical coberto no meio do terminal. Não resolve sono, mas é o lugar ' +
+          'mais bonito do aeroporto para esticar as pernas.' },
+        { n: 'Lamp Bear', d: 'O urso de pelúcia gigante do Urs Fischer, sob o abajur. É a foto obrigatória de Doha ' +
+          'e leva dois minutos.' }
+      ]
+    },
+    pagos: {
+      t: 'Se os cartões não abrirem',
+      itens: [
+        { n: 'Al Maha Lounge', d: 'US$ 57,79 por 4 horas, por pessoa. Para dois, uns R$ 600 — caro para três horas.' },
+        { n: 'Sleepover (cápsulas)', d: 'Cápsulas de dormir e cabines de família, no North Node, nível inferior dos ' +
+          'portões C, em frente aos C30/C31. Dá para pegar de 2 horas. Tem chuveiro.' },
+        { n: 'Sleep \u2019n Fly', d: 'Cápsulas perto do portão B10, cobradas por hora. É onde o Priority Pass entra.' },
+        { n: 'Oryx Airport Hotel', d: 'Hotel dentro da área de embarque. Para três horas não compensa.' }
+      ]
+    }
   },
 
   lounges: [
