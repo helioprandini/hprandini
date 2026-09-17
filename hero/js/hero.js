@@ -1002,6 +1002,22 @@
       });
       root.insertBefore(pi, root.firstChild);
 
+      if (I2.onde) {
+        var po = el('div', 'panel');
+        po.appendChild(el('h2', null, '\ud83e\udded ' + esc(I2.onde.t)));
+        po.appendChild(el('div', 'note ok', esc(I2.onde.d)));
+        I2.onde.concourses.forEach(function (c) {
+          var n = el('div', 'night');
+          n.appendChild(el('div', 'nn', esc(c.n)));
+          n.appendChild(el('div', 'nx', esc(c.d)));
+          po.appendChild(n);
+        });
+        po.appendChild(el('div', 'note warn', esc(I2.onde.gate)));
+        po.appendChild(el('div', 'note', esc(I2.onde.porqueNaoImporta)));
+        po.appendChild(el('div', 'note', esc(I2.onde.ressalva)));
+        root.insertBefore(po, pi.nextSibling);
+      }
+
       var pcz = el('div', 'panel');
       pcz.appendChild(el('h2', null, '\ud83d\udcb3 ' + esc(I2.cartoes.t)));
       pcz.appendChild(el('div', 'note bad', esc(I2.cartoes.aviso)));
@@ -1012,7 +1028,7 @@
       });
       pcz.appendChild(dlz);
       pcz.appendChild(el('div', 'note ok', esc(I2.cartoes.apps)));
-      root.insertBefore(pcz, pi.nextSibling);
+      root.insertBefore(pcz, (I2.onde ? po : pi).nextSibling);
 
       var ancora = pcz;
       [I2.gratis, I2.pagos].forEach(function (bl, i) {

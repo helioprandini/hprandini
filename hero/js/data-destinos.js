@@ -2,7 +2,7 @@
  * Cidade nova = um objeto aqui + um arquivo de dados. A interface não muda.
  */
 
-const HERO_VERSAO = { n: 'v24', data: '2026-09-16' };
+const HERO_VERSAO = { n: 'v25', data: '2026-09-17' };
 
 const HERO_MOEDAS = {
   base: 'BRL',
@@ -118,6 +118,30 @@ const HERO_ESCALA = {
       { h: '00h30', o: 'Descanso. Se for Quiet Room, escolham a de terminal menos movimentado (A ou D).' },
       { h: '01h40', o: 'No portão. O QR570 embarca antes das 02h25.' }
     ],
+    onde: {
+      t: 'Em que terminal você pousa? A pergunta tem uma resposta boa',
+      d: 'O Hamad tem UM TERMINAL SÓ. Não existe a confusão de Terminal 1 / Terminal 2 — tudo é o mesmo ' +
+         'prédio, tudo é área de embarque conectada, e você anda entre qualquer ponto sem passar por ' +
+         'segurança de novo. O que varia é o CONCOURSE (o braço do prédio) e o portão.',
+      concourses: [
+        { n: 'Concourse A', d: 'A oeste do saguão central. Portões A1 a A11.' },
+        { n: 'Concourse B', d: 'A leste do saguão central. Portões B1 a B10.' },
+        { n: 'Concourse C', d: 'Em frente ao saguão central, o maior. É onde fica o AL MAHA NORTH, no nível 1 do North Node.' },
+        { n: 'Concourses D e E', d: 'Os mais novos, abertos para a Copa. Portões D1 a D9 e E1 a E8.' }
+      ],
+      gate: 'O PORTÃO NÃO DÁ PARA SABER COM ANTECEDÊNCIA. Ele é atribuído poucas horas antes, às vezes no ' +
+            'mesmo dia. Onde olhar, em ordem: (1) o aplicativo da Qatar Airways, na sua reserva; ' +
+            '(2) dohahamadairport.com, na busca de voo; (3) Flightradar24, que mostra o portão assim que ' +
+            'é publicado. No pouso, a primeira coisa a fazer é olhar o painel: ele já mostra o portão do QR570.',
+      porqueNaoImporta: 'E aqui está a boa notícia: com três horas úteis, isso quase não pesa. Tudo é ' +
+        'conectado, os dois Al Maha ficam em pontos opostos (North Node no Concourse C, e o South na Duty ' +
+        'Free Plaza Sul), então um deles sempre está a uma caminhada razoável. A dica prática: ao pousar, ' +
+        'ande na direção do CENTRO do terminal — é onde ficam o Lamp Bear, a praça de duty free e a maior ' +
+        'parte da comida, e de lá tudo se alcança.',
+      ressalva: 'Uma coisa eu não consigo prever: alguns voos param em posição remota e o desembarque é de ' +
+        'ônibus. Se acontecer, some uns 15 minutos. Não dá para saber antes.'
+    },
+
     cartoes: {
       t: 'O que os seus cartões abrem em Doha — e a armadilha',
       aviso: 'ATENÇÃO, e isto é o mais importante desta página: o programa NÃO depende de o cartão ser ' +
@@ -141,8 +165,9 @@ const HERO_ESCALA = {
       t: 'De graça, sem cartão nenhum',
       itens: [
         { n: 'Quiet Rooms', d: 'Salas de descanso gratuitas espalhadas pelo terminal, com poltronas reclináveis e ' +
-          'luz baixa. Há salas separadas para homens, mulheres e famílias. Nos terminais A e D existem salas ' +
-          'silenciosas com espreguiçadeiras, e essas costumam ser as menos cheias.' },
+          'luz baixa. Há salas separadas para homens, mulheres e famílias. As dos concourses A e D costumam ' +
+          'ser as menos cheias. (CORREÇÃO: eu escrevi "terminais A e D" antes. São CONCOURSES — o ' +
+          'aeroporto tem um terminal só.)' },
         { n: 'The Orchard', d: 'O jardim tropical coberto no meio do terminal. Não resolve sono, mas é o lugar ' +
           'mais bonito do aeroporto para esticar as pernas.' },
         { n: 'Lamp Bear', d: 'O urso de pelúcia gigante do Urs Fischer, sob o abajur. É a foto obrigatória de Doha ' +
