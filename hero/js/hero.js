@@ -571,6 +571,12 @@
     var h = $('#heroHead');
     h.innerHTML = '';
     if (!destino) {
+      if (aba === 'cambio') {
+        h.appendChild(el('h1', null, 'Moedas e dinheiro'));
+        h.appendChild(el('p', null, 'Conversor, taxas e como tirar dinheiro na mão lá fora. ' +
+          'Vale para qualquer destino — por isso fica aqui, fora das cidades.'));
+        return;
+      }
       h.appendChild(el('h1', null, 'Para onde a gente vai'));
       h.appendChild(el('p', null, 'O guia de viagens do Helio e da Roberta. Escolha um destino.'));
       return;
@@ -2180,6 +2186,7 @@
   function contextoAtual() {
     var L = [];
     L.push('Estou no HeRo (nosso guia de viagens), versao ' + HERO_VERSAO.n + '.');
+    if (!destino && aba === 'cambio') { L.push('Estou vendo ' + NOME_ABA.cambio + ', fora de um destino.'); return L.join(' '); }
     if (!destino || aba === 'destinos') { L.push('Estou vendo ' + NOME_ABA.destinos + '.'); return L.join(' '); }
     var d = HERO_DESTINOS.filter(function (x) { return x.id === destino; })[0];
     L.push('Estou no destino ' + (d ? d.nome + ' (' + d.periodo + ')' : destino) + ', vendo ' + (NOME_ABA[aba] || aba) + '.');
@@ -2250,8 +2257,12 @@
     var root = $('#app'); root.innerHTML = '';
     pintaNav();
     pintaCabecalho();
-    if (aba === 'destinos' || !destino) { viewDestinos(root); return; }
-    if (aba === 'cambio') viewCambio(root);
+    /* Moedas e a unica aba que NAO depende de um destino escolhido: ela le
+       HERO_MOEDAS, nao C. Por isso vem antes do atalho abaixo — era exatamente
+       ai que ela morria na tela inicial (destino vazio devolvia a lista de
+       destinos sem nunca olhar a aba). */
+    if (aba === 'cambio') { viewCambio(root); finaliza(mantemFoco); return; }
+    if (aba === 'destinos' || !destino) { viewDestinos(root); finaliza(mantemFoco); return; }
     else if (aba === 'mapa') viewMapa(root);
     else if (aba === 'euroteiro') viewEuRoteiro(root);
     else if (aba === 'eunotas') viewEuNotas(root);
@@ -2272,6 +2283,9 @@
     else if (aba === 'hoteis') viewHoteis(root);
     else if (aba === 'reservaria') viewReservaria(root);
     else viewAvisos(root);
+    finaliza(mantemFoco);
+  }
+  function finaliza(mantemFoco) {
     if (!mantemFoco) window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
     montaBotaoClaude(); atualizaClaude();
   }
