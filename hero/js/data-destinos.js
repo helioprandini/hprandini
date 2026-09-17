@@ -2,7 +2,7 @@
  * Cidade nova = um objeto aqui + um arquivo de dados. A interface não muda.
  */
 
-const HERO_VERSAO = { n: 'v26', data: '2026-09-17' };
+const HERO_VERSAO = { n: 'v27', data: '2026-09-17' };
 
 const HERO_MOEDAS = {
   base: 'BRL',
@@ -23,7 +23,89 @@ const HERO_MOEDAS = {
     { t: 'Wise — INR/BRL', u: 'https://wise.com/gb/currency-converter/inr-to-brl-rate' },
     { t: 'XE — QAR/BRL', u: 'https://www.xe.com/currencyconverter/convert/?Amount=1&From=QAR&To=BRL' }
   ],
-  atalhos: [10, 50, 100, 300, 500, 1000, 5000]
+  atalhos: [10, 50, 100, 300, 500, 1000, 5000],
+
+  /* DINHEIRO NA MAO — pesquisado em 17/09/2026, para a pergunta do Helio:
+   * "consigo sacar facilmente com o cartao da Wise? como funcionam as taxas?"
+   * Regra da casa: nada de numero inventado. O que nao foi confirmado em
+   * fonte primaria esta marcado como "confira no app da Wise". */
+  saque: {
+    titulo: 'Dinheiro na mão na Índia',
+    resposta: 'Sim, o cartão da Wise saca normalmente em caixa eletrônico na Índia — é Mastercard. O custo do saque tem TRÊS camadas, e duas delas você controla.',
+    comprar: {
+      t: 'Comprar rupia no Brasil: não dá, e nem deveria querer',
+      p: [
+        'A rupia não é moeda livremente negociada. Casa de câmbio no Brasil quase nunca tem, e quando tem o spread é absurdo.',
+        'Mais forte que isso: o Banco Central da Índia (RBI) proíbe estrangeiro de ENTRAR no país com notas de rupia. O limite de ₹25.000 por viagem vale só para residentes indianos. Não existe franquia para turista.',
+        'Ou seja: rupia se consegue LÁ, no caixa eletrônico. É assim mesmo que funciona, não é improviso.'
+      ]
+    },
+    camadas: [
+      {
+        n: 'A Wise (cartão emitido no Brasil)',
+        v: '1º saque do mês: grátis, sem limite de valor. Do 2º em diante: R$ 20 fixos.',
+        d: 'Mudou em 1º de maio de 2026 — antes eram 2 saques grátis com teto de valor e mais 1,75% variável. Agora a taxa variável sumiu e sobrou o fixo. Isso muda a estratégia: sacar POUCAS VEZES e VALORES ALTOS.',
+        alerta: 'A conta é por MÊS CALENDÁRIO. Você está na Índia de 18 a 28 de setembro — tudo dentro do mesmo mês. Você tem UM saque grátis para a viagem inteira.'
+      },
+      {
+        n: 'O banco indiano (dono do caixa)',
+        v: 'Banco público: quase sempre ZERO. Banco privado: ₹200 a ₹335 por saque (R$ 11 a R$ 18).',
+        d: 'Procure caixa de banco PÚBLICO: State Bank of India (SBI), Bank of Baroda, Canara, Punjab National Bank, Union Bank, Indian Bank. Evite HDFC, ICICI, Axis, Kotak e Yes Bank — são os que cobram.',
+        alerta: null
+      },
+      {
+        n: 'A conversão na tela (DCC) — a armadilha cara',
+        v: 'Custa de 3% a 8%. E é 100% evitável.',
+        d: 'O caixa vai perguntar se você quer ser cobrado em REAL ou em RUPIA. Ele vai empurrar o real, com cara de favor ("sabemos exatamente quanto vai custar"). É a conversão do banco indiano, com o spread dele. Escolha SEMPRE rupia.',
+        alerta: 'Na tela, o botão certo é: "Without conversion" / "Charge in INR" / "Decline conversion" / "Continue without conversion". O errado é qualquer coisa que mostre um valor em BRL.'
+      }
+    ],
+    limite: {
+      t: 'O caixa limita o saque, não a Wise',
+      p: 'A maioria dos caixas na Índia entrega no máximo ₹10.000 por transação para cartão estrangeiro (uns poucos vão a ₹20.000). ₹10.000 ≈ R$ 540. Então o "sem limite de valor" da Wise, na prática, para no teto da máquina.'
+    },
+    plano: {
+      t: 'O plano para os 10 dias',
+      p: [
+        'Saque 1 (chegada em Delhi, caixa de banco público, no aeroporto ou no hotel): ₹10.000. Custo: zero.',
+        'Saque 2 (quando acabar, provavelmente lá pelo 4º ou 5º dia): ₹10.000. Custo: R$ 20.',
+        'Saque 3 se precisar: mais R$ 20.',
+        'Total da viagem em taxa de saque: R$ 20 a R$ 40. Fim. Desde que você recuse a conversão nas três vezes.',
+        'Para o resto — hotel, restaurante de hotel, loja grande, Uber — use cartão de crédito normalmente. Índia é muito mais digital do que a fama sugere.'
+      ]
+    },
+    ondePrecisa: {
+      t: 'Onde o dinheiro vivo é obrigatório',
+      p: [
+        'Tuk-tuk / auto-rickshaw — só dinheiro, e o preço se combina ANTES de entrar.',
+        'Gorjeta de guia e motorista — é o maior gasto em dinheiro de um roteiro como o seu, e é esperado.',
+        'Guarda-sapato de templo, doação, entrada de lugar pequeno.',
+        'Mercado, feira, barraca, comida de rua, lojinha de bairro.',
+        'Carregador de mala em estação — sempre em dinheiro.'
+      ]
+    },
+    antesDeSair: {
+      t: 'Duas coisas para conferir ANTES de sair do Brasil',
+      p: [
+        'A SENHA DE 4 DÍGITOS do cartão Wise. Muita gente usa o cartão anos sem nunca ter definido PIN — e sem PIN não sai dinheiro de caixa nenhum. Está no app da Wise, na tela do cartão.',
+        'Se o saque em caixa está habilitado no seu cartão (mesma tela). E confira ali mesmo o seu número de saques grátis do mês — os valores acima são a regra publicada para cartão emitido no Brasil, mas quem manda é o que o SEU app mostra.'
+      ]
+    },
+    doha: {
+      t: 'E em Doha?',
+      p: 'Não precisa de riyal. No aeroporto e na cidade cartão passa em tudo, inclusive táxi e Karak de QAR 5. E tem um motivo a mais para NÃO sacar lá: um saque em Doha queimaria o seu único saque grátis do mês, que você quer guardar para a Índia.'
+    },
+    reserva: {
+      t: 'Plano B honesto',
+      p: 'Se quiser dormir tranquilo, leve US$ 200 a US$ 300 em espécie. Dólar se compra fácil no Brasil, e na Índia se troca em qualquer hotel, aeroporto e casa de câmbio autorizada. É reserva de emergência (cartão bloqueado, caixa engolindo cartão), não é o dinheiro do dia a dia. Abaixo de US$ 5.000 não precisa declarar nada na alfândega indiana.'
+    },
+    fontes: [
+      { t: 'Wise — tarifas de saque (pt-BR)', u: 'https://wise.com/pt/help/articles/3GuSCwDgRqiYrsUc2eo7MN/estrutura-e-tarifas-de-saque-em-caixas-eletronicos' },
+      { t: 'Wise — quanto custa sacar', u: 'https://wise.com/pt/help/articles/2935769/quanto-custa-para-retirar-dinheiro-em-caixas-eletronicos-com-o-meu-cartao-da-wise' },
+      { t: 'Melhores Destinos — a mudança de 1º/05/2026', u: 'https://www.melhoresdestinos.com.br/milhas/conta-internacional-wise-muda-regras-saque' },
+      { t: 'Regras de moeda para entrar na Índia (RBI/Alfândega)', u: 'https://www.happyfares.in/blog/foreign-currency-carry-to-india-rules/' }
+    ]
+  }
 };
 
 const HERO_DESTINOS = [

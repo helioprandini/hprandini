@@ -736,7 +736,70 @@
     pn.appendChild(box2);
     root.appendChild(pn);
 
+    if (M.saque) viewSaque(root, M.saque);
+
     setTimeout(function () { campos.BRL.focus(); }, 60);
+  }
+
+  /* ---------- dinheiro na mao: sacar com a Wise na India ---------- */
+  function viewSaque(root, S) {
+    function painel(titulo) {
+      var p = el('div', 'panel');
+      p.appendChild(el('h2', null, esc(titulo)));
+      return p;
+    }
+    function paras(p, arr) {
+      (Array.isArray(arr) ? arr : [arr]).forEach(function (t) {
+        p.appendChild(el('div', 'lead', esc(t)));
+      });
+    }
+    function lista(p, arr) {
+      arr.forEach(function (t, i) {
+        var row = el('div', 'pick');
+        row.appendChild(el('div', 'rank', String(i + 1)));
+        var b = el('div', 'pb'); b.appendChild(el('div', 'px', esc(t)));
+        row.appendChild(b); p.appendChild(row);
+      });
+    }
+
+    var p0 = painel(S.titulo);
+    p0.appendChild(el('div', 'lead', esc(S.resposta)));
+    root.appendChild(p0);
+
+    var p1 = painel(S.comprar.t);
+    paras(p1, S.comprar.p);
+    root.appendChild(p1);
+
+    var p2 = painel('As três camadas da taxa');
+    S.camadas.forEach(function (c, i) {
+      var row = el('div', 'pick');
+      row.appendChild(el('div', 'rank', String(i + 1)));
+      var b = el('div', 'pb');
+      b.appendChild(el('div', 'px', esc(c.n)));
+      var v = el('div', 'px'); v.appendChild(el('b', null, esc(c.v))); b.appendChild(v);
+      b.appendChild(el('div', 'lead', esc(c.d)));
+      if (c.alerta) {
+        var al = el('div', 'lead'); al.appendChild(el('span', 'tag gold', esc(c.alerta)));
+        b.appendChild(al);
+      }
+      row.appendChild(b);
+      p2.appendChild(row);
+    });
+    root.appendChild(p2);
+
+    var p3 = painel(S.limite.t); paras(p3, S.limite.p); root.appendChild(p3);
+    var p4 = painel(S.plano.t); lista(p4, S.plano.p); root.appendChild(p4);
+    var p5 = painel(S.ondePrecisa.t); lista(p5, S.ondePrecisa.p); root.appendChild(p5);
+    var p6 = painel(S.antesDeSair.t); lista(p6, S.antesDeSair.p); root.appendChild(p6);
+    var p7 = painel(S.doha.t); paras(p7, S.doha.p); root.appendChild(p7);
+    var p8 = painel(S.reserva.t); paras(p8, S.reserva.p);
+    var box = el('div', 'srcs'); box.style.marginTop = '12px';
+    S.fontes.forEach(function (f) {
+      var a = el('a', null, '↗ ' + esc(f.t)); a.href = f.u; a.target = '_blank'; a.rel = 'noopener';
+      box.appendChild(a);
+    });
+    p8.appendChild(box);
+    root.appendChild(p8);
   }
 
   /* ---------- Índia ---------- */
