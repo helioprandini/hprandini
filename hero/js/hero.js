@@ -1002,6 +1002,20 @@
       });
       root.insertBefore(pi, root.firstChild);
 
+      if (I2.confirmado) {
+        var pcf = el('div', 'panel');
+        var C2 = I2.confirmado;
+        pcf.appendChild(el('h2', null, '\u2705 ' + esc(C2.t)));
+        pcf.appendChild(el('div', 'lead', esc(C2.d)));
+        pcf.appendChild(el('div', 'note ok', esc(C2.oQueMuda)));
+        C2.atencao.forEach(function (a) {
+          pcf.appendChild(el('div', 'note warn', '<b>' + esc(a.t) + '</b><br>' + esc(a.d)));
+        });
+        pcf.appendChild(el('div', 'note', esc(C2.escolha)));
+        pcf.appendChild(el('div', 'note ok', esc(C2.veredito)));
+        root.insertBefore(pcf, pi.nextSibling);
+        pi = pcf;
+      }
       if (I2.onde) {
         var po = el('div', 'panel');
         po.appendChild(el('h2', null, '\ud83e\udded ' + esc(I2.onde.t)));

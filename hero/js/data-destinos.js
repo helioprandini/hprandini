@@ -2,7 +2,7 @@
  * Cidade nova = um objeto aqui + um arquivo de dados. A interface não muda.
  */
 
-const HERO_VERSAO = { n: 'v25', data: '2026-09-17' };
+const HERO_VERSAO = { n: 'v26', data: '2026-09-17' };
 
 const HERO_MOEDAS = {
   base: 'BRL',
@@ -140,6 +140,37 @@ const HERO_ESCALA = {
         'parte da comida, e de lá tudo se alcança.',
       ressalva: 'Uma coisa eu não consigo prever: alguns voos param em posição remota e o desembarque é de ' +
         'ônibus. Se acontecer, some uns 15 minutos. Não dá para saber antes.'
+    },
+
+    confirmado: {
+      t: 'CONFIRMADO no seu app (17/09): o Al Maha está aberto para você',
+      d: 'O Helio abriu o aplicativo e mandou as telas. É o DragonPass (o "Explore" laranja), e em ' +
+         'Doha · Main Terminal ele lista, como SALA VIP: Al Maha Lounge (Sudeste), Al Maha Lounge (South), ' +
+         'mais um Al Maha que ficou cortado na tela, e o Sleepover Doha North Node. Em DESCANSAR, como ' +
+         'EXPERIÊNCIA: Sleepover South Node e Sleepover North Node.',
+      oQueMuda: 'A dúvida principal acabou: os Al Maha ESTÃO disponíveis. A saída do Priority Pass em ' +
+                'maio de 2026 não te afeta, porque o seu programa é outro.',
+      atencao: [
+        { t: 'SALA VIP e EXPERIÊNCIA não são a mesma coisa',
+          d: 'Nesses aplicativos, o que está como "Sala VIP" costuma entrar nos acessos incluídos; o que ' +
+             'está como "Experiência" costuma ser desconto, não gratuidade. Repare que o Sleepover aparece ' +
+             'nas DUAS listas — vale conferir qual das duas formas é a gratuita.' },
+        { t: 'O acompanhante é a conta que pode doer',
+          d: 'Vários cartões dão acesso livre ao titular e COBRAM o convidado. Abra a aba "Cartão" ou ' +
+             '"Conta" no app e confira duas coisas: quantos acessos grátis restam, e se a Roberta entra ' +
+             'de graça. É isso que pode virar uma surpresa no balcão à meia-noite.' },
+        { t: 'Sexta à noite em Doha é hora cheia',
+          d: '18/09/2026 cai numa SEXTA, e o Al Maha tem fama de lotar. Se o app deixar reservar com ' +
+             'antecedência, reserve agora. Chegar às 22h45 e encontrar fila é o pior cenário.' }
+      ],
+      escolha: 'QUAL DELES: escolha pelo portão. Você só descobre o portão do QR570 ao pousar, então ' +
+               'decida no painel: o Al Maha North fica no Concourse C (North Node), o South na Duty Free ' +
+               'Plaza Sul. Pegue o que estiver do lado do seu portão de saída — andar 15 minutos com mala ' +
+               'de mão à meia-noite não rende nada.',
+      veredito: 'MEU VOTO: Al Maha, não a cápsula. Com três horas úteis, a cápsula do Sleepover é ' +
+                'marginal — entre entrar, deitar e levantar, sobra uma hora e meia de sono ruim. O lounge ' +
+                'te dá BANHO (que é o que mais rende depois de 14h20 de voo), comida e poltrona. O sono ' +
+                'de verdade vocês fazem nas 3h50 até Delhi. A cápsula valeria se a escala fosse de 6 horas.'
     },
 
     cartoes: {
