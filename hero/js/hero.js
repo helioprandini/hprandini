@@ -791,6 +791,28 @@
     var p4 = painel(S.plano.t); lista(p4, S.plano.p); root.appendChild(p4);
     var p5 = painel(S.ondePrecisa.t); lista(p5, S.ondePrecisa.p); root.appendChild(p5);
     var p6 = painel(S.antesDeSair.t); lista(p6, S.antesDeSair.p); root.appendChild(p6);
+    if (S.c6) {
+      var pc = painel(S.c6.t);
+      pc.appendChild(el('div', 'lead', esc(S.c6.resumo)));
+      S.c6.itens.forEach(function (c, i) {
+        var row = el('div', 'pick');
+        row.appendChild(el('div', 'rank', String(i + 1)));
+        var b = el('div', 'pb');
+        b.appendChild(el('div', 'px', esc(c.n)));
+        var v = el('div', 'px'); v.appendChild(el('b', null, esc(c.v))); b.appendChild(v);
+        b.appendChild(el('div', 'lead', esc(c.d)));
+        row.appendChild(b);
+        pc.appendChild(row);
+      });
+      root.appendChild(pc);
+
+      var pp = painel(S.c6.papel.t);
+      paras(pp, S.c6.papel.p);
+      var cf = el('div', 'lead'); cf.appendChild(el('span', 'tag gold', esc(S.c6.confira)));
+      pp.appendChild(cf);
+      root.appendChild(pp);
+    }
+
     var p7 = painel(S.doha.t); paras(p7, S.doha.p); root.appendChild(p7);
     var p8 = painel(S.reserva.t); paras(p8, S.reserva.p);
     var box = el('div', 'srcs'); box.style.marginTop = '12px';

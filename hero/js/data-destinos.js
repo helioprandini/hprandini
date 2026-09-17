@@ -2,7 +2,7 @@
  * Cidade nova = um objeto aqui + um arquivo de dados. A interface não muda.
  */
 
-const HERO_VERSAO = { n: 'v27', data: '2026-09-17' };
+const HERO_VERSAO = { n: 'v28', data: '2026-09-17' };
 
 const HERO_MOEDAS = {
   base: 'BRL',
@@ -99,7 +99,45 @@ const HERO_MOEDAS = {
       t: 'Plano B honesto',
       p: 'Se quiser dormir tranquilo, leve US$ 200 a US$ 300 em espécie. Dólar se compra fácil no Brasil, e na Índia se troca em qualquer hotel, aeroporto e casa de câmbio autorizada. É reserva de emergência (cartão bloqueado, caixa engolindo cartão), não é o dinheiro do dia a dia. Abaixo de US$ 5.000 não precisa declarar nada na alfândega indiana.'
     },
+    /* WISE x C6 CONTA GLOBAL — pesquisado em 17/09/2026.
+     * O IOF saiu da conta de proposito: o Decreto 12.499/2025 unificou em
+     * 3,5% saque, compra, carga de pre-pago e transferencia para conta
+     * propria no exterior. Os dois pagam igual, entao o IOF nao decide. */
+    c6: {
+      t: 'Wise ou C6 Conta Global? Para a Índia, Wise — e não é perto',
+      resumo: 'O IOF empatou os dois: 3,5% nos dois casos, desde o decreto de 2025 que fechou a brecha da "mesma titularidade". Então quem decide é a tarifa de saque e o spread. E aí o C6 perde por dois motivos somados.',
+      itens: [
+        {
+          n: 'A tarifa: o C6 não tem saque grátis',
+          v: 'C6: US$ 5 por saque, sempre. Wise: o 1º do mês é grátis, depois R$ 20.',
+          d: 'US$ 5 ≈ R$ 26. Num saque de ₹10.000 (≈ R$ 540, que é o teto do caixa indiano), isso sozinho já é 4,8%. O estorno de tarifa que o C6 oferece é em caixa do Chase, nos Estados Unidos — não existe Chase na Índia.'
+        },
+        {
+          n: 'O spread: a Índia é moeda de terceiro país para o C6',
+          v: 'C6: 0,9% no real→dólar + 2% porque a compra é em rupia. Wise: converte real→rupia direto, taxa de mercado.',
+          d: 'A C6 Conta Global só existe em DÓLAR e EURO. Não tem rupia. Então todo saque na Índia vira real→dólar→rupia, e o C6 cobra 2% de "spread adicional para outras moedas" em cima da conversão da Mastercard. A Wise não tem essa camada.'
+        },
+        {
+          n: 'A conta fechada, num saque de ₹10.000',
+          v: 'C6: ≈ 7,7% de custo. Wise: ≈ 1% no primeiro saque, ≈ 4,7% nos seguintes.',
+          d: 'Nos dois casos ainda entra o IOF de 3,5% (igual) e a tarifa do banco dono do caixa (igual, e zero se for banco público). O C6 é mais caro em TODOS os saques da viagem — inclusive contra o segundo e o terceiro saque da Wise.'
+        }
+      ],
+      papel: {
+        t: 'Então o C6 não serve para nada nesta viagem?',
+        p: [
+          'Serve, e para uma coisa importante: ser o PLANO B. Dois cartões de instituições diferentes é a proteção real contra bloqueio antifraude, cartão engolido pela máquina ou app fora do ar. Leve o C6, deixe saldo nele, e não use.',
+          'Se o C6 virar o cartão principal por acidente (Wise bloqueada), o prejuízo é da ordem de R$ 30 por saque. É o preço de não ficar sem dinheiro no meio da Índia — barato.',
+          'Para COMPRAS (hotel, restaurante, loja), o débito Wise também sai na frente do débito C6, pelo mesmo motivo do spread de 2%. Cartão de crédito brasileiro continua fazendo sentido em conta grande de hotel, pela proteção de compra e pelos pontos — não pelo custo.'
+        ]
+      },
+      confira: 'Como sempre: US$ 5 e os spreads de 0,9% e 2% são a tabela publicada do C6. Confirme no app antes de embarcar — tarifa muda e quem manda é a tela do seu aplicativo.'
+    },
+
     fontes: [
+      { t: 'C6 — tarifas e limites de saque da Conta Global', u: 'https://www.c6bank.com.br/blog/quais-as-taxas-e-limites-de-saques-da-conta-global-do-c6-bank' },
+      { t: 'C6 — spread de câmbio da Conta Global', u: 'https://www.c6bank.com.br/blog/como-pagar-menos-spread-de-cambio' },
+      { t: 'Decreto 12.499/2025 — o IOF unificado em 3,5%', u: 'https://dmgsa.com.br/decreto-no-12-499-2025-altera-regras-do-iof-com-impactos-em-credito-cambio-e-seguros/' },
       { t: 'Wise — tarifas de saque (pt-BR)', u: 'https://wise.com/pt/help/articles/3GuSCwDgRqiYrsUc2eo7MN/estrutura-e-tarifas-de-saque-em-caixas-eletronicos' },
       { t: 'Wise — quanto custa sacar', u: 'https://wise.com/pt/help/articles/2935769/quanto-custa-para-retirar-dinheiro-em-caixas-eletronicos-com-o-meu-cartao-da-wise' },
       { t: 'Melhores Destinos — a mudança de 1º/05/2026', u: 'https://www.melhoresdestinos.com.br/milhas/conta-internacional-wise-muda-regras-saque' },
