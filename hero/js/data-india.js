@@ -25,10 +25,12 @@ const HERO_INDIA = {
   ],
 
   dias: [
-    { d: '19/09', cidade: 'Delhi', arte: 'delhi', hotel: 'DoubleTree by Hilton',
+    { d: '19/09', cidade: 'Delhi → Gurugram', arte: 'delhi', hotel: 'DoubleTree by Hilton Gurgaon',
       t: 'Chegada',
       x: 'Pousa em Delhi às 8h45 depois de quase 22 horas de viagem contando a escala. Check-in e a tarde para se recuperar. Sem plano, sem pressão — só entrar na Índia antes do caos começar.',
-      theo: 'Dia de fuso, não de turismo. O corpo vai achar que são 00h20 de Brasília quando vocês pousarem. Coma leve e durma cedo.' },
+      theo: 'Dia de fuso, não de turismo. O corpo vai achar que são 00h20 de Brasília quando vocês pousarem. Coma leve e durma cedo. ' +
+            'O hotel fica em GURUGRAM, não em Delhi — 30 min do aeroporto, mas 45–60 min do centro de Delhi. ' +
+            'Para um dia de recuperação isso é bom, e o hotel tem spa com sala de vapor se vocês quiserem tirar o voo do corpo.' },
 
     { d: '20/09', cidade: 'Agra', arte: 'agra', hotel: 'Tajview — IHCL SeleQtions',
       t: 'Taj Mahal e Forte de Agra',
@@ -79,11 +81,16 @@ const HERO_INDIA = {
   ],
 
   hoteis: [
-    { n: 'DoubleTree by Hilton', c: 'Delhi', p: '19–20/09', obs: 'Chegada. Tem bar e rooftop.' },
-    { n: 'Tajview — IHCL SeleQtions', c: 'Agra', p: '20–21/09', obs: 'Café da manhã incluído · 25% de desconto em comida, bebida e spa.' },
-    { n: 'Taj Palace', c: 'Delhi', p: '21–23/09', obs: 'Superior King, vista do Diplomatic Enclave · café incluído · 15% off em F&B e spa · happy hour 1+1 das 18h às 20h · check-in 2h antes e check-out 2h depois.' },
+    { n: 'DoubleTree by Hilton Gurgaon — New Delhi NCR', c: 'Gurugram', p: '19–20/09',
+      obs: 'Chegada · Setor 56, Golf Course Road · 30 min do aeroporto · TEM SPA com sala de vapor, piscina e academia ' +
+           '(confirmado no site da Hilton; nome, horário e tratamentos, não) · metrô Sector 55–56 a 2 min a pé · ' +
+           'ATENÇÃO: é Gurugram, não Delhi — o centro de Delhi fica a 45–60 min com trânsito · reserva Hotels.com 73526996639812.' },
+    { n: 'Tajview — IHCL SeleQtions', c: 'Agra', p: '20–21/09', obs: 'Café da manhã incluído · 25% de desconto em comida, bebida e spa ' +
+           '(conf. 300083578359) · ⚠️ o desconto exige número Tata NeuPass, que está EM BRANCO na reserva.' },
+    { n: 'Taj Palace', c: 'Delhi', p: '21–23/09', obs: 'Superior King, vista do Diplomatic Enclave · café incluído · 15% off em F&B e spa · happy hour 1+1 das 18h às 20h · check-in 2h antes e check-out 2h depois (conf. 300083578034) · ' +
+           '⚠️ a própria reserva diz que os benefícios exigem número Tata NeuPass válido, conferido no check-in — e o campo está EM BRANCO.' },
     { n: 'Welcomhotel by ITC — Delhi-Gurugram Hwy', c: 'Gurugram', p: '23–24/09', obs: 'Deluxe, 1 noite. Perto do aeroporto, para a volta de Mumbai de madrugada.' },
     { n: 'Taj Amer', c: 'Jaipur', p: '24–26/09', obs: 'Duas noites na Cidade Rosa.' },
-    { n: 'Taj Palace', c: 'Delhi', p: '26–28/09', obs: 'Mesmas condições da primeira estadia.' }
+    { n: 'Taj Palace', c: 'Delhi', p: '26–28/09', obs: 'Mesmas condições da primeira estadia (conf. 300083578414) · mesmo alerta do NeuPass.' }
   ]
 };
