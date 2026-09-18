@@ -25,6 +25,55 @@ var HERO_ARTE = (function () {
   }
 
   return {
+  /* Esquema do T3 — NAO e mapa GPS, e um diagrama de sequencia. Dentro do
+     terminal o GPS nao funciona, entao desenhar "voce esta aqui" ali seria
+     mentira. O que vale la dentro e saber a ordem das coisas. */
+  chegadaT3: function () {
+    var passos = [
+      ['1', 'Port\u00f5es 5 \u00b7 6 \u00b7 7', 'desembarque internacional'],
+      ['2', 'Imigra\u00e7\u00e3o', 'escada rolante \u00b7 45 a 90 min'],
+      ['3', 'Esteiras 7 a 12', 'bagagem internacional'],
+      ['4', 'Alf\u00e2ndega', 'canal verde'],
+      ['5', 'SA\u00cdDA', 'caixa SBI \u00e0 direita \u00b7 Airtel'],
+      ['6', 'Port\u00f5es 5 e 6', 'agora do lado de fora']
+    ];
+    var h = 74, topo = 26, alt = topo + passos.length * h + 130;
+    var o = '<svg viewBox="0 0 320 ' + alt + '" fill="none" stroke="currentColor" ' +
+      'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" ' +
+      'font-family="system-ui,sans-serif" role="img" aria-label="Sequencia do Terminal 3">';
+    o += '<line x1="34" y1="' + (topo + 14) + '" x2="34" y2="' +
+         (topo + (passos.length - 1) * h + 14) + '" opacity=".3"/>';
+    passos.forEach(function (x, i) {
+      var y = topo + i * h;
+      o += '<circle cx="34" cy="' + (y + 14) + '" r="13"/>';
+      o += '<text x="34" y="' + (y + 19) + '" text-anchor="middle" stroke="none" ' +
+           'fill="currentColor" font-size="13" font-weight="700">' + x[0] + '</text>';
+      o += '<text x="60" y="' + (y + 11) + '" stroke="none" fill="currentColor" ' +
+           'font-size="14" font-weight="600">' + x[1] + '</text>';
+      o += '<text x="60" y="' + (y + 29) + '" stroke="none" fill="currentColor" ' +
+           'font-size="11.5" opacity=".6">' + x[2] + '</text>';
+    });
+    /* daqui a rota se divide: Uber de um lado, taxi oficial do outro */
+    var yb = topo + (passos.length - 1) * h + 14;
+    o += '<path d="M34 ' + yb + ' v30 M34 ' + (yb + 30) + ' h196 M34 ' + (yb + 30) +
+         ' v26 M230 ' + (yb + 30) + ' v26" opacity=".3"/>';
+    o += '<rect x="6" y="' + (yb + 56) + '" width="150" height="64" rx="11"/>';
+    o += '<text x="81" y="' + (yb + 79) + '" text-anchor="middle" stroke="none" ' +
+         'fill="currentColor" font-size="13" font-weight="700">UBER</text>';
+    o += '<text x="81" y="' + (yb + 96) + '" text-anchor="middle" stroke="none" ' +
+         'fill="currentColor" font-size="10.5" opacity=".65">passarela coberta</text>';
+    o += '<text x="81" y="' + (yb + 110) + '" text-anchor="middle" stroke="none" ' +
+         'fill="currentColor" font-size="10.5" opacity=".65">MLCP \u00b7 Arrival P6</text>';
+    o += '<rect x="166" y="' + (yb + 56) + '" width="148" height="64" rx="11"/>';
+    o += '<text x="240" y="' + (yb + 79) + '" text-anchor="middle" stroke="none" ' +
+         'fill="currentColor" font-size="13" font-weight="700">T\u00c1XI OFICIAL</text>';
+    o += '<text x="240" y="' + (yb + 96) + '" text-anchor="middle" stroke="none" ' +
+         'fill="currentColor" font-size="10.5" opacity=".65">Bharat Prepaid</text>';
+    o += '<text x="240" y="' + (yb + 110) + '" text-anchor="middle" stroke="none" ' +
+         'fill="currentColor" font-size="10.5" opacity=".65">entre as pistas 2 e 3</text>';
+    o += '</svg>';
+    return o;
+  },
     /* Doha — torre de vento (barjeel), dhow e sol do Golfo */
     doha: function () {
       return moldura(

@@ -24,6 +24,56 @@ const HERO_INDIA = {
     { d: '01/10', n: '—', de: 'DOH · Doha', para: 'GRU · São Paulo', sai: '00:05', chega: '09:00', dur: '14h55', cia: 'Qatar Airways' }
   ],
 
+  /* A CHEGADA — 19/09, pouso 8h45 no T3.
+   * Existe porque a decisao acontece no aeroporto, depois de 22 horas de
+   * viagem, e ninguem esta em condicoes de ler pesquisa nessa hora.
+   * O que esta aqui foi conferido em 18/09/2026. */
+  chegada: {
+    voo: 'QR570 · pousa no Terminal 3 às 8h45 · sábado, 19 de setembro',
+    destino: 'DoubleTree by Hilton Gurgaon — New Delhi NCR, Sector 56, Golf Course Road, Gurugram 122011',
+    enderecoBusca: 'DoubleTree by Hilton Hotel Gurgaon New Delhi NCR, Sector 56, Golf Course Road, Gurugram 122011',
+    pontoUber: 'Terminal 3 Arrival P6, Indira Gandhi International Airport, New Delhi',
+    primeiro: {
+      t: 'Antes de tudo: os anfitriões vêm buscar?',
+      p: 'Ligue o celular ainda na fila da imigração e veja o WhatsApp. Se vierem, nada mais aqui importa. ' +
+         'Se não houver resposta, procure placa com o nome de vocês na saída por no máximo 15 minutos e siga para o carro.'
+    },
+    passos: [
+      { t: 'Portões 5, 6 e 7', d: 'Voo internacional desembarca por aí. Escada rolante direto para a imigração.' },
+      { t: 'Imigração', d: 'De 45 a 90 minutos na fila de estrangeiros. É o trecho mais longo do percurso — conte com isso.' },
+      { t: 'Esteiras 7 a 12', d: 'Bagagem internacional. A tela informa a esteira. Bagagem fora de medida sai entre as esteiras 10 e 11.' },
+      { t: 'Alfândega — canal verde', d: 'Nada a declarar. Lembre: até 2 litros de bebida por pessoa. Acima disso, canal vermelho.' },
+      { t: 'A saída', d: 'Logo depois da alfândega: caixa eletrônico do SBI à direita (banco público — não cobra taxa de cartão estrangeiro, é o melhor lugar para o primeiro saque) e balcão da Airtel, se precisar de chip.' },
+      { t: 'Portões 5 e 6, agora do lado de fora', d: 'Daqui a rota se divide. Uber para a esquerda, táxi oficial à frente.' },
+      { t: 'Uber — passarela coberta até o MLCP', d: 'Siga as placas "Car Parking / MLCP". A passarela é fechada, com ar e passa carrinho de bagagem. Ponto de embarque: Arrival P6. São uns 6 minutos de caminhada.' },
+      { t: 'Táxi oficial — balcão Bharat Prepaid', d: 'Do lado de FORA, entre as pistas 2 e 3, logo depois dos portões 5 e 6. Os balcões que ficam DENTRO do terminal cobram 2 a 3 vezes mais.' }
+    ],
+    comparativo: {
+      t: 'Uber ou táxi oficial? No preço eles empatam',
+      linhas: [
+        { k: 'Custo', a: 'Uber: ₹550 a ₹850 (corrida + ~₹150 de taxa do aeroporto) · R$ 30 a 46',
+          b: 'Táxi oficial: ₹580 a ₹660 (₹40 o 1º km + ₹20/km com ar, ~30 km) · R$ 31 a 36' },
+        { k: 'Tempo', a: 'Uber: 30 a 40 min', b: 'Táxi: 35 a 45 min' },
+        { k: 'Pagamento', a: 'Uber: cartão, automático, sem dinheiro na mão', b: 'Táxi: dinheiro, e o voucher só sai da sua mão NA CHEGADA' }
+      ],
+      veredito: 'NÃO são igualmente seguros. Os dois são canais legítimos e nenhum é perigoso — o perigo é o terceiro caminho, quem aborda você no saguão. Mas o Uber ganha no que importa se algo der errado: você vê nome, foto e PLACA antes de entrar; dá para compartilhar a viagem com a Roberta em tempo real; o PIN próprio impede que a corrida comece no carro errado; gravação de áudio e RideCheck podem ficar ligados por padrão em Preferências de Segurança; há linha de emergência 24h no app; e não há dinheiro trocando de mão. O táxi oficial ganha em uma coisa só, mas real: não depende de celular, bateria nem sinal. Como você tem dados: Uber, com o táxi oficial de plano B se o telefone morrer.',
+      sobretaxa: 'A sobretaxa noturna de 25% do táxi oficial vale das 23h às 5h. Você chega às 8h45 — não pega.'
+    },
+    golpes: [
+      { t: 'Quem aborda você é comissionado', d: '"Sir, taxi?" dentro do terminal é sempre tout. Nenhum serviço oficial aborda passageiro.' },
+      { t: 'O motorista pede para você CANCELAR e pagar em dinheiro', d: 'Esse é O golpe do Uber na Índia. Ele liga dizendo que o app paga pouco. Se você aceitar, perde placa registrada, rota gravada, viagem compartilhada e o pagamento protegido — tudo de uma vez. Nunca cancele a pedido do motorista: cancele você e chame outro.' },
+      { t: '"Seu hotel fechou / pegou fogo / a rua está interditada"', d: 'Clássico de Delhi, e mais plausível no seu caso porque o hotel não é em Delhi, é em Gurugram. Ele oferece ligar para confirmar — quem atende é amigo dele. Nunca use o telefone do motorista. Ligue você, ou mande seguir assim mesmo.' },
+      { t: 'Balcão "prepaid" dentro do terminal', d: 'O oficial é do lado de fora, entre as pistas 2 e 3. Os de dentro cobram 2 a 3 vezes a tarifa.' }
+    ],
+    fontes: [
+      { t: 'Golpes no aeroporto de Delhi — balcões e tarifas', u: 'https://www.hotelaerocitypurpleorchid.com/Blog/delhi-airport-taxi-scams-part-1.html' },
+      { t: 'Motoristas falsos no T3', u: 'https://www.hotelaerocitypurpleorchid.com/Blog/delhi-airport-taxi-scams-part-2.html' },
+      { t: 'Uber Índia — recursos de segurança 2026', u: 'https://www.uber.com/in/en/newsroom/uber-introduces-new-features-to-elevate-safety/' },
+      { t: 'Guia do T3 — portões, MLCP e passarela', u: 'https://airportandme.com/delhi-airport-t3-terminal-guide-2026-entry-gates-lounges-metro-hacks/' },
+      { t: 'Tarifas aeroporto → Gurgaon', u: 'https://delhiairporttransfer.com/delhi-airport-cab-fare-noida-gurgaon/' }
+    ]
+  },
+
   dias: [
     { d: '19/09', cidade: 'Delhi → Gurugram', arte: 'delhi', hotel: 'DoubleTree by Hilton Gurgaon',
       t: 'Chegada',

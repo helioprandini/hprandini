@@ -2,7 +2,7 @@
  * Cidade nova = um objeto aqui + um arquivo de dados. A interface não muda.
  */
 
-const HERO_VERSAO = { n: 'v31', data: '2026-09-18' };
+const HERO_VERSAO = { n: 'v32', data: '2026-09-18' };
 
 const HERO_MOEDAS = {
   base: 'BRL',

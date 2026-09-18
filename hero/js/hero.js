@@ -439,6 +439,7 @@
     { id: 'eureparos', l: 'Reparos' }
   ];
   var ABAS_INDIA = [
+    { id: 'chegada', l: '🛬 A chegada' },
     { id: 'iroteiro', l: 'Roteiro' },
     { id: 'ivoos', l: '✈️ Voos' },
     { id: 'ihoteis', l: '🏨 Hotéis' }
@@ -462,6 +463,7 @@
     avisos:   ico('<path d="M4 5.5A2 2 0 0 1 6 3.5h5v17H6a2 2 0 0 0-2 2z"/><path d="M20 5.5a2 2 0 0 0-2-2h-5v17h5a2 2 0 0 1 2 2z"/>'),
     cambio:   ico('<ellipse cx="12" cy="6.5" rx="7.5" ry="3"/><path d="M4.5 6.5v11c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-11M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/>'),
     mais:     ico('<path d="M4 7h16M4 12h16M4 17h16"/>'),
+    chegada:  ico('<path d="M3 20.5h18M4.5 16.5l15.5-3.4a2 2 0 0 0-1-3.8L14.5 10 9 3.5 6.5 4l3 7-4.2.9-2-2.4-1.6.4z"/>'),
     iroteiro: ico('<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="8.5" cy="14" r="1.1" fill="currentColor" stroke="none"/>'),
     ivoos:    ico('<path d="M3 15.5l18-6.6M5.5 12.2L3.2 9.4l1.9-.7 3.3 1.6M9 19.6l-1.3-3.1 1.8-.7 2.2 2.1"/>'),
     ihoteis:  ico('<path d="M3 19V7M3 12h18v7M21 19v-3"/><path d="M6.5 12V9.5h5V12"/><circle cx="16.5" cy="9.5" r="1.6"/>'),
@@ -478,11 +480,11 @@
     destinos:'Destinos', lista:'Comer', curadoria:'Curadoria', roteiros:'Roteiros',
     souq:'Souq', escala:'A escala', beber:'Beber', hoteis:'Hotéis',
     reservaria:'Reservar', avisos:'Saber', cambio:'Moedas',
-    iroteiro:'Roteiro', ivoos:'Voos', ihoteis:'Hotéis',
+    chegada:'Chegada', iroteiro:'Roteiro', ivoos:'Voos', ihoteis:'Hotéis',
     nyroteiro:'Roteiro', nymudou:'Mudou', nylugares:'Lugares', nyouro:'Ouro',
     euroteiro:'A viagem', eunotas:'As notas', eureparos:'Reparos', mapa:'Mapa'
   };
-  var PRIMARIAS = { doha: ['lista', 'mapa', 'roteiros', 'beber'], india: ['iroteiro', 'ivoos', 'ihoteis', 'cambio'], ny: ['nyroteiro', 'nymudou', 'nylugares', 'mapa'], eu23: ['euroteiro', 'eunotas', 'mapa', 'eureparos'],
+  var PRIMARIAS = { doha: ['lista', 'mapa', 'roteiros', 'beber'], india: ['chegada', 'iroteiro', 'ivoos', 'ihoteis'], ny: ['nyroteiro', 'nymudou', 'nylugares', 'mapa'], eu23: ['euroteiro', 'eunotas', 'mapa', 'eureparos'],
                    eu25: ['euroteiro', 'eunotas', 'mapa', 'eureparos'],
                    bos: ['euroteiro', 'eunotas', 'mapa', 'eureparos'] };
   var ABA_HOME = { id: 'destinos', l: '← Destinos' };
@@ -494,7 +496,7 @@
     return [ABA_HOME].concat(base, [ABA_CAMBIO]);
   }
   function primeiraAba() {
-    return destino === 'india' ? 'iroteiro' : destino === 'ny' ? 'nyroteiro' :
+    return destino === 'india' ? 'chegada' : destino === 'ny' ? 'nyroteiro' :
       ehArquivo() ? 'euroteiro' : destino === 'doha' ? 'lista' : 'destinos';
   }
   function irPara(d) {
@@ -828,6 +830,106 @@
     });
     p8.appendChild(box);
     root.appendChild(p8);
+  }
+
+  /* ---------- Índia: a chegada ----------
+     Duas coisas diferentes chamadas de "mapa", e a distincao e honesta:
+     DENTRO do terminal o GPS nao pega, entao ali vale um ESQUEMA de sequencia.
+     FORA, a posicao e real — e quem navega de verdade e o Google Maps, que
+     conhece o "Arrival P6"; eu nao invento coordenada de ponto interno. */
+  function viewChegada(root) {
+    var C2 = HERO_INDIA.chegada;
+
+    var p0 = el('div', 'panel');
+    p0.appendChild(el('h2', null, 'A chegada'));
+    p0.appendChild(el('div', 'lead', esc(C2.voo)));
+    p0.appendChild(el('div', 'lead', '<b>Destino:</b> ' + esc(C2.destino)));
+    var pr = el('div', 'note');
+    pr.appendChild(el('div', 'px', '<b>' + esc(C2.primeiro.t) + '</b>'));
+    pr.appendChild(el('div', 'lead', esc(C2.primeiro.p)));
+    p0.appendChild(pr);
+    root.appendChild(p0);
+
+    /* o esquema do terminal */
+    var pe = el('div', 'panel');
+    pe.appendChild(el('h2', null, 'Do avião ao carro'));
+    pe.appendChild(el('div', 'lead', 'Dentro do terminal o GPS não funciona — então isto é um esquema da ordem das coisas, não um mapa de posição. A posição ao vivo entra assim que vocês saírem.'));
+    var dz = el('div', 'esquema');
+    dz.innerHTML = HERO_ARTE.chegadaT3 ? HERO_ARTE.chegadaT3() : '';
+    pe.appendChild(dz);
+    root.appendChild(pe);
+
+    var pp = el('div', 'panel');
+    pp.appendChild(el('h2', null, 'Passo a passo'));
+    C2.passos.forEach(function (x, i) {
+      var row = el('div', 'pick');
+      row.appendChild(el('div', 'rank', String(i + 1)));
+      var bb = el('div', 'pb');
+      bb.appendChild(el('div', 'px', '<b>' + esc(x.t) + '</b>'));
+      bb.appendChild(el('div', 'lead', esc(x.d)));
+      row.appendChild(bb); pp.appendChild(row);
+    });
+    root.appendChild(pp);
+
+    /* mapa ao vivo: so vale do lado de fora, e quem navega e o Maps */
+    var pm = el('div', 'panel');
+    pm.appendChild(el('h2', null, 'Mapa ao vivo'));
+    pm.appendChild(el('div', 'lead', 'Funciona ao ar livre. Os dois botões abrem o Google Maps já com o destino preenchido, a partir de onde vocês estiverem.'));
+    caixaGeo(pm, 'a distância até o hotel');
+    var br = el('div', 'btnrow'); br.style.marginTop = '10px';
+    var b1 = el('a', 'btn gold', '🚶 A pé até o ponto do Uber');
+    b1.href = 'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=' +
+      encodeURIComponent(C2.pontoUber);
+    b1.target = '_blank'; b1.rel = 'noopener'; br.appendChild(b1);
+    var b2 = el('a', 'btn sec', '🚗 Rota até o hotel');
+    b2.href = 'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=' +
+      encodeURIComponent(C2.enderecoBusca);
+    b2.target = '_blank'; b2.rel = 'noopener'; br.appendChild(b2);
+    var b3 = el('button', 'btn sec', '📋 Copiar endereço do hotel');
+    b3.onclick = function () {
+      var t = C2.enderecoBusca;
+      if (navigator.clipboard) navigator.clipboard.writeText(t).then(
+        function () { b3.textContent = '✓ Copiado'; },
+        function () { prompt('Copie o endereço:', t); });
+      else prompt('Copie o endereço:', t);
+    };
+    br.appendChild(b3);
+    pm.appendChild(br);
+    root.appendChild(pm);
+
+    var pc = el('div', 'panel');
+    pc.appendChild(el('h2', null, esc(C2.comparativo.t)));
+    C2.comparativo.linhas.forEach(function (l) {
+      var q = el('div', 'note');
+      q.appendChild(el('div', 'px', '<b>' + esc(l.k) + '</b>'));
+      q.appendChild(el('div', 'lead', esc(l.a)));
+      q.appendChild(el('div', 'lead', esc(l.b)));
+      pc.appendChild(q);
+    });
+    pc.appendChild(el('div', 'lead', esc(C2.comparativo.sobretaxa)));
+    var vd = el('div', 'note warn');
+    vd.appendChild(el('div', 'lead', esc(C2.comparativo.veredito)));
+    pc.appendChild(vd);
+    root.appendChild(pc);
+
+    var pg = el('div', 'panel');
+    pg.appendChild(el('h2', null, 'Os quatro golpes, e a regra de cada um'));
+    C2.golpes.forEach(function (x, i) {
+      var row = el('div', 'pick');
+      row.appendChild(el('div', 'rank', String(i + 1)));
+      var bb = el('div', 'pb');
+      bb.appendChild(el('div', 'px', '<b>' + esc(x.t) + '</b>'));
+      bb.appendChild(el('div', 'lead', esc(x.d)));
+      row.appendChild(bb); pg.appendChild(row);
+    });
+    var bx = el('div', 'srcs'); bx.style.marginTop = '12px';
+    C2.fontes.forEach(function (f) {
+      var a2 = el('a', null, '↗ ' + esc(f.t));
+      a2.href = f.u; a2.target = '_blank'; a2.rel = 'noopener';
+      bx.appendChild(a2);
+    });
+    pg.appendChild(bx);
+    root.appendChild(pg);
   }
 
   /* ---------- Índia ---------- */
@@ -2193,7 +2295,8 @@
     souq: 'a secao do Souq Waqif', escala: 'a aba "A escala" (o dia 30/09 e o aeroporto)',
     beber: 'a aba "Onde beber" de Doha', hoteis: 'a comparacao de hoteis de Doha',
     reservaria: 'a aba "Eu reservaria"', avisos: 'a aba "Saber antes"',
-    cambio: 'o conversor de moedas', iroteiro: 'o roteiro da India',
+    cambio: 'o conversor de moedas', chegada: 'a aba "A chegada" (sair do T3 de Delhi ate o hotel)',
+    iroteiro: 'o roteiro da India',
     ivoos: 'os voos da India', ihoteis: 'os hoteis da India'
   };
 
@@ -2285,6 +2388,7 @@
     else if (aba === 'nymudou') viewNyMudou(root);
     else if (aba === 'nylugares') viewNyLugares(root);
     else if (aba === 'nyouro') viewNyOuro(root);
+    else if (aba === 'chegada') viewChegada(root);
     else if (aba === 'iroteiro') viewIndiaRoteiro(root);
     else if (aba === 'ivoos') viewIndiaVoos(root);
     else if (aba === 'ihoteis') viewIndiaHoteis(root);
