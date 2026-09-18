@@ -27,10 +27,23 @@ const HERO_INDIA = {
   dias: [
     { d: '19/09', cidade: 'Delhi → Gurugram', arte: 'delhi', hotel: 'DoubleTree by Hilton Gurgaon',
       t: 'Chegada',
+      alerta: 'Vocês devem chegar ao hotel por volta das 10h30 (imigração no T3 leva de 45 a 90 min) e o check-in padrão é às 14h. Peça early check-in na chegada, ou por mensagem antes — senão são horas de lobby com o corpo pedindo cama.',
       x: 'Pousa em Delhi às 8h45 depois de quase 22 horas de viagem contando a escala. Check-in e a tarde para se recuperar. Sem plano, sem pressão — só entrar na Índia antes do caos começar.',
       theo: 'Dia de fuso, não de turismo. O corpo vai achar que são 00h20 de Brasília quando vocês pousarem. Coma leve e durma cedo. ' +
             'O hotel fica em GURUGRAM, não em Delhi — 30 min do aeroporto, mas 45–60 min do centro de Delhi. ' +
-            'Para um dia de recuperação isso é bom, e o hotel tem spa com sala de vapor se vocês quiserem tirar o voo do corpo.' },
+            'Para um dia de recuperação isso é bom, e o hotel tem spa com sala de vapor se vocês quiserem tirar o voo do corpo.',
+      passos: {
+        t: 'Do T3 até o hotel — a sequência, sem pensar',
+        p: [
+          'Ligue o celular ainda na fila da imigração e veja o WhatsApp. Os anfitriões vêm buscar? Se sim, o resto não importa.',
+          'Na saída do desembarque, procure placa com o nome de vocês por no máximo 15 minutos. Ninguém e ninguém responde: siga para o 3.',
+          'Chame o Uber. Ponto de embarque: estacionamento coberto, atravessando as três pistas em frente aos PORTÕES 5 E 6. Só ali.',
+          'Destino: DoubleTree by Hilton Gurgaon — New Delhi NCR, Sector 56, Golf Course Road, Gurugram 122011. Uns ₹400–700 mais ~₹150 de taxa do aeroporto. 30 a 40 min.',
+          'Confira a placa do carro antes de entrar e compartilhe a corrida pelo app. Nunca aceite quem aborda você dentro do terminal.',
+          'Se o motorista disser que o hotel fechou, pegou fogo ou que a rua está interditada: é golpe conhecido de Delhi. Não use o telefone dele. Ligue você, ou mande seguir assim mesmo.',
+          'Alternativa oficial: Bharat Prepaid Taxi Counter — do lado de FORA, entre as pistas 2 e 3, depois dos portões 5 e 6. Os balcões de dentro do terminal cobram 2 a 3 vezes mais.'
+        ]
+      } },
 
     { d: '20/09', cidade: 'Agra', arte: 'agra', hotel: 'Tajview — IHCL SeleQtions',
       t: 'Taj Mahal e Forte de Agra',

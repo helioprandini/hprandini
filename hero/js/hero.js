@@ -854,6 +854,20 @@
       b.appendChild(el('div', 'nx', '<b>Hotel:</b> ' + esc(d.hotel)));
       if (d.theo) b.appendChild(el('div', 'note', '<b>Theo:</b> ' + esc(d.theo)));
       if (d.alerta) b.appendChild(el('div', 'note warn', '⚠️ ' + esc(d.alerta)));
+      /* passos: uma sequencia para seguir na hora, sem ter que ler nada.
+         Existe para o dia da chegada, que e quando ninguem esta em condicoes
+         de tomar decisao. */
+      if (d.passos) {
+        var lp = el('div', 'note');
+        lp.appendChild(el('div', 'px', '<b>' + esc(d.passos.t) + '</b>'));
+        d.passos.p.forEach(function (x, i) {
+          var row = el('div', 'pick');
+          row.appendChild(el('div', 'rank', String(i + 1)));
+          var pb = el('div', 'pb'); pb.appendChild(el('div', 'px', esc(x)));
+          row.appendChild(pb); lp.appendChild(row);
+        });
+        b.appendChild(lp);
+      }
       if (d.ponte) {
         var br = el('div', 'btnrow'); br.style.marginTop = '8px';
         var bt = el('button', 'btn gold', 'Abrir o guia de Doha →');
