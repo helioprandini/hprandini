@@ -440,6 +440,7 @@
   ];
   var ABAS_INDIA = [
     { id: 'chegada', l: '🛬 A chegada' },
+    { id: 'fotos', l: '📸 Fotos' },
     { id: 'iroteiro', l: 'Roteiro' },
     { id: 'ivoos', l: '✈️ Voos' },
     { id: 'ihoteis', l: '🏨 Hotéis' }
@@ -463,6 +464,7 @@
     avisos:   ico('<path d="M4 5.5A2 2 0 0 1 6 3.5h5v17H6a2 2 0 0 0-2 2z"/><path d="M20 5.5a2 2 0 0 0-2-2h-5v17h5a2 2 0 0 1 2 2z"/>'),
     cambio:   ico('<ellipse cx="12" cy="6.5" rx="7.5" ry="3"/><path d="M4.5 6.5v11c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-11M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/>'),
     mais:     ico('<path d="M4 7h16M4 12h16M4 17h16"/>'),
+    fotos:    ico('<rect x="3" y="6.5" width="18" height="13.5" rx="2.5"/><path d="M8.5 6.5l1.4-2.5h4.2l1.4 2.5"/><circle cx="12" cy="13.2" r="3.6"/>'),
     chegada:  ico('<path d="M3 20.5h18M4.5 16.5l15.5-3.4a2 2 0 0 0-1-3.8L14.5 10 9 3.5 6.5 4l3 7-4.2.9-2-2.4-1.6.4z"/>'),
     iroteiro: ico('<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="8.5" cy="14" r="1.1" fill="currentColor" stroke="none"/>'),
     ivoos:    ico('<path d="M3 15.5l18-6.6M5.5 12.2L3.2 9.4l1.9-.7 3.3 1.6M9 19.6l-1.3-3.1 1.8-.7 2.2 2.1"/>'),
@@ -480,19 +482,20 @@
     destinos:'Destinos', lista:'Comer', curadoria:'Curadoria', roteiros:'Roteiros',
     souq:'Souq', escala:'A escala', beber:'Beber', hoteis:'Hotéis',
     reservaria:'Reservar', avisos:'Saber', cambio:'Moedas',
-    chegada:'Chegada', iroteiro:'Roteiro', ivoos:'Voos', ihoteis:'Hotéis',
+    chegada:'Chegada', fotos:'Fotos', iroteiro:'Roteiro', ivoos:'Voos', ihoteis:'Hotéis',
     nyroteiro:'Roteiro', nymudou:'Mudou', nylugares:'Lugares', nyouro:'Ouro',
     euroteiro:'A viagem', eunotas:'As notas', eureparos:'Reparos', mapa:'Mapa'
   };
-  var PRIMARIAS = { doha: ['lista', 'mapa', 'roteiros', 'beber'], india: ['chegada', 'iroteiro', 'ivoos', 'ihoteis'], ny: ['nyroteiro', 'nymudou', 'nylugares', 'mapa'], eu23: ['euroteiro', 'eunotas', 'mapa', 'eureparos'],
+  var PRIMARIAS = { doha: ['lista', 'mapa', 'roteiros', 'fotos'], india: ['chegada', 'fotos', 'iroteiro', 'ihoteis'], ny: ['nyroteiro', 'nymudou', 'nylugares', 'mapa'], eu23: ['euroteiro', 'eunotas', 'mapa', 'eureparos'],
                    eu25: ['euroteiro', 'eunotas', 'mapa', 'eureparos'],
                    bos: ['euroteiro', 'eunotas', 'mapa', 'eureparos'] };
   var ABA_HOME = { id: 'destinos', l: '← Destinos' };
   var ABA_CAMBIO = { id: 'cambio', l: '💱 Moedas' };
+  var ABA_FOTOS = { id: 'fotos', l: '📸 Fotos' };
   function abasAtuais() {
     if (!destino) return [ABA_CAMBIO];
     var base = destino === 'india' ? ABAS_INDIA : destino === 'ny' ? ABAS_NY :
-      ehArquivo() ? ABAS_EU23 : ABAS_DOHA.concat([ABA_MAPA]);
+      ehArquivo() ? ABAS_EU23 : ABAS_DOHA.concat([ABA_MAPA, ABA_FOTOS]);
     return [ABA_HOME].concat(base, [ABA_CAMBIO]);
   }
   function primeiraAba() {
@@ -830,6 +833,137 @@
     });
     p8.appendChild(box);
     root.appendChild(p8);
+  }
+
+  /* ---------- spots de foto, com radar de proximidade ----------
+     LIMITE DA PLATAFORMA, dito na tela e nao escondido: isto e um app WEB.
+     O iOS nao da geolocalizacao em segundo plano para Safari nem para PWA,
+     e Web Push exigiria servidor — o HeRo e estatico. Entao push automatico
+     com o telefone no bolso NAO existe aqui; existiria num app nativo.
+     O que da, e da bem: com a aba aberta, vigiar a posicao e avisar quando
+     entrar no raio de um spot. */
+  var radarId = null, radarAvisados = {};
+  function pararRadar() {
+    if (radarId !== null && navigator.geolocation) {
+      navigator.geolocation.clearWatch(radarId);
+    }
+    radarId = null;
+  }
+
+  function viewFotos(root) {
+    var F = HERO_FOTOS;
+    var cidadesDoDestino = destino === 'doha' ? ['Doha'] : ['Delhi', 'Agra', 'Jaipur', 'Mumbai'];
+    var meus = F.spots.filter(function (x) { return cidadesDoDestino.indexOf(x.c) >= 0; });
+
+    var p0 = el('div', 'panel');
+    p0.appendChild(el('h2', null, 'Spots de foto'));
+    p0.appendChild(el('div', 'lead', meus.length + ' lugares, com o ângulo exato e a hora da luz. ' +
+      'Os marcados <b>achado</b> são os que quase ninguém posta — é onde está a foto que ninguém mais vai ter.'));
+    root.appendChild(p0);
+
+    /* ---- radar ---- */
+    var pr = el('div', 'panel');
+    pr.appendChild(el('h2', null, 'Radar de proximidade'));
+    var expl = el('div', 'lead',
+      'Com esta aba aberta, o app vigia a sua posição e avisa (vibração + alerta) quando vocês ' +
+      'entrarem a menos de 300 m de um spot. <b>Não funciona com o telefone no bolso e o app fechado</b> — ' +
+      'o iOS não dá localização em segundo plano para app web. Isso só num app nativo, e fica anotado como próximo passo.');
+    pr.appendChild(expl);
+    var estado = el('div', 'lead', 'Radar desligado.');
+    var bR = el('button', 'btn gold', '📡 Ligar o radar');
+    var ligado = false;
+    bR.onclick = function () {
+      if (ligado) { pararRadar(); ligado = false; bR.textContent = '📡 Ligar o radar'; estado.innerHTML = 'Radar desligado.'; return; }
+      if (!navigator.geolocation) { estado.innerHTML = 'Este navegador não dá localização.'; return; }
+      ligado = true; bR.textContent = '⏹ Desligar'; estado.innerHTML = 'Procurando sinal…';
+      radarId = navigator.geolocation.watchPosition(function (pos) {
+        minhaPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        var perto = null, dmin = 1e9;
+        meus.forEach(function (x) {
+          var d = hav(minhaPos.lat, minhaPos.lng, x.lat, x.lng);
+          if (d < dmin) { dmin = d; perto = x; }
+          if (d <= 0.3 && !radarAvisados[x.n]) {
+            radarAvisados[x.n] = 1;
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            alert('📸 ' + x.n + ' — a ' + Math.round(d * 1000) + ' m.\n\n' + x.a);
+          }
+        });
+        estado.innerHTML = perto ? 'Mais perto agora: <b>' + esc(perto.nome || perto.n) + '</b> · ' +
+          (dmin < 1 ? Math.round(dmin * 1000) + ' m' : dmin.toFixed(1).replace('.', ',') + ' km') : 'Sem spot por perto.';
+        ordena();
+      }, function () { estado.innerHTML = 'Não consegui a localização. Autorize nos ajustes do Safari.'; },
+      { enableHighAccuracy: true, maximumAge: 15000, timeout: 20000 });
+    };
+    var brw = el('div', 'btnrow'); brw.style.marginTop = '8px'; brw.appendChild(bR);
+    pr.appendChild(brw);
+    pr.appendChild(estado);
+    root.appendChild(pr);
+
+    /* ---- filtros ---- */
+    var filtro = 'todos';
+    var pf = el('div', 'btnrow'); pf.style.margin = '14px 0 4px';
+    [['todos', 'Todos'], ['achado', '✨ Só os achados'], ['obvio', 'Os clássicos']].forEach(function (f) {
+      var b2 = el('button', 'btn sec', f[1]);
+      b2.onclick = function () { filtro = f[0]; ordena(); };
+      pf.appendChild(b2);
+    });
+    root.appendChild(pf);
+
+    var lista = el('div');
+    root.appendChild(lista);
+
+    function ordena() {
+      lista.innerHTML = '';
+      var arr = meus.filter(function (x) {
+        return filtro === 'todos' || (filtro === 'achado' ? !x.obvio : x.obvio);
+      });
+      if (minhaPos) {
+        arr = arr.slice().sort(function (u, v) {
+          return hav(minhaPos.lat, minhaPos.lng, u.lat, u.lng) - hav(minhaPos.lat, minhaPos.lng, v.lat, v.lng);
+        });
+      }
+      arr.forEach(function (x) {
+        var c = el('div', 'panel');
+        var top = el('div', 'nn');
+        top.appendChild(el('span', 'nh', esc(x.n)));
+        top.appendChild(el('span', 'tag', esc(x.c)));
+        if (!x.obvio) top.appendChild(el('span', 'tag gold', '✨ achado'));
+        if (minhaPos) {
+          var d = hav(minhaPos.lat, minhaPos.lng, x.lat, x.lng);
+          top.appendChild(el('span', 'tag dist', '📍 ' + (d < 1 ? Math.round(d * 1000) + ' m' :
+            d.toFixed(1).replace('.', ',') + ' km')));
+        }
+        c.appendChild(top);
+        c.appendChild(el('div', 'nx', esc(x.q)));
+        var ang = el('div', 'note');
+        ang.appendChild(el('div', 'px', '<b>O ângulo</b>'));
+        ang.appendChild(el('div', 'lead', esc(x.a)));
+        c.appendChild(ang);
+        c.appendChild(el('div', 'lead', '<b>🕐 Luz:</b> ' + esc(x.h)));
+        if (x.r) c.appendChild(el('div', 'note warn', '⚠️ ' + esc(x.r)));
+        var bb = el('div', 'btnrow'); bb.style.marginTop = '8px';
+        var am = el('a', 'btn sec', '🗺 Abrir no mapa');
+        am.href = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(x.busca);
+        am.target = '_blank'; am.rel = 'noopener'; bb.appendChild(am);
+        c.appendChild(bb);
+        lista.appendChild(c);
+      });
+      if (!arr.length) lista.appendChild(el('div', 'panel', 'Nada neste filtro.'));
+    }
+    ordena();
+
+    /* ---- regras ---- */
+    var pg = el('div', 'panel');
+    pg.appendChild(el('h2', null, 'As regras que estragam a foto (ou o dia)'));
+    F.regras.forEach(function (x, i) {
+      var row = el('div', 'pick');
+      row.appendChild(el('div', 'rank', String(i + 1)));
+      var bd = el('div', 'pb');
+      bd.appendChild(el('div', 'px', '<b>' + esc(x.t) + '</b>'));
+      bd.appendChild(el('div', 'lead', esc(x.d)));
+      row.appendChild(bd); pg.appendChild(row);
+    });
+    root.appendChild(pg);
   }
 
   /* ---------- Índia: a chegada ----------
@@ -2296,6 +2430,7 @@
     beber: 'a aba "Onde beber" de Doha', hoteis: 'a comparacao de hoteis de Doha',
     reservaria: 'a aba "Eu reservaria"', avisos: 'a aba "Saber antes"',
     cambio: 'o conversor de moedas', chegada: 'a aba "A chegada" (sair do T3 de Delhi ate o hotel)',
+    fotos: 'a aba de spots de foto',
     iroteiro: 'o roteiro da India',
     ivoos: 'os voos da India', ihoteis: 'os hoteis da India'
   };
@@ -2371,6 +2506,7 @@
   }
 
   function render(mantemFoco) {
+    pararRadar();
     var root = $('#app'); root.innerHTML = '';
     pintaNav();
     pintaCabecalho();
@@ -2388,6 +2524,7 @@
     else if (aba === 'nymudou') viewNyMudou(root);
     else if (aba === 'nylugares') viewNyLugares(root);
     else if (aba === 'nyouro') viewNyOuro(root);
+    else if (aba === 'fotos') viewFotos(root);
     else if (aba === 'chegada') viewChegada(root);
     else if (aba === 'iroteiro') viewIndiaRoteiro(root);
     else if (aba === 'ivoos') viewIndiaVoos(root);
