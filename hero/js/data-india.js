@@ -33,6 +33,34 @@ const HERO_INDIA = {
     destino: 'DoubleTree by Hilton Gurgaon — New Delhi NCR, Sector 56, Golf Course Road, Gurugram 122011',
     enderecoBusca: 'DoubleTree by Hilton Hotel Gurgaon New Delhi NCR, Sector 56, Golf Course Road, Gurugram 122011',
     pontoUber: 'Terminal 3 Arrival P6, Indira Gandhi International Airport, New Delhi',
+    /* O QUE EU DEIXEI PASSAR (registrado em 19/09/2026, depois do Helio apontar).
+     * Escrevi a secao da chegada inteira - imigracao, esteira, canal verde -
+     * e nao coloquei o unico documento que hoje e OBRIGATORIO para embarcar.
+     * Fica aqui no topo, antes de tudo, porque e o que vem antes de tudo. */
+    eArrival: {
+      t: '🔴 e-Arrival Card — obrigatório, ANTES de ir ao aeroporto',
+      resumo: 'Desde 1º de abril de 2026 todo estrangeiro que entra na Índia precisa preencher o e-Arrival Card online. ' +
+              'O cartão de desembarque de papel foi DESCONTINUADO — não existe alternativa na chegada.',
+      itens: [
+        { k: 'Quando', v: 'Na janela de 72 horas antes da chegada. Nem antes disso, nem depois do horário do pouso.' },
+        { k: 'Onde', v: 'indianvisaonline.gov.in/earrival — ou o aplicativo Su-Swagatam. É grátis e não pede upload de documento.' },
+        { k: 'O que pede', v: 'Dados do passaporte, data de chegada, contato e o ENDEREÇO DA HOSPEDAGEM na Índia. Tenha o endereço do primeiro hotel à mão.' },
+        { k: 'O que devolve', v: 'Um QR Code por e-mail. Ele é pedido DUAS vezes: no check-in da companhia e na imigração.' },
+        { k: 'Se não fizer', v: 'A companhia pode negar o embarque — a multa é de até ₹50.000 POR passageiro e quem paga é ela, então ela confere no balcão e no portão. Chegando sem, é quiosque na imigração, fila extra e perguntas.' }
+      ],
+      outro: 'NÃO confundir com a declaração de alfândega (app ATITHI 2.0), que é OPCIONAL: declara bagagem e moeda antecipadamente e só serve para acelerar a saída pelo canal verde. O e-Arrival Card é o obrigatório.'
+    },
+
+    doha: {
+      t: '✅ E na entrada em Doha, dia 28/09: nada a preencher antes',
+      p: [
+        'Conferi para não errar duas vezes. Brasileiro entra no Catar com isenção de visto — a duração diverge entre as fontes (30 ou 90 dias) e não confirmei, mas para 3 noites não muda nada.',
+        'O Ehteraz (pré-registro que já foi obrigatório) NÃO é mais exigido para entrar. Só para acessar unidade de saúde.',
+        'O seguro-saúde obrigatório do Catar (cerca de QAR 50) ISENTA quem entra com visto na chegada nos primeiros 30 dias. Vocês ficam 3 — isentos.',
+        'O que pedem no balcão: passaporte válido por 6 meses, passagem de volta e comprovante de hospedagem. Tenham a reserva do hotel de Doha no celular.'
+      ]
+    },
+
     primeiro: {
       t: 'Antes de tudo: os anfitriões vêm buscar?',
       p: 'Ligue o celular ainda na fila da imigração e veja o WhatsApp. Se vierem, nada mais aqui importa. ' +

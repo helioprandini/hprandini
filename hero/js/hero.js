@@ -984,6 +984,35 @@
     p0.appendChild(pr);
     root.appendChild(p0);
 
+    /* Documento obrigatorio vem ANTES de qualquer instrucao de percurso:
+       sem ele nao se embarca, entao nada do resto acontece. */
+    if (C2.eArrival) {
+      var pe2 = el('div', 'panel');
+      pe2.appendChild(el('h2', null, esc(C2.eArrival.t)));
+      var av = el('div', 'note warn');
+      av.appendChild(el('div', 'lead', esc(C2.eArrival.resumo)));
+      pe2.appendChild(av);
+      C2.eArrival.itens.forEach(function (x) {
+        var q = el('div', 'note');
+        q.appendChild(el('div', 'px', '<b>' + esc(x.k) + '</b>'));
+        q.appendChild(el('div', 'lead', esc(x.v)));
+        pe2.appendChild(q);
+      });
+      var lb = el('div', 'btnrow'); lb.style.marginTop = '10px';
+      var la = el('a', 'btn gold', '🔗 Abrir o e-Arrival Card');
+      la.href = 'https://indianvisaonline.gov.in/earrival';
+      la.target = '_blank'; la.rel = 'noopener'; lb.appendChild(la);
+      pe2.appendChild(lb);
+      pe2.appendChild(el('div', 'lead', esc(C2.eArrival.outro)));
+      root.appendChild(pe2);
+    }
+    if (C2.doha) {
+      var pd2 = el('div', 'panel');
+      pd2.appendChild(el('h2', null, esc(C2.doha.t)));
+      C2.doha.p.forEach(function (t) { pd2.appendChild(el('div', 'lead', esc(t))); });
+      root.appendChild(pd2);
+    }
+
     /* o esquema do terminal */
     var pe = el('div', 'panel');
     pe.appendChild(el('h2', null, 'Do avião ao carro'));
