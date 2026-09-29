@@ -775,6 +775,12 @@ const HERO_RESTAURANTES = [
 },
 {
   id: 'hakkasan',
+  climaNoite: 'vibrante', climaConf: 'parcial',
+  climaNota: 'DIVERGÊNCIA, e ela é sua para resolver: a classificação aqui é a que você passou (vibrante). ' +
+             'Mas a página do Tao Group, que opera a casa, fala em DJ RESIDENTE diariamente das 16h às 2h no terraço, ' +
+             'com mistura de jazz e house. Pela sua própria régua, isso cairia em "animado/DJ". ' +
+             'Possível explicação: o terraço e o lounge têm DJ, o salão do restaurante não. Se for jantar no salão, "vibrante" está certo.',
+  noitesFortes: 'Quinta e sexta, como o resto de Doha.',
   nome: 'Hakkasan',
   status: 'aberto',
   statusNota: 'Confirmado em operação. MICHELIN Selected. Nenhum indício de fechamento.',
@@ -885,6 +891,11 @@ const HERO_RESTAURANTES = [
 {
   id: 'coya',
   nome: 'COYA Doha',
+  climaNoite: 'animado', climaConf: 'confirmado',
+  climaNota: 'O site da própria COYA descreve DJ residente TODAS as noites, mais eventos semanais com DJ convidado. ' +
+             'A trilha é eletrônica de influência latina — down-tempo, afro-house, organic house — com banda latino-americana ao vivo em algumas noites. ' +
+             'Não é jantar de conversa depois de certa hora.',
+  noitesFortes: null,
   status: 'aberto',
   statusNota: 'Em operação no W Doha, West Bay — NÃO em Katara.',
   cozinha: 'Peruana contemporânea',
@@ -1125,6 +1136,10 @@ const HERO_RESTAURANTES = [
 {
   id: 'zuma',
   nome: 'Zuma Doha',
+  climaNoite: 'animado', climaConf: 'confirmado',
+  climaNota: 'O site da Zuma descreve a casa abrindo em clima relaxado de dia (13h) e virando "cena noturna" com os DJs da casa ' +
+             'tocando até de madrugada — funciona até 1h. Terraço grande, bar-ilha e cozinha à vista: é casa de grupo, não de mesa de dois em silêncio.',
+  noitesFortes: 'Quinta e sexta. No Catar o fim de semana é sexta e sábado, então quinta à noite já é véspera — é quando a casa enche e o DJ pesa.',
   status: 'aberto',
   statusNota: 'Em operação em Al Maha Island (NÃO no Gate Mall). MICHELIN Selected.',
   cozinha: 'Japonesa contemporânea / izakaya',

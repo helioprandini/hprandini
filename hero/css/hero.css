@@ -539,3 +539,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
 /* Esquema do T3 — SVG monocromatico que acompanha o tema pelo currentColor. */
 .esquema{margin-top:12px;color:var(--ink)}
 .esquema svg{width:100%;height:auto;max-width:340px;display:block;margin:0 auto}
+
+/* Selo de clima de noite. O .selo do alcool mora no canto inferior ESQUERDO,
+   entao este vai para o DIREITO, senao os dois se sobrepoem. .dubio marca o
+   que nao esta confirmado em fonte oficial — mesmo padrao da faixa de preco. */
+.selo.clima{left:auto;right:10px;bottom:10px;background:rgba(28,26,23,.88);color:#fff;
+  max-width:52%}
+.selo.clima.dubio{opacity:.78;font-style:italic}

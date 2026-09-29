@@ -138,8 +138,20 @@
   }
 
   /* ---------- filtros ---------- */
+  /* CLIMA DE NOITE — o mesmo valor serve ao selo do card, à ficha e ao filtro,
+     para os tres nunca discordarem. `conf` segue o padrao da faixa de preco:
+     confirmado / parcial / nao-confirmado. */
+  var CLIMA = {
+    animado:   { l: 'Animado · DJ', e: '🎧', d: 'DJ residente ou música alta. Vira lounge/festa.' },
+    vibrante:  { l: 'Vibrante',     e: '🔊', d: 'Música ambiente alta, bom para ver e ser visto. Sem festa.' },
+    tranquilo: { l: 'Tranquilo',    e: '🕯️', d: 'Jantar e conversa.' }
+  };
+
   var FILTROS = [
     { id: 'todos', l: 'Todos' },
+    { id: 'cl-animado', l: '🎧 Animado/DJ' },
+    { id: 'cl-vibrante', l: '🔊 Vibrante' },
+    { id: 'cl-tranquilo', l: '🕯️ Tranquilo' },
     { id: 'qatari', l: '🫖 Qatari' },
     { id: 'arabe', l: '🍲 Árabe' },
     { id: 'alta', l: '✨ Alta gastronomia' },
@@ -170,6 +182,7 @@
     if (f === 'barato') return r.precoQar && r.precoQar[0] <= 100;
     if (f === 'alcool') return r.alcool === true;
     if (f === 'seco') return r.alcool === false;
+    if (f.indexOf('cl-') === 0) return r.climaNoite === f.slice(3);
     if (f === 'michelin') return !!r.destaque && /MICHELIN|BIB|★/i.test(r.destaque);
     return (r.categorias || []).indexOf(f) >= 0;
   }
@@ -188,6 +201,11 @@
     if (r.alcool === true) vis.appendChild(el('div', 'selo', '🍷 Serve álcool'));
     else if (r.alcool === false) vis.appendChild(el('div', 'selo seco', '🚫 Sem álcool'));
     else vis.appendChild(el('div', 'selo seco', '? Álcool não confirmado'));
+    if (r.climaNoite && CLIMA[r.climaNoite]) {
+      var cl = CLIMA[r.climaNoite];
+      vis.appendChild(el('div', 'selo clima' + (r.climaConf === 'confirmado' ? '' : ' dubio'),
+        cl.e + ' ' + esc(cl.l) + (r.climaConf === 'confirmado' ? '' : ' ?')));
+    }
     c.appendChild(vis);
 
     var b = el('div', 'card-body');
@@ -248,6 +266,9 @@
       ['Preço / pessoa', faixa(r)],
       ['Estimativa p/ dois', faixa(r, true)],
       ['Álcool', r.alcool === true ? 'Sim' : r.alcool === false ? 'Não' : 'Não confirmado'],
+      r.climaNoite && CLIMA[r.climaNoite] ? ['Clima de noite', CLIMA[r.climaNoite].l +
+        (r.climaConf === 'confirmado' ? ' (confirmado)' : r.climaConf === 'parcial' ? ' (parcial — ver nota)' : ' (não confirmado)')] : null,
+      r.noitesFortes ? ['Noites fortes', r.noitesFortes] : null,
       ['Reserva', r.reserva === 'obrigatoria' ? 'Obrigatória' : r.reserva === 'recomendavel' ? 'Recomendável' : 'Não precisa'],
       ['Ambiente', (r.ambiente || []).join(', ') || '—'],
       r.vista ? ['Vista', r.vista] : null,
@@ -258,6 +279,10 @@
     sd.appendChild(dl);
     if (r.redeNota) sd.appendChild(el('div', 'note', esc(r.redeNota)));
     if (r.alcoolNota) sd.appendChild(el('div', 'note', '🍷 ' + esc(r.alcoolNota)));
+    if (r.climaNota) {
+      sd.appendChild(el('div', 'note' + (r.climaConf === 'confirmado' ? '' : ' warn'),
+        (CLIMA[r.climaNoite] ? CLIMA[r.climaNoite].e : '🎧') + ' ' + esc(r.climaNota)));
+    }
     if (r.reservaNota) sd.appendChild(el('div', 'note', '📅 ' + esc(r.reservaNota)));
 
     /* preços */
