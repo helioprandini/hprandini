@@ -464,6 +464,7 @@
     avisos:   ico('<path d="M4 5.5A2 2 0 0 1 6 3.5h5v17H6a2 2 0 0 0-2 2z"/><path d="M20 5.5a2 2 0 0 0-2-2h-5v17h5a2 2 0 0 1 2 2z"/>'),
     cambio:   ico('<ellipse cx="12" cy="6.5" rx="7.5" ry="3"/><path d="M4.5 6.5v11c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-11M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/>'),
     mais:     ico('<path d="M4 7h16M4 12h16M4 17h16"/>'),
+    cafe:     ico('<path d="M4 8h12v7a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10h2.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 2.5v2.5M12 2.5v2.5"/>'),
     fotos:    ico('<rect x="3" y="6.5" width="18" height="13.5" rx="2.5"/><path d="M8.5 6.5l1.4-2.5h4.2l1.4 2.5"/><circle cx="12" cy="13.2" r="3.6"/>'),
     chegada:  ico('<path d="M3 20.5h18M4.5 16.5l15.5-3.4a2 2 0 0 0-1-3.8L14.5 10 9 3.5 6.5 4l3 7-4.2.9-2-2.4-1.6.4z"/>'),
     iroteiro: ico('<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="8.5" cy="14" r="1.1" fill="currentColor" stroke="none"/>'),
@@ -482,20 +483,21 @@
     destinos:'Destinos', lista:'Comer', curadoria:'Curadoria', roteiros:'Roteiros',
     souq:'Souq', escala:'A escala', beber:'Beber', hoteis:'Hotéis',
     reservaria:'Reservar', avisos:'Saber', cambio:'Moedas',
-    chegada:'Chegada', fotos:'Fotos', iroteiro:'Roteiro', ivoos:'Voos', ihoteis:'Hotéis',
+    chegada:'Chegada', fotos:'Fotos', cafe:'Café', iroteiro:'Roteiro', ivoos:'Voos', ihoteis:'Hotéis',
     nyroteiro:'Roteiro', nymudou:'Mudou', nylugares:'Lugares', nyouro:'Ouro',
     euroteiro:'A viagem', eunotas:'As notas', eureparos:'Reparos', mapa:'Mapa'
   };
-  var PRIMARIAS = { doha: ['lista', 'mapa', 'roteiros', 'fotos'], india: ['chegada', 'fotos', 'iroteiro', 'ihoteis'], ny: ['nyroteiro', 'nymudou', 'nylugares', 'mapa'], eu23: ['euroteiro', 'eunotas', 'mapa', 'eureparos'],
+  var PRIMARIAS = { doha: ['lista', 'cafe', 'mapa', 'fotos'], india: ['chegada', 'fotos', 'iroteiro', 'ihoteis'], ny: ['nyroteiro', 'nymudou', 'nylugares', 'mapa'], eu23: ['euroteiro', 'eunotas', 'mapa', 'eureparos'],
                    eu25: ['euroteiro', 'eunotas', 'mapa', 'eureparos'],
                    bos: ['euroteiro', 'eunotas', 'mapa', 'eureparos'] };
   var ABA_HOME = { id: 'destinos', l: '← Destinos' };
   var ABA_CAMBIO = { id: 'cambio', l: '💱 Moedas' };
   var ABA_FOTOS = { id: 'fotos', l: '📸 Fotos' };
+  var ABA_CAFE = { id: 'cafe', l: '☕ Café da manhã' };
   function abasAtuais() {
     if (!destino) return [ABA_CAMBIO];
     var base = destino === 'india' ? ABAS_INDIA : destino === 'ny' ? ABAS_NY :
-      ehArquivo() ? ABAS_EU23 : ABAS_DOHA.concat([ABA_MAPA, ABA_FOTOS]);
+      ehArquivo() ? ABAS_EU23 : ABAS_DOHA.concat([ABA_MAPA, ABA_FOTOS, ABA_CAFE]);
     return [ABA_HOME].concat(base, [ABA_CAMBIO]);
   }
   function primeiraAba() {
@@ -833,6 +835,82 @@
     });
     p8.appendChild(box);
     root.appendChild(p8);
+  }
+
+  /* ---------- café da manhã em Doha ----------
+     A distancia NAO vem escrita no dado: sai de daBase(), a mesma funcao das
+     fichas de restaurante, medida a partir do Park Hyatt. Assim ela nao mente
+     se a base mudar — e o que navega de verdade e o botao de rota. */
+  function viewCafe(root) {
+    var C3 = HERO_CAFE;
+
+    var p0 = el('div', 'panel');
+    p0.appendChild(el('h2', null, 'Café da manhã'));
+    p0.appendChild(el('div', 'lead', esc(C3.nota)));
+    p0.appendChild(el('div', 'lead',
+      'Notas e número de avaliações são do Google. <b>Os horários marcados ' +
+      '“confirmado” eu conferi em fonte</b>; os outros vieram da busca no mapa e ' +
+      'estão marcados como não confirmados — ligue antes de sair de madrugada atrás de padaria.'));
+    root.appendChild(p0);
+
+    var arr = C3.lugares.slice().sort(function (u, v) {
+      var du = daBase(u), dv = daBase(v);
+      return (du ? du.km : 99) - (dv ? dv.km : 99);
+    });
+
+    arr.forEach(function (x) {
+      var c = el('div', 'panel');
+      var top = el('div', 'nn');
+      top.appendChild(el('span', 'nh', esc(x.n)));
+      if (x.voto) top.appendChild(el('span', 'tag gold', '★ meu voto'));
+      var db = daBase(x);
+      if (db) {
+        top.appendChild(el('span', 'tag dist', '📍 ' + (db.km < 1 ? Math.round(db.km * 1000) + ' m' :
+          db.km.toFixed(1).replace('.', ',') + ' km') + ' · ' + db.min + ' min ' + (db.aPe ? 'a pé' : 'de táxi')));
+      }
+      c.appendChild(top);
+      c.appendChild(el('div', 'lead', esc((x.casa ? x.casa + ' · ' : '') + x.bairro)));
+
+      var h = el('div', 'note');
+      var conf = x.horaConf === 'confirmado' ? '✓ confirmado'
+               : x.horaConf === 'parcial' ? '◐ parcial' : '◦ não confirmado';
+      h.appendChild(el('div', 'px', '<b>🕐 ' + esc(x.hora) + '</b> <span style="opacity:.65">' + conf + '</span>'));
+      if (x.horaNota) h.appendChild(el('div', 'lead', esc(x.horaNota)));
+      c.appendChild(h);
+
+      c.appendChild(el('div', 'nx', esc(x.q)));
+      var pq = el('div', 'note');
+      pq.appendChild(el('div', 'px', '<b>Por que ir</b>'));
+      pq.appendChild(el('div', 'lead', esc(x.porque)));
+      c.appendChild(pq);
+
+      var br = el('div', 'btnrow'); br.style.marginTop = '8px';
+      var am = el('a', 'btn sec', '🗺 Rota do hotel');
+      am.href = rotaPara(x); am.target = '_blank'; am.rel = 'noopener';
+      br.appendChild(am);
+      if (x.tel) {
+        var at = el('a', 'btn sec', '📞 Ligar');
+        at.href = 'tel:' + x.tel; br.appendChild(at);
+      }
+      c.appendChild(br);
+      root.appendChild(c);
+    });
+
+    var pf = el('div', 'panel');
+    pf.appendChild(el('h2', null, 'De onde veio cada coisa'));
+    pf.appendChild(el('div', 'lead',
+      'A lista nasceu de uma busca no mapa em ' +
+      new Date(C3.atualizado + 'T12:00:00').toLocaleDateString('pt-BR') +
+      '. As coordenadas são de quarteirão, não de porta — Msheireb é compacto e a ' +
+      'distância serve para ordenar, não para navegar. Quem navega é o botão de rota.'));
+    var bx = el('div', 'srcs'); bx.style.marginTop = '12px';
+    C3.fontes.forEach(function (f) {
+      var a2 = el('a', null, '↗ ' + esc(f.t));
+      a2.href = f.u; a2.target = '_blank'; a2.rel = 'noopener';
+      bx.appendChild(a2);
+    });
+    pf.appendChild(bx);
+    root.appendChild(pf);
   }
 
   /* ---------- spots de foto, com radar de proximidade ----------
@@ -2459,7 +2537,7 @@
     beber: 'a aba "Onde beber" de Doha', hoteis: 'a comparacao de hoteis de Doha',
     reservaria: 'a aba "Eu reservaria"', avisos: 'a aba "Saber antes"',
     cambio: 'o conversor de moedas', chegada: 'a aba "A chegada" (sair do T3 de Delhi ate o hotel)',
-    fotos: 'a aba de spots de foto',
+    fotos: 'a aba de spots de foto', cafe: 'a aba de cafe da manha de Doha',
     iroteiro: 'o roteiro da India',
     ivoos: 'os voos da India', ihoteis: 'os hoteis da India'
   };
@@ -2553,6 +2631,7 @@
     else if (aba === 'nymudou') viewNyMudou(root);
     else if (aba === 'nylugares') viewNyLugares(root);
     else if (aba === 'nyouro') viewNyOuro(root);
+    else if (aba === 'cafe') viewCafe(root);
     else if (aba === 'fotos') viewFotos(root);
     else if (aba === 'chegada') viewChegada(root);
     else if (aba === 'iroteiro') viewIndiaRoteiro(root);
