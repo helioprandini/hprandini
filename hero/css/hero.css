@@ -546,3 +546,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
 .selo.clima{left:auto;right:10px;bottom:10px;background:rgba(28,26,23,.88);color:#fff;
   max-width:52%}
 .selo.clima.dubio{opacity:.78;font-style:italic}
+
+/* Tela de mandar dica: previa do texto como ele vai chegar no WhatsApp. */
+.previa{white-space:pre-wrap;font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  background:var(--sand-2);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:12px 13px;margin:0;overflow-x:auto}
+.conv-row textarea{width:100%;font:inherit;padding:10px 12px;border:1px solid var(--line);
+  border-radius:8px;background:var(--card);color:var(--ink);resize:vertical}
+.btn.sec.on{background:var(--ink);border-color:var(--ink);color:var(--sand)}

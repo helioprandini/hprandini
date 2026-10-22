@@ -106,6 +106,9 @@
       var b = el('a', 'btn sec', '🔗 Reservar no site');
       b.href = r.reservaUrl; b.target = '_blank'; b.rel = 'noopener'; box.appendChild(b);
     }
+    var bd = el('button', 'btn sec', '💡 Mandar uma dica sobre este lugar');
+    bd.onclick = function () { preContrib = { tipo: 'correcao', lugar: r.nome, bairro: r.bairro || '' }; vaiPara('contribuir'); };
+    box.appendChild(bd);
     var cp = el('button', 'btn sec', '📋 Copiar pedido de reserva');
     cp.onclick = function () {
       var t = textoReserva(r);
@@ -508,7 +511,7 @@
     destinos:'Destinos', lista:'Comer', curadoria:'Curadoria', roteiros:'Roteiros',
     souq:'Souq', escala:'A escala', beber:'Beber', hoteis:'Hotéis',
     reservaria:'Reservar', avisos:'Saber', cambio:'Moedas',
-    chegada:'Chegada', fotos:'Fotos', cafe:'Café', iroteiro:'Roteiro', ivoos:'Voos', ihoteis:'Hotéis',
+    chegada:'Chegada', fotos:'Fotos', cafe:'Café', contribuir:'Dica', iroteiro:'Roteiro', ivoos:'Voos', ihoteis:'Hotéis',
     nyroteiro:'Roteiro', nymudou:'Mudou', nylugares:'Lugares', nyouro:'Ouro',
     euroteiro:'A viagem', eunotas:'As notas', eureparos:'Reparos', mapa:'Mapa'
   };
@@ -519,11 +522,12 @@
   var ABA_CAMBIO = { id: 'cambio', l: '💱 Moedas' };
   var ABA_FOTOS = { id: 'fotos', l: '📸 Fotos' };
   var ABA_CAFE = { id: 'cafe', l: '☕ Café da manhã' };
+  var ABA_CONTRIB = { id: 'contribuir', l: '💡 Mandar uma dica' };
   function abasAtuais() {
-    if (!destino) return [ABA_CAMBIO];
+    if (!destino) return [ABA_CAMBIO, ABA_CONTRIB];
     var base = destino === 'india' ? ABAS_INDIA : destino === 'ny' ? ABAS_NY :
       ehArquivo() ? ABAS_EU23 : ABAS_DOHA.concat([ABA_MAPA, ABA_FOTOS, ABA_CAFE]);
-    return [ABA_HOME].concat(base, [ABA_CAMBIO]);
+    return [ABA_HOME].concat(base, [ABA_CAMBIO, ABA_CONTRIB]);
   }
   function primeiraAba() {
     return destino === 'india' ? 'chegada' : destino === 'ny' ? 'nyroteiro' :
@@ -552,7 +556,8 @@
     var nav = $('#botnav'); nav.innerHTML = '';
     var itens;
     if (!destino) {
-      itens = [{ id: 'destinos', l: 'Destinos' }, { id: 'cambio', l: 'Moedas' }];
+      itens = [{ id: 'destinos', l: 'Destinos' }, { id: 'cambio', l: 'Moedas' },
+               { id: 'contribuir', l: 'Dica' }];
     } else {
       itens = (PRIMARIAS[destino] || []).map(function (id) { return { id: id, l: CURTO[id] }; });
       itens.push({ id: '__mais', l: 'Mais' });
@@ -603,6 +608,11 @@
     var h = $('#heroHead');
     h.innerHTML = '';
     if (!destino) {
+      if (aba === 'contribuir') {
+        h.appendChild(el('h1', null, 'Mandar uma dica'));
+        h.appendChild(el('p', null, 'O HeRo melhora com quem foi. Se voc\u00ea conhece um lugar que merece entrar, conte.'));
+        return;
+      }
       if (aba === 'cambio') {
         h.appendChild(el('h1', null, 'Moedas e dinheiro'));
         h.appendChild(el('p', null, 'Conversor, taxas e como tirar dinheiro na mão lá fora. ' +
@@ -860,6 +870,145 @@
     });
     p8.appendChild(box);
     root.appendChild(p8);
+  }
+
+  /* ---------- mandar uma dica (caminho 2: WhatsApp, zero servidor) ----------
+     DECISAO DELIBERADA: o link do WhatsApp vai SEM numero.
+     wa.me/?text=... abre o seletor de contato e a pessoa escolhe o Helio na
+     agenda dela. Assim o numero dele NAO entra num repositorio publico, que
+     seria alvo de robo em dias. O comportamento sem numero so esta documentado
+     por terceiros, nao pela Meta — por isso o botao de COPIAR existe ao lado,
+     e nada se perde se o seletor mudar de comportamento. */
+  var preContrib = null;
+  var LS_RASCUNHO = 'hero_dica_rascunho';
+
+  function textoDica(d) {
+    var L = [];
+    L.push('💡 DICA PARA O HeRo');
+    L.push('');
+    L.push('Destino: ' + (d.destino || '—'));
+    L.push('Tipo: ' + (d.tipo === 'novo' ? 'lugar novo' : d.tipo === 'correcao' ? 'correção num lugar que já está no app' : 'dica geral'));
+    if (d.lugar)  L.push('Lugar: ' + d.lugar);
+    if (d.bairro) L.push('Onde: ' + d.bairro);
+    if (d.oque)   L.push('O que é: ' + d.oque);
+    if (d.preco)  L.push('Preço aprox.: ' + d.preco);
+    L.push('Já fui: ' + (d.jafoi ? 'sim' : 'não — é indicação de terceiro'));
+    L.push('');
+    L.push('Por que vale:');
+    L.push(d.porque || '(não preenchido)');
+    L.push('');
+    L.push('Quem mandou: ' + (d.quem || '—'));
+    L.push('— HeRo ' + HERO_VERSAO.n + ' · ' + new Date().toLocaleDateString('pt-BR'));
+    return L.join('\n');
+  }
+
+  function viewContribuir(root) {
+    var d = load(LS_RASCUNHO, {});
+    if (preContrib) { d.tipo = preContrib.tipo; d.lugar = preContrib.lugar; d.bairro = preContrib.bairro; preContrib = null; }
+    if (!d.destino) {
+      var dd = HERO_DESTINOS.filter(function (x) { return x.id === destino; })[0];
+      d.destino = dd ? dd.nome : '';
+    }
+    if (!d.tipo) d.tipo = 'novo';
+
+    var p0 = el('div', 'panel');
+    p0.appendChild(el('h2', null, 'Mandar uma dica'));
+    p0.appendChild(el('div', 'lead',
+      'O HeRo é curadoria de gente que foi. Se você conhece um lugar que merece entrar — ' +
+      'ou viu que alguma coisa aqui está errada — preencha e mande. ' +
+      'A dica vai pelo <b>seu</b> WhatsApp, para o Helio, e ele decide o que entra.'));
+    p0.appendChild(el('div', 'note', '🔒 Nada é enviado por este app. Ele só monta o texto; ' +
+      'quem manda é você, do seu aparelho. Não guardamos nada em servidor nenhum — ' +
+      'o rascunho fica só neste celular.'));
+    root.appendChild(p0);
+
+    var pf = el('div', 'panel');
+    var campos = {};
+    function campo(k, rotulo, dica, tipo) {
+      var w = el('label', 'conv-row');
+      var lab = el('div', 'conv-lab');
+      lab.appendChild(el('b', null, esc(rotulo)));
+      if (dica) lab.appendChild(el('span', null, esc(dica)));
+      w.appendChild(lab);
+      var i = tipo === 'area' ? el('textarea') : el('input');
+      if (tipo !== 'area') i.type = 'text';
+      i.id = 'dica-' + k;
+      i.value = d[k] || '';
+      if (tipo === 'area') i.rows = 4;
+      i.oninput = function () { d[k] = i.value; save(LS_RASCUNHO, d); atualiza(); };
+      w.appendChild(i);
+      campos[k] = i;
+      pf.appendChild(w);
+    }
+
+    /* tipo da dica */
+    var tw = el('div'); tw.style.marginBottom = '10px';
+    tw.appendChild(el('div', 'lead', '<b>O que é esta dica?</b>'));
+    var tr = el('div', 'btnrow');
+    [['novo', 'Lugar novo'], ['correcao', 'Correção'], ['geral', 'Dica geral']].forEach(function (t) {
+      var b2 = el('button', 'btn sec' + (d.tipo === t[0] ? ' on' : ''), t[1]);
+      b2.onclick = function () { d.tipo = t[0]; save(LS_RASCUNHO, d); render(); };
+      tr.appendChild(b2);
+    });
+    tw.appendChild(tr);
+    pf.appendChild(tw);
+
+    campo('destino', 'Destino', 'cidade ou país — pode ser um que ainda não está no app');
+    campo('lugar', 'Nome do lugar', d.tipo === 'geral' ? 'opcional numa dica geral' : '');
+    campo('bairro', 'Onde fica', 'bairro, rua ou referência');
+    campo('oque', 'O que é', 'restaurante, bar, museu, loja…');
+    campo('porque', 'Por que vale a pena', 'a parte que importa — seja específico', 'area');
+    campo('preco', 'Preço aproximado', 'por pessoa, se souber');
+    campo('quem', 'Seu nome', 'para o Helio saber de quem veio');
+
+    var jw = el('label', 'conv-row');
+    var jl = el('div', 'conv-lab');
+    jl.appendChild(el('b', null, 'Você já foi?'));
+    jl.appendChild(el('span', null, 'se não foi, diga — muda o peso da dica'));
+    jw.appendChild(jl);
+    var jb = el('button', 'btn sec' + (d.jafoi ? ' on' : ''), d.jafoi ? '✓ Já fui' : 'Não fui');
+    jb.onclick = function () { d.jafoi = !d.jafoi; save(LS_RASCUNHO, d); render(); };
+    jw.appendChild(jb);
+    pf.appendChild(jw);
+    root.appendChild(pf);
+
+    /* previa + acoes */
+    var pp = el('div', 'panel');
+    pp.appendChild(el('h2', null, 'Como vai chegar'));
+    var pre = el('pre', 'previa');
+    pp.appendChild(pre);
+
+    var br = el('div', 'btnrow'); br.style.marginTop = '12px';
+    var wa = el('a', 'btn gold', '💬 Mandar pelo WhatsApp');
+    wa.target = '_blank'; wa.rel = 'noopener';
+    br.appendChild(wa);
+    var cp = el('button', 'btn sec', '📋 Copiar o texto');
+    cp.onclick = function () {
+      var t = textoDica(d);
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(t).then(function () { cp.textContent = '✓ Copiado'; },
+          function () { prompt('Copie o texto:', t); });
+      } else { prompt('Copie o texto:', t); }
+    };
+    br.appendChild(cp);
+    var lm = el('button', 'btn sec', '🗑 Limpar');
+    lm.onclick = function () {
+      if (!confirm('Apagar o rascunho desta dica?')) return;
+      save(LS_RASCUNHO, {}); preContrib = null; render();
+    };
+    br.appendChild(lm);
+    pp.appendChild(br);
+    pp.appendChild(el('div', 'lead',
+      'O botão do WhatsApp abre a sua lista de contatos com o texto já pronto — ' +
+      'escolha o Helio. Se o seu aparelho não abrir, use <b>Copiar o texto</b> e cole na conversa.'));
+    root.appendChild(pp);
+
+    function atualiza() {
+      var t = textoDica(d);
+      pre.textContent = t;
+      wa.href = 'https://wa.me/?text=' + encodeURIComponent(t);
+    }
+    atualiza();
   }
 
   /* ---------- café da manhã em Doha ----------
@@ -2562,7 +2711,7 @@
     beber: 'a aba "Onde beber" de Doha', hoteis: 'a comparacao de hoteis de Doha',
     reservaria: 'a aba "Eu reservaria"', avisos: 'a aba "Saber antes"',
     cambio: 'o conversor de moedas', chegada: 'a aba "A chegada" (sair do T3 de Delhi ate o hotel)',
-    fotos: 'a aba de spots de foto', cafe: 'a aba de cafe da manha de Doha',
+    fotos: 'a aba de spots de foto', contribuir: 'a tela de mandar uma dica', cafe: 'a aba de cafe da manha de Doha',
     iroteiro: 'o roteiro da India',
     ivoos: 'os voos da India', ihoteis: 'os hoteis da India'
   };
@@ -2647,6 +2796,7 @@
        ai que ela morria na tela inicial (destino vazio devolvia a lista de
        destinos sem nunca olhar a aba). */
     if (aba === 'cambio') { viewCambio(root); finaliza(mantemFoco); return; }
+    if (aba === 'contribuir') { viewContribuir(root); finaliza(mantemFoco); return; }
     if (aba === 'destinos' || !destino) { viewDestinos(root); finaliza(mantemFoco); return; }
     else if (aba === 'mapa') viewMapa(root);
     else if (aba === 'euroteiro') viewEuRoteiro(root);
@@ -2656,6 +2806,7 @@
     else if (aba === 'nymudou') viewNyMudou(root);
     else if (aba === 'nylugares') viewNyLugares(root);
     else if (aba === 'nyouro') viewNyOuro(root);
+    else if (aba === 'contribuir') viewContribuir(root);
     else if (aba === 'cafe') viewCafe(root);
     else if (aba === 'fotos') viewFotos(root);
     else if (aba === 'chegada') viewChegada(root);
