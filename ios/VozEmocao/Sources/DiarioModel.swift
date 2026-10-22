@@ -54,6 +54,7 @@ final class DiarioModel: NSObject, ObservableObject {
         var inferido: Inferido
         var gatilho: Gatilho?          // o que acordou a Escuta Ativa
         var verbal: Verbal?            // canal verbal: sentimento + termos, nunca o texto
+        var coerencia: Coerencia.Leitura?  // palavra × voz, contra o normal da pessoa
 
         var rotulado: Bool { relatado != nil }
     }
@@ -332,7 +333,9 @@ final class DiarioModel: NSObject, ObservableObject {
             statusText = "Apagado. Sigo ouvindo."
             return
         }
-        momentos.insert(m, at: 0)
+        var registro = m
+        registro.coerencia = Coerencia.avaliar(m, anteriores: momentos)
+        momentos.insert(registro, at: 0)
         capturados += 1
         salvar()
         querRotular = true
@@ -537,5 +540,89 @@ final class RollingFrameBuffer: @unchecked Sendable {
         return cut.map { f in
             var g = f; g.t = f.t - t0; return g
         }
+    }
+}
+
+/// Termômetro de coerência (o "Fakenometro" do Helio, com o nome honesto):
+/// as PALAVRAS e a VOZ do mesmo momento contam a mesma história?
+///
+/// Descreve comportamento, nunca intenção: "palavras positivas, voz tensa"
+/// pode ser ironia, educação ou cansaço. A tela nunca diz "fake".
+///
+/// A voz é comparada com o normal da própria pessoa (z-score sobre os
+/// momentos anteriores com voz limpa); sem 15 deles, é inconclusivo. Da voz
+/// só entra o que a prosódia mede bem — ativação, expressividade, pausas —
+/// nunca a valência (r = 0.37 no 2º dataset).
+///
+/// Espelha `research/benchmark/coerencia.js`, que também valida a regra
+/// contra os rótulos. Mudou lá, muda aqui.
+enum Coerencia {
+    static let baseMinima = 15
+    static let limiarTexto = 0.3
+
+    struct Leitura: Codable {
+        var estado: String        // coerente | divergente | inconclusivo
+        var voz: String?          // normal | tensa | apagada | hesitante | viva
+        var frase: String
+        var sentimento: Double?
+        var baseN: Int
+        var zAtivacao: Double?
+        var zExpressividade: Double?
+        var zPausas: Double?
+    }
+
+    private struct Medida {
+        let m: Double, s: Double
+        init(_ v: [Double]) {
+            let media = v.reduce(0, +) / Double(v.count)
+            let dp = (v.map { ($0 - media) * ($0 - media) }.reduce(0, +) / Double(v.count)).squareRoot()
+            m = media; s = dp > 0 ? dp : 1e-9
+        }
+        func z(_ x: Double) -> Double { (x - m) / s }
+    }
+
+    static func avaliar(_ momento: DiarioModel.Momento,
+                        anteriores: [DiarioModel.Momento]) -> Leitura {
+        let limpos = anteriores.filter { $0.qualidade == "limpa" }
+        let s = momento.verbal?.sentimento
+        var l = Leitura(estado: "inconclusivo", voz: nil, frase: "", sentimento: s, baseN: limpos.count)
+        guard let s else { l.frase = "Sem texto para comparar."; return l }
+        guard limpos.count >= baseMinima else {
+            l.frase = "Ainda aprendendo o seu normal (\(limpos.count)/\(baseMinima))."
+            return l
+        }
+
+        let o = momento.observado
+        let altura = Medida(limpos.map { Double($0.observado.alturaMediaHz) })
+        let rms = Medida(limpos.map { Double($0.observado.energiaRms) })
+        let semitons = Medida(limpos.map { Double($0.observado.variacaoPitchSemitons) })
+        let pausas = Medida(limpos.map { Double($0.observado.pausasPct) })
+
+        let zA = (altura.z(Double(o.alturaMediaHz)) + rms.z(Double(o.energiaRms))) / 2
+        let zE = semitons.z(Double(o.variacaoPitchSemitons))
+        let zP = pausas.z(Double(o.pausasPct))
+        func r2(_ v: Double) -> Double { (v * 100).rounded() / 100 }
+        l.zAtivacao = r2(zA); l.zExpressividade = r2(zE); l.zPausas = r2(zP)
+
+        // Estado da voz relativo ao normal da pessoa; o mais específico primeiro.
+        let voz: String
+        if zA >= 1 && zE <= 0 { voz = "tensa" }
+        else if zA <= -1 && zE <= -0.5 { voz = "apagada" }
+        else if zP >= 1.5 { voz = "hesitante" }
+        else if zE >= 1 && zA >= 0 { voz = "viva" }
+        else { voz = "normal" }
+        l.voz = voz
+
+        if abs(s) < limiarTexto {
+            l.frase = "Palavras neutras — nada a comparar."
+        } else if s > 0 && ["tensa", "apagada", "hesitante"].contains(voz) {
+            l.estado = "divergente"; l.frase = "Palavras positivas, voz \(voz)."
+        } else if s < 0 && voz == "viva" {
+            // O caso mais fraco: ironia, brincadeira ou desabafo animado.
+            l.estado = "divergente"; l.frase = "Palavras negativas, voz viva."
+        } else {
+            l.estado = "coerente"; l.frase = "Palavras e voz na mesma direção."
+        }
+        return l
     }
 }

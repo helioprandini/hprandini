@@ -181,6 +181,7 @@ struct DiarioView: View {
                 }
             }
             ForEach(diario.momentos.filter(\.rotulado).prefix(10)) { m in
+              VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 10) {
                     Text(m.data.formatted(date: .abbreviated, time: .shortened))
                         .font(.system(size: 12))
@@ -202,6 +203,13 @@ struct DiarioView: View {
                         .font(.system(size: 12))
                         .foregroundStyle(Theme.textFaint)
                 }
+                // Só aparece depois do rótulo: a folha é cega, para não ancorar.
+                if let c = m.coerencia, c.estado != "inconclusivo" {
+                    Text((c.estado == "divergente" ? "⚡︎ " : "≈ ") + c.frase)
+                        .font(.system(size: 11))
+                        .foregroundStyle(c.estado == "divergente" ? Theme.warm : Theme.textFaint)
+                }
+              }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
