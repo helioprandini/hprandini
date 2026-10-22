@@ -2241,6 +2241,15 @@
   var spFiltro = 'todos';
   var spFoco = '';
 
+  /* Um lugar é "escolha dele" quando alguma ocasião aponta para ele. Fica
+     DERIVADO da estrutura, não repetido num campo: campo duplicado é campo
+     que um dia diverge. */
+  function spEhDele(x) {
+    var sim = false;
+    HERO_SP.ocasioes.forEach(function (o) { if (o.lugar === x.id) sim = true; });
+    return sim;
+  }
+
   function spPorId(id) {
     var achou = null;
     HERO_SP.lugares.forEach(function (x) { if (x.id === id) achou = x; });
@@ -2314,6 +2323,22 @@
     bc.appendChild(bb);
     pp.appendChild(bc);
     root.appendChild(pp);
+
+    /* O que ele JÁ respondeu. Está na tela para nenhuma sessão futura
+       reabrir o que está fechado — pendência resolvida que volta a
+       aparecer corrói a confiança no app inteiro. */
+    if (S.resolvidas && S.resolvidas.length) {
+      var pr = el('div', 'panel');
+      pr.appendChild(el('h2', null, 'Já respondido'));
+      pr.appendChild(el('div', 'lead', 'Confirmado por ele em 22/10/2026. Fica registrado para ninguém perguntar de novo.'));
+      var dlr = el('dl', 'kv');
+      S.resolvidas.forEach(function (q) {
+        dlr.appendChild(el('dt', null, esc(q.q)));
+        dlr.appendChild(el('dd', null, '✓ ' + esc(q.r)));
+      });
+      pr.appendChild(dlr);
+      root.appendChild(pr);
+    }
   }
 
   function viewSpLugares(root) {
@@ -2352,7 +2377,10 @@
         return da - db;
       });
     } else {
-      lista.sort(function (a, b) { return ordem[a.conf] - ordem[b.conf]; });
+      lista.sort(function (a, b) {
+        if (!!a.secundario !== !!b.secundario) return a.secundario ? 1 : -1;
+        return ordem[a.conf] - ordem[b.conf];
+      });
     }
 
     var cnt = el('div', 'count', lista.length + ' de ' + S.lugares.length + ' lugares');
@@ -2360,7 +2388,7 @@
 
     lista.forEach(function (x) {
       var sel = SELO_NY[x.conf];
-      var p = el('div', 'panel');
+      var p = el('div', 'panel' + (x.secundario ? ' dim' : ''));
       p.id = 'sp-' + x.id;
       p.appendChild(el('h2', null, esc(x.n)));
       var tg = el('div', 'tagrow');
@@ -2368,6 +2396,8 @@
       tg.appendChild(el('span', 'tag', esc(x.z)));
       tg.appendChild(el('span', 'tag', esc(x.tipo)));
       if (x.ocasiao) tg.appendChild(el('span', 'tag gold', esc(x.ocasiao)));
+      if (spEhDele(x)) tg.appendChild(el('span', 'tag ok', '✓ escolha do Helio'));
+      if (x.secundario) tg.appendChild(el('span', 'tag bad', 'NÃO é a dele'));
       var cd = chipDist(x); if (cd) tg.appendChild(cd);
       p.appendChild(tg);
 

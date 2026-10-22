@@ -10,6 +10,12 @@
  * se organiza por dia, e sim por OCASIÃO. "Jantar para impressionar" não é
  * um ponto no mapa, é uma pergunta que o amigo visitante faz.
  *
+ * CONFIRMADO POR ELE em 22/10/2026, na segunda rodada: Fabrique é a matriz de
+ * Higienópolis · Vaca Véia é a do Itaim · Z Deli é o RESTAURANTE da Alameda
+ * Lorena · Santino é o Trattoria do Itaim. As duas unidades que NÃO são as
+ * dele continuam no arquivo de propósito, marcadas secundario:true — não como
+ * recomendação, e sim para ele não cair nelas por engano.
+ *
  * O QUE É DELE E O QUE É MEU:
  *   - o nome do lugar e a ocasião: DELE. É o que nenhum guia tem.
  *   - endereço, bairro, horário, preço: MEU, pesquisado em 22/10/2026.
@@ -71,15 +77,15 @@ const HERO_SP = {
     { id: 'negocio', q: 'Almoço de negócio, perto de casa', lugar: 'santino', emoji: '🍝',
       d: 'Trattoria do chef Rodolfo de Santis, no Itaim. Casa nova (abriu em julho de 2026) e descrita como italiano arrumado de preço amigável — o que é exatamente o perfil de almoço de trabalho.' },
     { id: 'sempre', q: 'O de sempre, ele e a Roberta, sem pensar', lugar: 'zdeli-lorena', emoji: '🥪',
-      d: 'O voto de confiança do casal. Deli nova-iorquina nos Jardins. Vale saber que tem DUAS caras: a casa da Alameda Lorena é restaurante, e as outras unidades são sanduíche de balcão.' },
+      d: 'O voto de confiança do casal. Deli nova-iorquina nos Jardins. Ele confirmou qual é: a casa da Alameda Lorena, a que é RESTAURANTE — não o balcão de sanduíche da Oscar Freire.' },
     { id: 'carne', q: 'Carne', lugar: 'ntmu', emoji: '🥩',
       d: 'NTMU é "Nice to Meat U", no Jardim Europa. Steakhouse de corte na brasa, não é rodízio.' },
     { id: 'japones', q: 'Japonês', lugar: 'nori-vaz', emoji: '🍣',
       d: 'Casa de temaki do chef Wdson Vaz, na Augusta. Daí o "Vaz" do nome — não é rua, é o sobrenome do chef.' },
     { id: 'padaria', q: 'Padaria e café da manhã', lugar: 'fabrique', emoji: '🥐',
-      d: 'Padaria de fermentação natural. A matriz é em Higienópolis. Atenção: não encontrei unidade nos Jardins nem em Pinheiros — está na lista de pendências.' },
+      d: 'Padaria de fermentação natural, de fermentação lenta. É a matriz de Higienópolis — ele confirmou. Não existe Fabrique nos Jardins nem em Pinheiros; quem te mandar para lá está enganado.' },
     { id: 'bar', q: 'Bar para tomar uma', lugar: 'vaca-veia-itaim', emoji: '🍺',
-      d: 'Boteco de esquina no Itaim. Tem uma segunda unidade em Pinheiros, com avaliação bem pior de atendimento — importa saber qual é a dele.' },
+      d: 'Boteco de esquina no Itaim — confirmado. Existe uma segunda unidade em Pinheiros com reclamação recorrente de atendimento; não é essa.' },
     { id: 'cantina', q: 'Cantina, comfort food', lugar: 'jardim-di-napoli', emoji: '🧆',
       d: 'Aberta desde 1949, em Higienópolis. É A casa do polpettone à parmegiana de São Paulo — tem fila na porta por causa de um prato só.' },
     { id: 'passeio', q: 'O passeio que ele leva visitante', lugar: 'casa-do-porco', emoji: '🐖',
@@ -114,7 +120,7 @@ const HERO_SP = {
       horaConf: 'parcial',
       preco: null, precoNota: 'nao-confirmado',
       d: 'Do chef Rodolfo de Santis, que voltou ao Itaim depois de mais de dois anos fora de cozinha. Casa nova: abriu em julho de 2026. A imprensa descreve como "italiano classudo de preços amigáveis" — o perfil certo para almoço de trabalho.',
-      atencao: 'É no ITAIM, não nos Jardins. Se o seu almoço de negócio é na região da Paulista, são uns 15 minutos de carro, não é na esquina.',
+      atencao: 'CONFIRMADO por ele: é o Trattoria do Itaim. Ou seja, é no ITAIM e não nos Jardins — se o almoço for na região da Paulista, conte uns 15 minutos de carro, não é na esquina.',
       f: [
         { t: 'Taste and Fly — Rodolfo de Santis inaugura o Santino no Itaim', u: 'https://www.tasteandfly.com.br/chef-rodolfo-de-santis-inaugura-o-santino-no-itaim-italiano-classudo-de-precos-amigaveis/' },
         { t: 'Espaces — Santino Trattoria (Itaim Bibi)', u: 'https://espaces.com.br/santino-trattoria' }
@@ -128,8 +134,8 @@ const HERO_SP = {
       hora: 'Seg a qui 12h à 0h · sex e sáb 8h–11h e 12h à 1h · dom 8h–11h e 12h à 0h',
       horaConf: 'parcial',
       preco: null, precoNota: 'nao-confirmado',
-      d: 'Esta é a unidade RESTAURANTE, a que aceita reserva. Café da manhã judaico-nova-iorquino de sexta a domingo, 8h às 11h — e isso é só aqui, não existe nas unidades de sanduíche.',
-      atencao: 'Se "o de sempre" para vocês é o sanduíche de balcão, então o lugar é outro: a unidade da Oscar Freire. Vale me dizer qual.',
+      d: 'A unidade RESTAURANTE, a que aceita reserva — e é esta a casa do "de sempre" de vocês dois, confirmado por ele. Café da manhã judaico-nova-iorquino de sexta a domingo, 8h às 11h, que só existe aqui.',
+      atencao: 'O café da manhã NÃO existe nas unidades de sanduíche. Se a ideia for o brunch de fim de semana, tem que ser na Alameda Lorena.',
       f: [
         { t: 'CNN Brasil — Z Deli Restaurante, uma deli nova-iorquina reinventada', u: 'https://www.cnnbrasil.com.br/viagemegastronomia/gastronomia/z-deli-restaurante-uma-deli-nova-iorquina-reinventada-em-sao-paulo/' },
         { t: 'Gastronominho — o café da manhã judaico-nova-iorquino nos Jardins', u: 'https://gastronominho.com.br/comidas/2026/10/z-deli-cafe-da-manha-judaico-jardins/' }
@@ -138,13 +144,13 @@ const HERO_SP = {
     {
       id: 'zdeli-oscar', n: 'Z Deli Sandwiches — Jardins',
       lat: -23.5600, lng: -46.6625, prec: 'bairro', z: 'Jardins',
-      tipo: 'sanduíche', conf: 'mudou', ocasiao: 'O de sempre (versão balcão)',
+      tipo: 'sanduíche', conf: 'mudou', ocasiao: null, secundario: true,
       end: 'R. Oscar Freire, 164',
       hora: 'Não confirmado.',
       horaConf: 'nao-confirmado',
       preco: null, precoNota: 'nao-confirmado',
-      d: 'A casa de sanduíche. Carimbei como "mudou" por um motivo concreto: matérias e diretórios ainda mandam para a Rua Haddock Lobo, 1386, que é endereço ANTIGO e não aparece mais na listagem oficial. Se alguém te indicar a Haddock Lobo, vai andar à toa.',
-      atencao: 'Sem café da manhã — esse é só na Alameda Lorena.',
+      d: 'NÃO é a casa de vocês — o "de sempre" é o restaurante da Alameda Lorena. Está aqui por dois motivos concretos: para você não cair nela por engano, e porque matérias e diretórios ainda mandam para a Rua Haddock Lobo, 1386, endereço ANTIGO que não aparece mais na listagem oficial.',
+      atencao: 'Se alguém te indicar "o Z Deli da Haddock Lobo", vai andar à toa. E aqui não tem café da manhã.',
       f: [
         { t: 'Apple Maps — Z DELI Sandwiches, Jardins', u: 'https://maps.apple.com/place?place-id=I3E5FB8871C780F7A' },
         { t: 'CNN Brasil — Z Deli Sandwich Shop (cita o endereço antigo)', u: 'https://www.cnnbrasil.com.br/viagemegastronomia/gastronomia/z-deli-sanduiche/' }
@@ -189,7 +195,7 @@ const HERO_SP = {
       horaConf: 'nao-confirmado',
       preco: null, precoNota: 'nao-confirmado',
       d: 'Padaria artesanal de fermentação natural. Esta é a matriz. Há unidade confirmada na Vila Romana (R. Faustolo, 553) e uma na Santa Cecília (R. Conselheiro Brotero, 860) que aparece só em diretório antigo.',
-      atencao: 'PENDÊNCIA REAL: procurei e NÃO existe Fabrique nos Jardins, em Pinheiros nem na Oscar Freire. Ou a sua é a de Higienópolis, ou é outra padaria com nome parecido. Preciso que você me diga.',
+      atencao: 'CONFIRMADO por ele em 22/10/2026: é esta, a matriz. Vale saber por quê a pergunta existiu: NÃO há Fabrique nos Jardins, em Pinheiros nem na Oscar Freire — se alguém te mandar para lá, é outra padaria.',
       f: [
         { t: 'Guia da Semana — padarias artesanais em São Paulo', u: 'https://www.guiadasemana.com.br/restaurantes/noticia/padarias-artesanais-em-sao-paulo' },
         { t: 'Giraí — Padaria Fabrique Pão e Café', u: 'https://www.girai.com.br/restaurantes/fabrique-pao-e-cafe/' }
@@ -203,8 +209,8 @@ const HERO_SP = {
       hora: 'Não confirmado.',
       horaConf: 'nao-confirmado',
       preco: null, precoNota: 'nao-confirmado',
-      d: 'Boteco de esquina, casa de happy hour. É o endereço principal da marca.',
-      atencao: 'Existe uma segunda unidade, em Pinheiros (R. Ferreira de Araújo, 271), e ela tem reclamação recorrente de atendimento. Como "serviço ruim" é um dos seus três critérios, importa saber qual das duas é a sua.',
+      d: 'Boteco de esquina, casa de happy hour, endereço principal da marca — e é esta a sua, confirmado em 22/10/2026.',
+      atencao: 'Se marcarem com você "no Vaca Véia" sem dizer qual, PERGUNTE: a unidade de Pinheiros tem reclamação recorrente de atendimento, e serviço ruim é um dos seus três critérios.',
       f: [
         { t: 'Giraí — Bar Vaca Véia', u: 'https://www.girai.com.br/bares/vaca-veia/' },
         { t: 'BaresSP — Vaca Véia, Itaim Bibi', u: 'https://www.baressp.com.br/bares/vaca-veia' }
@@ -213,12 +219,12 @@ const HERO_SP = {
     {
       id: 'vaca-veia-pinheiros', n: 'Vaca Véia — Pinheiros',
       lat: -23.5676, lng: -46.6945, prec: 'bairro', z: 'Pinheiros',
-      tipo: 'bar', conf: 'nao-confirmado', ocasiao: 'Bar (a outra unidade)',
+      tipo: 'bar', conf: 'nao-confirmado', ocasiao: null, secundario: true,
       end: 'R. Ferreira de Araújo, 271',
       hora: 'Não confirmado.',
       horaConf: 'nao-confirmado',
       preco: null, precoNota: 'nao-confirmado',
-      d: 'Está aqui só para você não cair nela por engano achando que é a do Itaim. As avaliações públicas desta unidade são ruins, com reclamação de atendimento.',
+      d: 'NÃO é a sua — a sua é a do Itaim, confirmada. Está aqui só para você não cair nesta por engano. As avaliações públicas desta unidade são ruins, com reclamação de atendimento.',
       atencao: 'Não é recomendação. É aviso de homônimo.',
       f: [
         { t: 'Apple Maps — Vaca Véia Pinheiros', u: 'https://maps.apple.com/place?place-id=ID3A3738F4DB7354B' }
@@ -295,11 +301,17 @@ const HERO_SP = {
      pendência escondida vira dado errado no mês seguinte.
      --------------------------------------------------------------- */
   pendencias: [
-    { q: 'Fabrique: qual é a sua?', d: 'Não existe unidade nos Jardins nem em Pinheiros. A matriz é em Higienópolis (R. Itacolomi, 612). É essa, é a da Vila Romana, ou é outra padaria?' },
-    { q: 'Vaca Véia: Itaim ou Pinheiros?', d: 'Registrei o Itaim como a principal. A de Pinheiros tem reclamação de atendimento — e serviço ruim é um dos seus três critérios.' },
-    { q: 'Z Deli: restaurante ou balcão?', d: 'O "de sempre" é a casa da Alameda Lorena (restaurante, com café da manhã no fim de semana) ou o sanduíche da Oscar Freire?' },
-    { q: 'Santino é o Trattoria do Itaim?', d: 'É o único Santino que achei em São Paulo, e abriu em julho de 2026. Se o seu é mais antigo, é outra casa e eu errei o lugar.' },
-    { q: 'Falta a Roberta nesta lista', d: 'As dez respostas são suas. Os lugares dela podem ser outros — e o app ganha se as duas curadorias estiverem separadas, não misturadas.' },
-    { q: 'Preço: nenhum confirmado', d: 'Nesta rodada não pesquisei faixa de preço em fonte primária, então não há nenhuma neste arquivo. Posso fazer essa passada separada.' }
+    { q: 'Preço: nenhum confirmado', d: 'Não pesquisei faixa de preço em fonte primária, então não há nenhuma neste arquivo. É uma passada separada, e eu posso fazer quando você quiser.' },
+    { q: 'Falta a Roberta nesta lista', d: 'As nove respostas são do Helio. Os lugares dela podem ser outros — e o app fica melhor com as duas curadorias separadas, nunca misturadas.' }
+  ],
+
+  /* O que ele já respondeu, para nenhuma sessão futura reabrir o que está
+     fechado. Pendência resolvida que volta a aparecer corrói a confiança
+     no app inteiro. */
+  resolvidas: [
+    { q: 'Fabrique: qual unidade?', r: 'A matriz, Higienópolis (R. Itacolomi, 612).' },
+    { q: 'Vaca Véia: Itaim ou Pinheiros?', r: 'Itaim.' },
+    { q: 'Z Deli: restaurante ou balcão?', r: 'O restaurante, Alameda Lorena 1689.' },
+    { q: 'Santino é o Trattoria do Itaim?', r: 'É.' }
   ]
 };
