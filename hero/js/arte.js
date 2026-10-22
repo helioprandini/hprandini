@@ -105,6 +105,53 @@ var HERO_ARTE = (function () {
     },
 
     /* Nova York — o skyline de Midtown ao anoitecer */
+    /* São Paulo — a curva do Copan, os prédios do centro e garoa.
+       Escolhi o Copan porque é a única silhueta que diz "São Paulo" sem
+       legenda: a onda horizontal com os brises é dele e de mais ninguém. */
+    sp: function () {
+      var torres = '';
+      var esp = [[4, 98, 15], [22, 114, 13], [38, 90, 16], [56, 108, 12], [74, 122, 14], [92, 102, 15],
+                 [196, 106, 13], [214, 88, 16], [232, 118, 12], [250, 100, 15], [268, 112, 14], [288, 94, 16]];
+      for (var i = 0; i < esp.length; i++) {
+        var x = esp[i][0], y = esp[i][1], w = esp[i][2];
+        torres += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + (200 - y) + '" fill="#39324a" opacity=".72"/>';
+        for (var j = y + 7; j < 158; j += 12) {
+          torres += '<rect x="' + (x + 3) + '" y="' + j + '" width="' + (w - 6) + '" height="4" fill="#ffd9a0" opacity=".38"/>';
+        }
+      }
+      /* Edifício Itália ao centro, mais alto e com a coroa iluminada */
+      var italia =
+        '<g fill="#332b44">' +
+        '<rect x="142" y="56" width="32" height="104"/>' +
+        '<rect x="150" y="42" width="16" height="16"/>' +
+        '<rect x="156" y="28" width="4" height="15"/>' +
+        '</g>' +
+        '<g fill="#ffd9a0" opacity=".52">' +
+        '<rect x="147" y="66" width="22" height="4"/><rect x="147" y="78" width="22" height="4"/>' +
+        '<rect x="147" y="90" width="22" height="4"/><rect x="147" y="102" width="22" height="4"/>' +
+        '<rect x="147" y="114" width="22" height="4"/><rect x="147" y="126" width="22" height="4"/>' +
+        '</g>' +
+        '<circle cx="158" cy="26" r="2.6" fill="#ff6f91"/>';
+      /* O Copan: o corpo e os brises seguindo a mesma curva, deslocados */
+      var copan = '<path d="M10 200 L10 152 C 74 128 140 176 310 142 L310 200 Z" fill="#241e30"/>';
+      for (var k = 0; k < 5; k++) {
+        var dy = 9 + k * 10;
+        copan += '<path d="M10 ' + (152 + dy) + ' C 74 ' + (128 + dy) + ' 140 ' + (176 + dy) +
+                 ' 310 ' + (142 + dy) + '" stroke="#f4e7d2" stroke-width="3.4" fill="none" opacity=".46"/>';
+      }
+      /* Garoa — fina, inclinada e discreta. É o clima da cidade. */
+      var chuva = '';
+      for (var m = 0; m < 54; m++) {
+        var gx = (m * 37 + 11) % 320, gy = (m * 23 + 5) % 132;
+        chuva += '<line x1="' + gx + '" y1="' + gy + '" x2="' + (gx - 3) + '" y2="' + (gy + 12) +
+                 '" stroke="#ffffff" stroke-width="1" opacity=".15"/>';
+      }
+      return moldura(
+        '<circle cx="232" cy="52" r="24" fill="%SOL%" opacity=".38"/>' +
+        chuva + torres + italia + copan,
+        '#ffe3b0', '#d79a62', '#cdd0dc', '#6f6886');
+    },
+
     ny: function () {
       var torres = '';
       var esp = [[8,104,16],[28,88,14],[46,116,12],[62,96,18],[84,124,13],[100,108,15],

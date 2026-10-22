@@ -452,6 +452,13 @@
     { id: 'reservaria', l: 'Eu reservaria' },
     { id: 'avisos', l: 'Saber antes' }
   ];
+  /* São Paulo é organizada por OCASIÃO, não por dia: ele mora lá, não é
+     viagem. "Jantar para impressionar" é a pergunta que o visitante faz. */
+  var ABAS_SP = [
+    { id: 'spocasiao', l: 'Por ocasião' },
+    { id: 'splugares', l: 'Lugares' },
+    { id: 'mapa', l: 'Mapa' }
+  ];
   var ABAS_NY = [
     { id: 'nyroteiro', l: 'Roteiro' },
     { id: 'nymudou', l: 'O que mudou' },
@@ -501,6 +508,8 @@
     nyroteiro:ico('<path d="M9 19.5l-5.5 2V5.5L9 3.5m0 16V3.5m0 16l6-2m-6-14l6 2m0 12V5.5m0 12l5.5 2V5.5L15 3.5"/>'),
     nymudou:  ico('<path d="M20.5 11.5A8.5 8.5 0 1 0 19 16.5"/><path d="M20.5 6.5v5h-5"/>'),
     nylugares:ico('<path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>'),
+    spocasiao:ico('<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3.2 2"/>'),
+    splugares:ico('<path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>'),
     nyouro:   ico('<path d="M12 3.5l2.5 5.3 5.5.8-4 4 .95 5.7L12 16.6l-4.95 2.7L8 13.6l-4-4 5.5-.8z"/>'),
     euroteiro:ico('<path d="M4 20c4-1.5 5-6 5-9.5A4.5 4.5 0 0 0 4 6M20 20c-4-1.5-5-6-5-9.5A4.5 4.5 0 0 1 20 6"/><path d="M12 21V8M9 8h6l-3-4z"/>'),
     eunotas:  ico('<path d="M5 4.5h14v15l-7-3.2-7 3.2z"/><path d="M9 9.5h6M9 13h4"/>'),
@@ -513,9 +522,10 @@
     reservaria:'Reservar', avisos:'Saber', cambio:'Moedas',
     chegada:'Chegada', fotos:'Fotos', cafe:'Café', contribuir:'Dica', iroteiro:'Roteiro', ivoos:'Voos', ihoteis:'Hotéis',
     nyroteiro:'Roteiro', nymudou:'Mudou', nylugares:'Lugares', nyouro:'Ouro',
+    spocasiao:'Ocasiões', splugares:'Lugares',
     euroteiro:'A viagem', eunotas:'As notas', eureparos:'Reparos', mapa:'Mapa'
   };
-  var PRIMARIAS = { doha: ['lista', 'cafe', 'mapa', 'fotos'], india: ['chegada', 'fotos', 'iroteiro', 'ihoteis'], ny: ['nyroteiro', 'nymudou', 'nylugares', 'mapa'], eu23: ['euroteiro', 'eunotas', 'mapa', 'eureparos'],
+  var PRIMARIAS = { sp: ['spocasiao', 'splugares', 'mapa'], doha: ['lista', 'cafe', 'mapa', 'fotos'], india: ['chegada', 'fotos', 'iroteiro', 'ihoteis'], ny: ['nyroteiro', 'nymudou', 'nylugares', 'mapa'], eu23: ['euroteiro', 'eunotas', 'mapa', 'eureparos'],
                    eu25: ['euroteiro', 'eunotas', 'mapa', 'eureparos'],
                    bos: ['euroteiro', 'eunotas', 'mapa', 'eureparos'] };
   var ABA_HOME = { id: 'destinos', l: '← Destinos' };
@@ -525,12 +535,12 @@
   var ABA_CONTRIB = { id: 'contribuir', l: '💡 Mandar uma dica' };
   function abasAtuais() {
     if (!destino) return [ABA_CAMBIO, ABA_CONTRIB];
-    var base = destino === 'india' ? ABAS_INDIA : destino === 'ny' ? ABAS_NY :
+    var base = destino === 'sp' ? ABAS_SP : destino === 'india' ? ABAS_INDIA : destino === 'ny' ? ABAS_NY :
       ehArquivo() ? ABAS_EU23 : ABAS_DOHA.concat([ABA_MAPA, ABA_FOTOS, ABA_CAFE]);
     return [ABA_HOME].concat(base, [ABA_CAMBIO, ABA_CONTRIB]);
   }
   function primeiraAba() {
-    return destino === 'india' ? 'chegada' : destino === 'ny' ? 'nyroteiro' :
+    return destino === 'sp' ? 'spocasiao' : destino === 'india' ? 'chegada' : destino === 'ny' ? 'nyroteiro' :
       ehArquivo() ? 'euroteiro' : destino === 'doha' ? 'lista' : 'destinos';
   }
   function irPara(d) {
@@ -634,6 +644,20 @@
       me.appendChild(el('span', 'chip', '<b>' + E.paradas.length + '</b> paradas'));
       me.appendChild(el('span', 'chip', '<b>' + com + '</b> notas de voc\u00eas'));
       h.appendChild(me);
+      return;
+    }
+    if (destino === 'sp') {
+      var S = HERO_SP;
+      h.appendChild(el('h1', null, 'São Paulo'));
+      h.appendChild(el('p', null, 'Não é uma viagem: é onde o Helio mora. Por isso está organizado por OCASIÃO — ' +
+        'a pergunta que o amigo visitante faz — e não por dia. Os nomes e o julgamento são dele; endereço e ' +
+        'horário foram conferidos por mim, e o que não deu para confirmar diz isso com todas as letras.'));
+      var ms = el('div', 'meta-row');
+      ms.appendChild(el('span', 'chip', 'Base: <b>' + esc(S.base.nome) + '</b>'));
+      ms.appendChild(el('span', 'chip', '<b>' + S.ocasioes.length + '</b> ocasiões'));
+      ms.appendChild(el('span', 'chip', '<b>' + S.lugares.length + '</b> lugares'));
+      ms.appendChild(el('span', 'chip', '<b>' + S.pendencias.length + '</b> pendências'));
+      h.appendChild(ms);
       return;
     }
     if (destino === 'ny') {
@@ -2210,6 +2234,189 @@
     return a;
   }
 
+  /* ---------- São Paulo: a cidade onde ele mora, por ocasião ----------
+     Diferente de todo destino anterior: não há dia 1, dia 2. O amigo que
+     vem visitar não pergunta "o que fazer na terça", pergunta "onde levo
+     alguém para impressionar". As abas respondem nessa forma. */
+  var spFiltro = 'todos';
+  var spFoco = '';
+
+  function spPorId(id) {
+    var achou = null;
+    HERO_SP.lugares.forEach(function (x) { if (x.id === id) achou = x; });
+    return achou;
+  }
+
+  function viewSpOcasioes(root) {
+    var S = HERO_SP;
+
+    var p0 = el('div', 'panel');
+    p0.appendChild(el('h2', null, 'São Paulo, por ocasião'));
+    p0.appendChild(el('div', 'lead', esc(S.autoria)));
+    p0.appendChild(el('p', null, 'São Paulo não é uma viagem que ele fez — é onde ele mora. Por isso aqui não existe roteiro de dia 1 e dia 2: existe a pergunta que o visitante faz, e a resposta dele.'));
+    root.appendChild(p0);
+
+    /* O FILTRO vem antes de tudo: é o critério que explica a lista inteira. */
+    var pf = el('div', 'panel');
+    pf.appendChild(el('h2', null, esc(S.filtro.t)));
+    pf.appendChild(el('div', 'lead', esc(S.filtro.chamada)));
+    var dlf = el('dl', 'kv');
+    S.filtro.criterios.forEach(function (c) {
+      dlf.appendChild(el('dt', null, esc(c.n)));
+      dlf.appendChild(el('dd', null, esc(c.d)));
+    });
+    pf.appendChild(dlf);
+    pf.appendChild(el('div', 'note', esc(S.filtro.consequencia)));
+    root.appendChild(pf);
+
+    S.ocasioes.forEach(function (o) {
+      var x = spPorId(o.lugar);
+      var p = el('div', 'panel');
+      p.appendChild(el('h2', null, (o.emoji ? o.emoji + '  ' : '') + esc(o.q)));
+      if (x) {
+        var nm = el('div', 'lead');
+        nm.appendChild(el('strong', null, esc(x.n)));
+        p.appendChild(nm);
+        var tg = el('div', 'tagrow');
+        var sel = SELO_NY[x.conf];
+        tg.appendChild(el('span', 'tag ' + sel.c, sel.l));
+        tg.appendChild(el('span', 'tag', esc(x.z)));
+        tg.appendChild(el('span', 'tag', esc(x.tipo)));
+        var cd = chipDist(x); if (cd) tg.appendChild(cd);
+        p.appendChild(tg);
+      }
+      if (o.d) p.appendChild(el('p', null, esc(o.d)));
+      var bw = el('div', 'btnrow');
+      if (x) {
+        var bf = el('button', 'btn sec', 'Ficha completa');
+        bf.onclick = function () { spFoco = x.id; spFiltro = 'todos'; aba = 'splugares'; render(); };
+        bw.appendChild(bf);
+        var br = botaoRota(x); if (br) bw.appendChild(br);
+      }
+      if (bw.childNodes.length) p.appendChild(bw);
+      root.appendChild(p);
+    });
+
+    /* Pendências ficam VISÍVEIS, não num rodapé. Pendência escondida vira
+       dado errado no mês seguinte. */
+    var pp = el('div', 'panel');
+    pp.appendChild(el('h2', null, 'O que só você resolve'));
+    pp.appendChild(el('div', 'lead', 'Seis dúvidas que eu não tenho como responder sozinho. Cada uma que você responder tira um "não confirmado" do app.'));
+    var dlp = el('dl', 'kv');
+    S.pendencias.forEach(function (q) {
+      dlp.appendChild(el('dt', null, esc(q.q)));
+      dlp.appendChild(el('dd', null, esc(q.d)));
+    });
+    pp.appendChild(dlp);
+    var bc = el('div', 'btnrow');
+    var bb = el('button', 'btn', '💡 Responder pelo formulário de dica');
+    bb.onclick = function () { aba = 'contribuir'; render(); };
+    bc.appendChild(bb);
+    pp.appendChild(bc);
+    root.appendChild(pp);
+  }
+
+  function viewSpLugares(root) {
+    var S = HERO_SP;
+
+    var p0 = el('div', 'panel');
+    p0.appendChild(el('h2', null, 'Os lugares, um a um'));
+    p0.appendChild(el('div', 'lead', 'Endereço, horário e carimbo de conferência — pesquisados em ' +
+      esc(S.conferidoEm.split('-').reverse().join('/')) + '.'));
+    p0.appendChild(el('div', 'note warn', 'PREÇO: nenhum foi confirmado em fonte primária nesta rodada, então não há faixa de preço nenhuma aqui. Preço chutado é pior que preço ausente.'));
+    root.appendChild(p0);
+
+    caixaGeo(root, 'os lugares');
+
+    var FS = [
+      { id: 'todos', l: 'Todos' },
+      { id: 'aberto', l: '✅ Confirmados' },
+      { id: 'mudou', l: 'Mudaram' },
+      { id: 'nao-confirmado', l: 'Não confirmados' }
+    ];
+    var fb = el('div', 'chips');
+    FS.forEach(function (f) {
+      var b = el('button', 'chip' + (spFiltro === f.id ? ' on' : ''), f.l);
+      b.onclick = function () { spFiltro = f.id; render(true); };
+      fb.appendChild(b);
+    });
+    root.appendChild(fb);
+
+    var ordem = { aberto: 0, mudou: 1, 'nao-confirmado': 2 };
+    var lista = S.lugares.filter(function (x) { return spFiltro === 'todos' || x.conf === spFiltro; }).slice();
+    if (minhaPos) {
+      lista.sort(function (a, b) {
+        var da = distDe(a), db = distDe(b);
+        if (da == null) return 1;
+        if (db == null) return -1;
+        return da - db;
+      });
+    } else {
+      lista.sort(function (a, b) { return ordem[a.conf] - ordem[b.conf]; });
+    }
+
+    var cnt = el('div', 'count', lista.length + ' de ' + S.lugares.length + ' lugares');
+    cnt.style.margin = '10px 0'; root.appendChild(cnt);
+
+    lista.forEach(function (x) {
+      var sel = SELO_NY[x.conf];
+      var p = el('div', 'panel');
+      p.id = 'sp-' + x.id;
+      p.appendChild(el('h2', null, esc(x.n)));
+      var tg = el('div', 'tagrow');
+      tg.appendChild(el('span', 'tag ' + sel.c, sel.l));
+      tg.appendChild(el('span', 'tag', esc(x.z)));
+      tg.appendChild(el('span', 'tag', esc(x.tipo)));
+      if (x.ocasiao) tg.appendChild(el('span', 'tag gold', esc(x.ocasiao)));
+      var cd = chipDist(x); if (cd) tg.appendChild(cd);
+      p.appendChild(tg);
+
+      if (x.d) p.appendChild(el('p', null, esc(x.d)));
+
+      var linhas = [];
+      if (x.end) linhas.push(['Endereço', x.end]);
+      if (x.hora) linhas.push(['Horário' + (x.horaConf === 'parcial' ? ' (parcial)' :
+        x.horaConf === 'nao-confirmado' ? ' (não confirmado)' : ''), x.hora]);
+      linhas.push(['Preço', 'não confirmado']);
+      var dl = el('dl', 'kv');
+      linhas.forEach(function (L) { dl.appendChild(el('dt', null, esc(L[0]))); dl.appendChild(el('dd', null, esc(L[1]))); });
+      p.appendChild(dl);
+
+      if (x.atencao) p.appendChild(el('div', 'note warn', esc(x.atencao)));
+
+      var br = botaoRota(x);
+      if (br) { var bw = el('div', 'btnrow'); bw.appendChild(br); p.appendChild(bw); }
+      var f = fontesDe(x.f); if (f) p.appendChild(f);
+      root.appendChild(p);
+    });
+
+    /* Casa do Porco: o único da lista onde a logística decide se você come */
+    var P = S.porco;
+    var pc = el('div', 'panel');
+    pc.appendChild(el('h2', null, esc(P.t)));
+    pc.appendChild(el('div', 'lead', esc(P.chamada)));
+    pc.appendChild(el('div', 'note warn', esc(P.aviso)));
+    var dlc = el('dl', 'kv');
+    P.caminhos.forEach(function (c) {
+      dlc.appendChild(el('dt', null, esc(c.n)));
+      dlc.appendChild(el('dd', null, esc(c.d)));
+    });
+    pc.appendChild(dlc);
+    pc.appendChild(el('div', 'note', esc(P.taxa)));
+    pc.appendChild(el('div', 'note ok', 'Meu voto: ' + esc(P.voto)));
+    root.appendChild(pc);
+
+    /* Rolar até a ficha pedida na aba de ocasiões. render() sobe a página,
+       então o scroll tem que vir depois, na próxima volta do laço. */
+    if (spFoco) {
+      var alvo = 'sp-' + spFoco; spFoco = '';
+      setTimeout(function () {
+        var e = document.getElementById(alvo);
+        if (e) e.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 60);
+    }
+  }
+
   /* ---------- Nova York: um roteiro antigo, conferido ---------- */
   var SELO_NY = {
     aberto:          { c: 'ok',   l: 'confirmado aberto' },
@@ -2381,6 +2588,8 @@
         p.push({ n: r.nome, lat: r.lat, lng: r.lng, prec: 'end', conf: r.status === 'aberto' ? 'aberto' : r.status === 'fechado' ? 'fechado' : 'nao-confirmado',
                  nota: null, sub: r.cozinha, id: r.id });
       });
+    } else if (destino === 'sp') {
+      HERO_SP.lugares.forEach(function (x) { if (x.lat) p.push({ n: x.n, lat: x.lat, lng: x.lng, prec: x.prec, conf: x.conf, nota: null, sub: x.z + ' · ' + x.tipo }); });
     } else if (destino === 'ny') {
       HERO_NY.lugares.forEach(function (x) { if (x.lat) p.push({ n: x.n, lat: x.lat, lng: x.lng, prec: x.prec, conf: x.conf, nota: null, sub: x.z + ' · ' + x.tipo }); });
     } else if (ehArquivo()) {
@@ -2802,6 +3011,8 @@
     else if (aba === 'euroteiro') viewEuRoteiro(root);
     else if (aba === 'eunotas') viewEuNotas(root);
     else if (aba === 'eureparos') viewEuReparos(root);
+    else if (aba === 'spocasiao') viewSpOcasioes(root);
+    else if (aba === 'splugares') viewSpLugares(root);
     else if (aba === 'nyroteiro') viewNyRoteiro(root);
     else if (aba === 'nymudou') viewNyMudou(root);
     else if (aba === 'nylugares') viewNyLugares(root);
