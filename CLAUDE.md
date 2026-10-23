@@ -370,6 +370,22 @@ cadastro de 2 min no app (filtro com erro); Fase B, modelo de voz de verdade,
 treinado e validado no Mac com áudio dele e de outros (precisa de 2–3 áudios
 do Plaud, que nunca saem do Mac). Aguarda o "2" dele e os áudios.
 
+### Termômetro de coerência — o "Fakenometro" (pedido do Helio, 2026-10-22)
+
+O Helio pediu um "Fakenometro" e escolheu a versão honesta: **incongruência
+palavra × voz** ("tá ótimo" dito com a voz tensa), não detector de mentira.
+"Fakenometro" é apelido interno; na tela é **coerência**, e nunca "fake".
+
+Regra (`research/benchmark/coerencia.js` = `Coerencia` em `DiarioModel.swift`):
+sentimento do texto (|s| ≥ 0.3) contra a voz **relativa ao normal da própria
+pessoa** (z-score sobre momentos anteriores com voz limpa; < 15 = inconclusivo).
+Da voz só entra o que a prosódia mede bem — ativação, expressividade, pausas —
+**nunca a valência** (r = 0.37). Calculado no "sim" da Escuta Ativa e mostrado
+só **depois** do rótulo (a folha é cega). O script valida: nos divergentes, o
+rótulo ficou com a voz ou com a palavra? Se ficar com a palavra, o termômetro
+é ruído e a gente diz. Compilação Swift não testada aqui (sem compilador no
+Linux); sem arquivo novo, então **não precisa de xcodegen**.
+
 ## Próximos passos
 
 - [x] Terminar a instalação do app no iPhone do Helio.
@@ -382,6 +398,9 @@ do Plaud, que nunca saem do Mac). Aguarda o "2" dele e os áudios.
       (`EscutaAtiva.swift`), então o `.xcodeproj` foi regenerado: **reescolher
       o Team** em Signing & Capabilities antes do ▶. Medir: acordou nas horas
       certas? Quantos "não"? Bateria no fim do dia?
+- [ ] **Termômetro de coerência**: dar ▶ no Xcode (sem xcodegen), juntar 15
+      momentos de voz limpa e rodar `node research/benchmark/coerencia.js`
+      no export. Abaixo de ~10 divergentes rotulados, é anedota.
 - [ ] **Só a minha voz** (Fase A: cadastro de 2 min + impressão vocal; Fase B:
       modelo de locutor com áudio do Plaud). Ver "Porteiro de assunto".
 - [ ] Portar a mesma captura para o iOS fora do Diário (o Diário já rotula).
