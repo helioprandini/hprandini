@@ -518,7 +518,7 @@
     mapa:     ico('<path d="M9 19.5l-5.5 2V5.5L9 3.5l6 2 5.5-2v16l-5.5 2z"/><path d="M9 3.5v16M15 5.5v16"/>')
   };
   var CURTO = {
-    destinos:'Destinos', lista:'Comer', curadoria:'Curadoria', roteiros:'Roteiros',
+    destinos:'Viagens', lista:'Comer', curadoria:'Curadoria', roteiros:'Roteiros',
     souq:'Souq', escala:'A escala', beber:'Beber', hoteis:'Hotéis',
     reservaria:'Reservar', avisos:'Saber', cambio:'Moedas', cidades:'Cidades', cidade:'Cidade',
     chegada:'Chegada', fotos:'Fotos', cafe:'Café', contribuir:'Dica', iroteiro:'Roteiro', ivoos:'Voos', ihoteis:'Hotéis',
@@ -529,21 +529,21 @@
   var PRIMARIAS = { sp: ['spocasiao', 'splugares', 'mapa'], doha: ['lista', 'cafe', 'mapa', 'fotos'], india: ['chegada', 'fotos', 'iroteiro', 'ihoteis'], ny: ['nyroteiro', 'nymudou', 'nylugares', 'mapa'], eu23: ['euroteiro', 'eunotas', 'mapa', 'eureparos'],
                    eu25: ['euroteiro', 'eunotas', 'mapa', 'eureparos'],
                    bos: ['euroteiro', 'eunotas', 'mapa', 'eureparos'] };
-  var ABA_HOME = { id: 'destinos', l: '← Destinos' };
+  var ABA_HOME = { id: 'cidades', l: '← Cidades' };
   var ABA_CIDADES = { id: 'cidades', l: '🏙️ Cidades' };
   var ABA_CAMBIO = { id: 'cambio', l: '💱 Moedas' };
   var ABA_FOTOS = { id: 'fotos', l: '📸 Fotos' };
   var ABA_CAFE = { id: 'cafe', l: '☕ Café da manhã' };
   var ABA_CONTRIB = { id: 'contribuir', l: '💡 Mandar uma dica' };
   function abasAtuais() {
-    if (!destino) return [ABA_CIDADES, ABA_CAMBIO, ABA_CONTRIB];
+    if (!destino) return [ABA_CIDADES, { id: 'destinos', l: '🧳 Viagens' }, ABA_CAMBIO, ABA_CONTRIB];
     var base = destino === 'sp' ? ABAS_SP : destino === 'india' ? ABAS_INDIA : destino === 'ny' ? ABAS_NY :
       ehArquivo() ? ABAS_EU23 : ABAS_DOHA.concat([ABA_MAPA, ABA_FOTOS, ABA_CAFE]);
-    return [ABA_HOME].concat(base, [ABA_CIDADES, ABA_CAMBIO, ABA_CONTRIB]);
+    return [ABA_HOME].concat(base, [{ id: 'destinos', l: '🧳 Viagens' }, ABA_CAMBIO, ABA_CONTRIB]);
   }
   function primeiraAba() {
     return destino === 'sp' ? 'spocasiao' : destino === 'india' ? 'chegada' : destino === 'ny' ? 'nyroteiro' :
-      ehArquivo() ? 'euroteiro' : destino === 'doha' ? 'lista' : 'destinos';
+      ehArquivo() ? 'euroteiro' : destino === 'doha' ? 'lista' : 'cidades';
   }
   function irPara(d) {
     destino = d; pref.destino = d; save(LS_PREF, pref);
@@ -560,7 +560,7 @@
 
   /* ---------- navegação inferior ---------- */
   function vaiPara(id) {
-    if (id === 'destinos') { destino = ''; pref.destino = ''; save(LS_PREF, pref); aba = 'destinos'; }
+    if (id === 'destinos' || id === 'cidades') { destino = ''; pref.destino = ''; save(LS_PREF, pref); aba = id; }
     else aba = id;
     fecharMais(); render();
   }
@@ -568,7 +568,7 @@
     var nav = $('#botnav'); nav.innerHTML = '';
     var itens;
     if (!destino) {
-      itens = [{ id: 'destinos', l: 'Destinos' }, { id: 'cidades', l: 'Cidades' },
+      itens = [{ id: 'cidades', l: 'Cidades' }, { id: 'destinos', l: 'Viagens' },
                { id: 'cambio', l: 'Moedas' }, { id: 'contribuir', l: 'Dica' }];
     } else {
       itens = (PRIMARIAS[destino] || []).map(function (id) { return { id: id, l: CURTO[id] }; });
@@ -626,9 +626,12 @@
         return;
       }
       if (aba === 'cidades' || aba === 'cidade') {
-        h.appendChild(el('h1', null, 'Por cidade'));
-        h.appendChild(el('p', null, 'As mesmas viagens, cortadas por cidade. ' +
-          'Quem vai a Paris não quer saber que Paris foi a sexta parada da Europa 2025.'));
+        /* Esta é a PORTA DA FRENTE do app desde a v41 — então o cabeçalho
+           daqui é o de boas-vindas, não um rótulo de seção. */
+        h.appendChild(el('h1', null, aba === 'cidades' ? 'Para onde a gente vai' : 'Por cidade'));
+        h.appendChild(el('p', null, aba === 'cidades'
+          ? 'O guia de viagens do Helio e da Roberta. Escolha uma cidade.'
+          : 'A mesma curadoria, cortada por cidade em vez de por viagem.'));
         var mc = el('div', 'meta-row');
         var tc = indiceCidades();
         mc.appendChild(el('span', 'chip', '<b>' + tc.length + '</b> cidades'));
@@ -642,8 +645,13 @@
           'Vale para qualquer destino — por isso fica aqui, fora das cidades.'));
         return;
       }
-      h.appendChild(el('h1', null, 'Para onde a gente vai'));
-      h.appendChild(el('p', null, 'O guia de viagens do Helio e da Roberta. Escolha um destino.'));
+      h.appendChild(el('h1', null, 'As viagens'));
+      h.appendChild(el('p', null, 'Cada uma inteira: roteiro, hotéis, o que mudou desde então ' +
+        'e as notas de vocês. A entrada do app é por cidade — aqui é o arquivo.'));
+      var mv = el('div', 'meta-row');
+      mv.appendChild(el('span', 'chip', '<b>' + HERO_DESTINOS.length + '</b> viagens'));
+      mv.appendChild(el('span', 'chip', '<b>' + indiceCidades().length + '</b> cidades'));
+      h.appendChild(mv);
       return;
     }
     if (ehArquivo()) {
@@ -709,22 +717,13 @@
   }
 
   /* ---------- seletor de destinos ---------- */
-  function viewDestinos(root) {
-    /* Porta de entrada para o corte por cidade. Fica no TOPO porque é a
-       primeira dúvida de quem chega: "tem a minha cidade aí?" */
-    var pc = el('div', 'panel');
-    pc.appendChild(el('h2', null, 'Procurando uma cidade?'));
-    pc.appendChild(el('div', 'lead', 'As viagens também estão cortadas por cidade — ' +
-      'e Nova York, que aparece em duas delas, vira uma lista só.'));
-    var bc = el('div', 'btnrow');
-    var bq = el('button', 'btn', '🏙️ Ver todas as cidades');
-    bq.onclick = function () { aba = 'cidades'; render(); };
-    bc.appendChild(bq);
-    pc.appendChild(bc);
-    root.appendChild(pc);
-
-    /* Capa. Se existir hero/img/capa.jpg, ela entra; senão fica só o
-       letreiro sobre o fundo de gradiente, sem buraco na página. */
+  /* A CAPA mora na entrada do app, e a entrada agora é CIDADES.
+     Decisão do Helio (23/10): "abra por cidades, não precisa mais ter essas
+     viagens concentradas". A viagem não sumiu — virou o arquivo, onde o guia
+     inteiro de cada lugar continua morando. */
+  function pintaCapa(root) {
+    /* Se existir hero/img/capa.jpg, ela entra; senão fica só o letreiro
+       sobre o fundo de gradiente, sem buraco na página. */
     var capa = el('div', 'capa');
     if (HERO_ARTE.capa) { var ca = el('div', 'capa-arte'); ca.innerHTML = HERO_ARTE.capa(); capa.appendChild(ca); }
     var img = new Image();
@@ -736,6 +735,15 @@
     ct.appendChild(el('span', null, 'guia de viagens'));
     capa.appendChild(ct);
     root.appendChild(capa);
+  }
+
+  function viewDestinos(root) {
+    var p0 = el('div', 'panel');
+    p0.appendChild(el('h2', null, 'As viagens, inteiras'));
+    p0.appendChild(el('div', 'lead', 'Cada viagem é um guia completo — com roteiro, hotéis, ' +
+      'o que mudou desde então e as notas de vocês. A entrada do app é por cidade; ' +
+      'aqui é onde a história de cada viagem continua inteira.'));
+    root.appendChild(p0);
 
     var g = el('div', 'destinos');
     HERO_DESTINOS.forEach(function (d) {
@@ -2353,17 +2361,27 @@
 
   var cidadeSel = '', filtroCidade = '';
 
+  /* Cor do país, DERIVADA do nome. Doze países hoje e mais a cada viagem —
+     uma tabela à mão viraria manutenção. O mesmo país dá sempre a mesma cor. */
+  function corPais(pais) {
+    var h = 0, t = String(pais || '?');
+    for (var i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) % 360;
+    return 'hsl(' + h + ' 58% 52%)';
+  }
+
   function linhaCidade(c) {
-    var b = el('button', 'lg-item');
-    b.style.width = '100%'; b.style.textAlign = 'left';
-    var t = el('div');
+    var b = el('button', 'cidade');
+    b.type = 'button';
+    var rail = el('i', 'rail');
+    rail.style.background = corPais(c.pais);
+    b.appendChild(rail);
+    var t = el('div', 'ct');
     t.appendChild(el('strong', null, esc(c.nome)));
     var sub = [];
     if (c.pais) sub.push(esc(c.pais));
     sub.push(c.n ? '<b>' + c.n + '</b> lugar' + (c.n > 1 ? 'es' : '') : 'roteiro de dias');
     if (c.notas) sub.push('<b>' + c.notas + '</b> com nota de vocês');
     t.appendChild(el('span', null, sub.join(' · ')));
-    b.appendChild(t);
     /* Uma etiqueta por VIAGEM, não por parada: Boston tem dois dias na mesma
        viagem e mostrava "Boston 2024" duas vezes. */
     var tg = el('div', 'tagrow'), vistos = {};
@@ -2373,20 +2391,27 @@
       var dd = HERO_DESTINOS.filter(function (x) { return x.id === f.destino; })[0];
       tg.appendChild(el('span', 'tag' + (f.porta ? ' gold' : ''), esc(dd ? dd.nome : f.destino)));
     });
-    b.appendChild(tg);
+    t.appendChild(tg);
+    b.appendChild(t);
+    b.appendChild(el('i', 'chev', '›'));
     b.onclick = function () { cidadeSel = c.chave; aba = 'cidade'; render(); };
     return b;
   }
 
   function viewCidades(root) {
     var todas = indiceCidades();
+    pintaCapa(root);
 
+    /* O cabeçalho já deu as boas-vindas. Aqui só entra o que ele não diz:
+       a fusão que só este corte produz, e a porta para o arquivo. */
     var p0 = el('div', 'panel');
-    p0.appendChild(el('h2', null, 'Todas as cidades'));
-    p0.appendChild(el('div', 'lead', 'A mesma curadoria, cortada por cidade em vez de por viagem. ' +
-      'Quem quer Paris não quer saber que Paris foi a sexta parada da Europa 2025.'));
-    p0.appendChild(el('div', 'note', 'Uma coisa que só aparece aqui: <b>Nova York está em duas viagens</b> — ' +
-      'o roteiro dele e a estrada de Boston 2024. Por viagem, são duas listas que nunca se encontram. Aqui viram uma.'));
+    p0.appendChild(el('div', 'note', '<b>Nova York aparece em duas viagens</b> — o roteiro dele e a ' +
+      'estrada de Boston 2024. Por viagem, são duas listas que nunca se encontram. Aqui viram uma, com 46 lugares.'));
+    var bv = el('div', 'btnrow');
+    var bt = el('button', 'btn sec', '🧳 Ver por viagem');
+    bt.onclick = function () { aba = 'destinos'; render(); };
+    bv.appendChild(bt);
+    p0.appendChild(bv);
     root.appendChild(p0);
 
     var busca = el('input');
@@ -2405,18 +2430,18 @@
     root.appendChild(el('div', 'count', lista.length + ' de ' + todas.length + ' cidades'));
 
     if (fortes.length) {
-      var pf = el('div', 'panel');
-      pf.appendChild(el('h2', null, 'Cidades com conteúdo de sobra'));
-      fortes.forEach(function (c) { pf.appendChild(linhaCidade(c)); });
-      root.appendChild(pf);
+      root.appendChild(el('h3', 'sec', 'Cidades com conteúdo de sobra'));
+      var gf = el('div', 'cidades-grid');
+      fortes.forEach(function (c) { gf.appendChild(linhaCidade(c)); });
+      root.appendChild(gf);
     }
     if (magras.length) {
-      var pm = el('div', 'panel');
-      pm.appendChild(el('h2', null, 'Passagens rápidas'));
-      pm.appendChild(el('div', 'lead', 'Menos de cinco lugares cada. Estão aqui porque existem de verdade — ' +
+      root.appendChild(el('h3', 'sec', 'Passagens rápidas'));
+      root.appendChild(el('div', 'lead', 'Menos de cinco lugares cada. Estão aqui porque existem de verdade — ' +
         'não porque dariam um guia. Inventar volume aqui seria o mesmo que inventar preço.'));
-      magras.forEach(function (c) { pm.appendChild(linhaCidade(c)); });
-      root.appendChild(pm);
+      var gm = el('div', 'cidades-grid');
+      magras.forEach(function (c) { gm.appendChild(linhaCidade(c)); });
+      root.appendChild(gm);
     }
     if (!lista.length) root.appendChild(el('div', 'panel', '<p>Nenhuma cidade com esse nome. Experimente o país — “Itália”, “Espanha”.</p>'));
   }
@@ -3373,10 +3398,10 @@
     if (brand) {
       brand.setAttribute('role', 'button');
       brand.setAttribute('tabindex', '0');
-      brand.title = 'Voltar para os destinos';
+      brand.title = 'Voltar para as cidades';
       var irHome = function () {
         destino = ''; pref.destino = ''; save(LS_PREF, pref);
-        aba = 'destinos'; fecharMais(); render();
+        aba = 'cidades'; fecharMais(); render();
         window.scrollTo(0, 0);
       };
       brand.onclick = irHome;
