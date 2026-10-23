@@ -509,6 +509,7 @@
     nymudou:  ico('<path d="M20.5 11.5A8.5 8.5 0 1 0 19 16.5"/><path d="M20.5 6.5v5h-5"/>'),
     nylugares:ico('<path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>'),
     spocasiao:ico('<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3.2 2"/>'),
+    cidades:  ico('<path d="M3 21h18"/><path d="M5 21V9l5-3.5V21"/><path d="M14 21V11h5v10"/><path d="M7.4 11h.01M7.4 14.5h.01M16.3 14.5h.01"/>'),
     splugares:ico('<path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>'),
     nyouro:   ico('<path d="M12 3.5l2.5 5.3 5.5.8-4 4 .95 5.7L12 16.6l-4.95 2.7L8 13.6l-4-4 5.5-.8z"/>'),
     euroteiro:ico('<path d="M4 20c4-1.5 5-6 5-9.5A4.5 4.5 0 0 0 4 6M20 20c-4-1.5-5-6-5-9.5A4.5 4.5 0 0 1 20 6"/><path d="M12 21V8M9 8h6l-3-4z"/>'),
@@ -519,7 +520,7 @@
   var CURTO = {
     destinos:'Destinos', lista:'Comer', curadoria:'Curadoria', roteiros:'Roteiros',
     souq:'Souq', escala:'A escala', beber:'Beber', hoteis:'Hotéis',
-    reservaria:'Reservar', avisos:'Saber', cambio:'Moedas',
+    reservaria:'Reservar', avisos:'Saber', cambio:'Moedas', cidades:'Cidades', cidade:'Cidade',
     chegada:'Chegada', fotos:'Fotos', cafe:'Café', contribuir:'Dica', iroteiro:'Roteiro', ivoos:'Voos', ihoteis:'Hotéis',
     nyroteiro:'Roteiro', nymudou:'Mudou', nylugares:'Lugares', nyouro:'Ouro',
     spocasiao:'Ocasiões', splugares:'Lugares',
@@ -529,15 +530,16 @@
                    eu25: ['euroteiro', 'eunotas', 'mapa', 'eureparos'],
                    bos: ['euroteiro', 'eunotas', 'mapa', 'eureparos'] };
   var ABA_HOME = { id: 'destinos', l: '← Destinos' };
+  var ABA_CIDADES = { id: 'cidades', l: '🏙️ Cidades' };
   var ABA_CAMBIO = { id: 'cambio', l: '💱 Moedas' };
   var ABA_FOTOS = { id: 'fotos', l: '📸 Fotos' };
   var ABA_CAFE = { id: 'cafe', l: '☕ Café da manhã' };
   var ABA_CONTRIB = { id: 'contribuir', l: '💡 Mandar uma dica' };
   function abasAtuais() {
-    if (!destino) return [ABA_CAMBIO, ABA_CONTRIB];
+    if (!destino) return [ABA_CIDADES, ABA_CAMBIO, ABA_CONTRIB];
     var base = destino === 'sp' ? ABAS_SP : destino === 'india' ? ABAS_INDIA : destino === 'ny' ? ABAS_NY :
       ehArquivo() ? ABAS_EU23 : ABAS_DOHA.concat([ABA_MAPA, ABA_FOTOS, ABA_CAFE]);
-    return [ABA_HOME].concat(base, [ABA_CAMBIO, ABA_CONTRIB]);
+    return [ABA_HOME].concat(base, [ABA_CIDADES, ABA_CAMBIO, ABA_CONTRIB]);
   }
   function primeiraAba() {
     return destino === 'sp' ? 'spocasiao' : destino === 'india' ? 'chegada' : destino === 'ny' ? 'nyroteiro' :
@@ -566,8 +568,8 @@
     var nav = $('#botnav'); nav.innerHTML = '';
     var itens;
     if (!destino) {
-      itens = [{ id: 'destinos', l: 'Destinos' }, { id: 'cambio', l: 'Moedas' },
-               { id: 'contribuir', l: 'Dica' }];
+      itens = [{ id: 'destinos', l: 'Destinos' }, { id: 'cidades', l: 'Cidades' },
+               { id: 'cambio', l: 'Moedas' }, { id: 'contribuir', l: 'Dica' }];
     } else {
       itens = (PRIMARIAS[destino] || []).map(function (id) { return { id: id, l: CURTO[id] }; });
       itens.push({ id: '__mais', l: 'Mais' });
@@ -621,6 +623,17 @@
       if (aba === 'contribuir') {
         h.appendChild(el('h1', null, 'Mandar uma dica'));
         h.appendChild(el('p', null, 'O HeRo melhora com quem foi. Se voc\u00ea conhece um lugar que merece entrar, conte.'));
+        return;
+      }
+      if (aba === 'cidades' || aba === 'cidade') {
+        h.appendChild(el('h1', null, 'Por cidade'));
+        h.appendChild(el('p', null, 'As mesmas viagens, cortadas por cidade. ' +
+          'Quem vai a Paris não quer saber que Paris foi a sexta parada da Europa 2025.'));
+        var mc = el('div', 'meta-row');
+        var tc = indiceCidades();
+        mc.appendChild(el('span', 'chip', '<b>' + tc.length + '</b> cidades'));
+        mc.appendChild(el('span', 'chip', '<b>' + HERO_DESTINOS.length + '</b> viagens'));
+        h.appendChild(mc);
         return;
       }
       if (aba === 'cambio') {
@@ -697,6 +710,19 @@
 
   /* ---------- seletor de destinos ---------- */
   function viewDestinos(root) {
+    /* Porta de entrada para o corte por cidade. Fica no TOPO porque é a
+       primeira dúvida de quem chega: "tem a minha cidade aí?" */
+    var pc = el('div', 'panel');
+    pc.appendChild(el('h2', null, 'Procurando uma cidade?'));
+    pc.appendChild(el('div', 'lead', 'As viagens também estão cortadas por cidade — ' +
+      'e Nova York, que aparece em duas delas, vira uma lista só.'));
+    var bc = el('div', 'btnrow');
+    var bq = el('button', 'btn', '🏙️ Ver todas as cidades');
+    bq.onclick = function () { aba = 'cidades'; render(); };
+    bc.appendChild(bq);
+    pc.appendChild(bc);
+    root.appendChild(pc);
+
     /* Capa. Se existir hero/img/capa.jpg, ela entra; senão fica só o
        letreiro sobre o fundo de gradiente, sem buraco na página. */
     var capa = el('div', 'capa');
@@ -2234,6 +2260,241 @@
     return a;
   }
 
+  /* ================= ÍNDICE DE CIDADES =================
+     Pedido do Helio: quebrar as viagens em cidades, "assim teremos muito
+     mais opções". O índice é DERIVADO das viagens, nunca escrito à mão —
+     cidade escrita à mão é cidade que um dia diverge da viagem que a contém.
+
+     O ganho que SÓ esta visão dá: Nova York aparece em DUAS viagens (o
+     roteiro dele e a estrada de Boston 2024). Por viagem, são duas listas
+     que nunca se encontram. Por cidade, viram uma só.
+
+     Regra de exibição: cidade que já tem guia completo (Doha, Nova York,
+     São Paulo, Índia) entra como PORTA — um botão para o guia inteiro — e
+     não é relistada aqui. Parada de viagem de arquivo entra com a lista
+     mesmo. Relistar 43 restaurantes de Doha seria duplicar, não dividir. */
+
+  var PAIS_CIDADE = {
+    'madri': 'Espanha', 'zaragoza e lleida': 'Espanha', 'barcelona': 'Espanha',
+    'andorra': 'Andorra', 'lisboa': 'Portugal', 'paris': 'França',
+    'londres': 'Reino Unido', 'frankfurt': 'Alemanha', 'zurique': 'Suíça',
+    'lago di como': 'Itália', 'milao': 'Itália', 'piacenza e val trebbia': 'Itália',
+    'parma e pontremoli': 'Itália', 'modena e chegada a florenca': 'Itália',
+    'florenca': 'Itália', 'pisa chianti e san gimignano': 'Itália',
+    'siena montalcino montepulciano e val d orcia': 'Itália', 'roma': 'Itália',
+    'boston': 'Estados Unidos', 'a estrada providence e connecticut': 'Estados Unidos',
+    'base em yardley pensilvania': 'Estados Unidos', 'nova york': 'Estados Unidos',
+    'esqui e volta': 'Estados Unidos', 'doha': 'Catar', 'sao paulo': 'Brasil',
+    'delhi': 'Índia', 'agra': 'Índia', 'jaipur': 'Índia', 'mumbai': 'Índia'
+  };
+
+  /* "Boston — primeiro dia" e "Boston — segundo dia" são a mesma cidade.
+     "Londres (escala)" é Londres. Acento e caixa não podem separar nada. */
+  function chaveCidade(nome) {
+    return String(nome || '')
+      .replace(/\s*[—–-]\s*(primeiro|segundo|terceiro).*$/i, '')
+      .replace(/\s*\(.*?\)\s*/g, ' ')
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+  function nomeLimpo(nome) {
+    return String(nome || '').replace(/\s*[—–-]\s*(primeiro|segundo|terceiro).*$/i, '')
+      .replace(/\s*\(escala\)\s*/i, '').trim();
+  }
+
+  var _cidades = null;
+  function indiceCidades() {
+    if (_cidades) return _cidades;
+    var mapa = {};
+    function pega(nome) {
+      var k = chaveCidade(nome);
+      if (!mapa[k]) mapa[k] = { chave: k, nome: nomeLimpo(nome), pais: PAIS_CIDADE[k] || '', n: 0, notas: 0, fontes: [] };
+      return mapa[k];
+    }
+    /* guias completos: entram como porta, com a contagem deles */
+    pega('Doha').fontes.push({ destino: 'doha', rotulo: 'Guia de Doha · 43 restaurantes avaliados', n: R.length, lugares: null, porta: true });
+    pega('Doha').n += R.length;
+    pega('Nova York').fontes.push({ destino: 'ny', rotulo: 'Roteiro de Nova York, conferido', n: HERO_NY.lugares.length, lugares: null, porta: true });
+    pega('Nova York').n += HERO_NY.lugares.length;
+    pega('São Paulo').fontes.push({ destino: 'sp', rotulo: 'São Paulo por ocasião', n: HERO_SP.lugares.length, lugares: null, porta: true });
+    pega('São Paulo').n += HERO_SP.lugares.length;
+
+    /* Índia: o dado é roteiro de dias e hotéis, NÃO lista de lugares.
+       Dizer "4 lugares" ali seria mentir sobre o que existe. */
+    var diasPor = {};
+    HERO_INDIA.dias.forEach(function (d) {
+      if (!d.arte || d.arte === 'doha') return;          /* o último dia é a saída para Doha */
+      diasPor[d.arte] = (diasPor[d.arte] || 0) + 1;
+    });
+    Object.keys(diasPor).forEach(function (k) {
+      var nome = k.charAt(0).toUpperCase() + k.slice(1);
+      var c = pega(nome);
+      c.fontes.push({ destino: 'india', rotulo: 'Índia 2026 · ' + diasPor[k] + (diasPor[k] > 1 ? ' dias' : ' dia') + ' de roteiro', n: 0, lugares: null, porta: true, roteiro: true });
+    });
+
+    /* viagens de arquivo: aqui a lista vem junto */
+    [['eu23', HERO_EU23], ['eu25', HERO_EU25], ['bos', HERO_BOS]].forEach(function (par) {
+      var id = par[0], D = par[1];
+      var dd = HERO_DESTINOS.filter(function (x) { return x.id === id; })[0];
+      D.paradas.forEach(function (q) {
+        if (!q.lugares.length) return;                   /* Frankfurt tem zero: não vira cartão vazio */
+        var c = pega(q.nome);
+        var comNota = q.lugares.filter(function (l) { return l.nota != null; }).length;
+        c.n += q.lugares.length; c.notas += comNota;
+        c.fontes.push({ destino: id, rotulo: (dd ? dd.nome : id) + (q.datas ? ' · ' + q.datas : ''),
+                        n: q.lugares.length, lugares: q.lugares, porta: false, hotel: q.hotel || '' });
+      });
+    });
+
+    _cidades = Object.keys(mapa).map(function (k) { return mapa[k]; })
+      .sort(function (a, b) { return b.n - a.n || a.nome.localeCompare(b.nome); });
+    return _cidades;
+  }
+
+  var cidadeSel = '', filtroCidade = '';
+
+  function linhaCidade(c) {
+    var b = el('button', 'lg-item');
+    b.style.width = '100%'; b.style.textAlign = 'left';
+    var t = el('div');
+    t.appendChild(el('strong', null, esc(c.nome)));
+    var sub = [];
+    if (c.pais) sub.push(esc(c.pais));
+    sub.push(c.n ? '<b>' + c.n + '</b> lugar' + (c.n > 1 ? 'es' : '') : 'roteiro de dias');
+    if (c.notas) sub.push('<b>' + c.notas + '</b> com nota de vocês');
+    t.appendChild(el('span', null, sub.join(' · ')));
+    b.appendChild(t);
+    /* Uma etiqueta por VIAGEM, não por parada: Boston tem dois dias na mesma
+       viagem e mostrava "Boston 2024" duas vezes. */
+    var tg = el('div', 'tagrow'), vistos = {};
+    c.fontes.forEach(function (f) {
+      if (vistos[f.destino]) return;
+      vistos[f.destino] = 1;
+      var dd = HERO_DESTINOS.filter(function (x) { return x.id === f.destino; })[0];
+      tg.appendChild(el('span', 'tag' + (f.porta ? ' gold' : ''), esc(dd ? dd.nome : f.destino)));
+    });
+    b.appendChild(tg);
+    b.onclick = function () { cidadeSel = c.chave; aba = 'cidade'; render(); };
+    return b;
+  }
+
+  function viewCidades(root) {
+    var todas = indiceCidades();
+
+    var p0 = el('div', 'panel');
+    p0.appendChild(el('h2', null, 'Todas as cidades'));
+    p0.appendChild(el('div', 'lead', 'A mesma curadoria, cortada por cidade em vez de por viagem. ' +
+      'Quem quer Paris não quer saber que Paris foi a sexta parada da Europa 2025.'));
+    p0.appendChild(el('div', 'note', 'Uma coisa que só aparece aqui: <b>Nova York está em duas viagens</b> — ' +
+      'o roteiro dele e a estrada de Boston 2024. Por viagem, são duas listas que nunca se encontram. Aqui viram uma.'));
+    root.appendChild(p0);
+
+    var busca = el('input');
+    busca.type = 'text'; busca.id = 'busca-cidade';
+    busca.placeholder = '🔎 Filtrar cidade…';
+    busca.value = filtroCidade;
+    busca.style.cssText = 'width:100%;margin:0 0 12px';
+    busca.oninput = function () { filtroCidade = busca.value; render(true); };
+    root.appendChild(busca);
+
+    var q = chaveCidade(filtroCidade);
+    var lista = todas.filter(function (c) { return !q || c.chave.indexOf(q) >= 0 || chaveCidade(c.pais).indexOf(q) >= 0; });
+    var fortes = lista.filter(function (c) { return c.n >= 5 || c.fontes.some(function (f) { return f.roteiro; }); });
+    var magras = lista.filter(function (c) { return fortes.indexOf(c) < 0; });
+
+    root.appendChild(el('div', 'count', lista.length + ' de ' + todas.length + ' cidades'));
+
+    if (fortes.length) {
+      var pf = el('div', 'panel');
+      pf.appendChild(el('h2', null, 'Cidades com conteúdo de sobra'));
+      fortes.forEach(function (c) { pf.appendChild(linhaCidade(c)); });
+      root.appendChild(pf);
+    }
+    if (magras.length) {
+      var pm = el('div', 'panel');
+      pm.appendChild(el('h2', null, 'Passagens rápidas'));
+      pm.appendChild(el('div', 'lead', 'Menos de cinco lugares cada. Estão aqui porque existem de verdade — ' +
+        'não porque dariam um guia. Inventar volume aqui seria o mesmo que inventar preço.'));
+      magras.forEach(function (c) { pm.appendChild(linhaCidade(c)); });
+      root.appendChild(pm);
+    }
+    if (!lista.length) root.appendChild(el('div', 'panel', '<p>Nenhuma cidade com esse nome. Experimente o país — “Itália”, “Espanha”.</p>'));
+  }
+
+  function viewCidade(root) {
+    var c = indiceCidades().filter(function (x) { return x.chave === cidadeSel; })[0];
+    if (!c) { aba = 'cidades'; viewCidades(root); return; }
+
+    var p0 = el('div', 'panel');
+    var volta = el('button', 'btn sec', '← Todas as cidades');
+    volta.onclick = function () { aba = 'cidades'; render(); };
+    p0.appendChild(volta);
+    p0.appendChild(el('h2', null, esc(c.nome)));
+    var tg = el('div', 'tagrow');
+    if (c.pais) tg.appendChild(el('span', 'tag', esc(c.pais)));
+    if (c.n) tg.appendChild(el('span', 'tag', c.n + ' lugar' + (c.n > 1 ? 'es' : '')));
+    if (c.notas) tg.appendChild(el('span', 'tag gold', c.notas + ' com nota de vocês'));
+    p0.appendChild(tg);
+    root.appendChild(p0);
+
+    /* portas para os guias completos */
+    c.fontes.filter(function (f) { return f.porta; }).forEach(function (f) {
+      var pp = el('div', 'panel');
+      pp.appendChild(el('h2', null, esc(f.rotulo)));
+      pp.appendChild(el('p', null, f.roteiro
+        ? 'O que existe desta cidade é o roteiro de dias e os hotéis, não uma lista de lugares avaliados. Está tudo no guia da Índia.'
+        : 'Esta cidade tem guia próprio, inteiro. Não repito a lista aqui — abra o guia.'));
+      var bw = el('div', 'btnrow');
+      var bb = el('button', 'btn gold', 'Abrir o guia completo');
+      bb.onclick = function () { irPara(f.destino); };
+      bw.appendChild(bb);
+      pp.appendChild(bw);
+      root.appendChild(pp);
+    });
+
+    var comLista = c.fontes.filter(function (f) { return f.lugares; });
+    if (comLista.length) caixaGeo(root, 'os lugares');
+
+    comLista.forEach(function (f) {
+      var ph = el('div', 'panel');
+      ph.appendChild(el('h2', null, esc(f.rotulo)));
+      /* hotel é OBJETO {n, conf, d}, não texto — como o roteiro já trata. */
+      if (f.hotel && f.hotel.n) {
+        ph.appendChild(el('div', 'note', '🏨 <b>' + esc(f.hotel.n) + '</b>' +
+          (f.hotel.d ? ' — ' + esc(f.hotel.d) : '')));
+      }
+      var lst = f.lugares.slice();
+      if (minhaPos) {
+        lst.sort(function (a, b) {
+          var da = distDe(a), db = distDe(b);
+          if (da == null) return 1; if (db == null) return -1; return da - db;
+        });
+      }
+      lst.forEach(function (l) {
+        var r = el('div', 'linha-nota');
+        if (l.nota != null) r.appendChild(el('div', 'ln-nota ' + corNota(l.nota), l.nota === 11 ? '11' : String(l.nota)));
+        else r.appendChild(el('div', 'ln-nota blue', l.feito === false ? '◦' : '✓'));
+        var t = el('div', 'ln-txt');
+        t.appendChild(el('strong', null, esc(l.n)));
+        var sub = [esc(l.tipo)];
+        if (l.feito === false) sub.push('não aconteceu');
+        t.appendChild(el('span', null, sub.join(' · ')));
+        if (l.voce) t.appendChild(el('em', null, '“' + esc(l.voce) + '”'));
+        if (l.d) t.appendChild(el('span', null, esc(l.d)));
+        var cd = chipDist(l); var br = botaoRota(l);
+        if (cd || br) {
+          var row = el('div', 'btnrow'); row.style.marginTop = '6px';
+          if (cd) row.appendChild(cd);
+          if (br) row.appendChild(br);
+          t.appendChild(row);
+        }
+        r.appendChild(t);
+        ph.appendChild(r);
+      });
+      root.appendChild(ph);
+    });
+  }
+
   /* ---------- São Paulo: a cidade onde ele mora, por ocasião ----------
      Diferente de todo destino anterior: não há dia 1, dia 2. O amigo que
      vem visitar não pergunta "o que fazer na terça", pergunta "onde levo
@@ -3036,6 +3297,8 @@
        destinos sem nunca olhar a aba). */
     if (aba === 'cambio') { viewCambio(root); finaliza(mantemFoco); return; }
     if (aba === 'contribuir') { viewContribuir(root); finaliza(mantemFoco); return; }
+    if (aba === 'cidades') { viewCidades(root); finaliza(mantemFoco); return; }
+    if (aba === 'cidade') { viewCidade(root); finaliza(mantemFoco); return; }
     if (aba === 'destinos' || !destino) { viewDestinos(root); finaliza(mantemFoco); return; }
     else if (aba === 'mapa') viewMapa(root);
     else if (aba === 'euroteiro') viewEuRoteiro(root);
