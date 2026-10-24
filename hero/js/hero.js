@@ -2361,6 +2361,18 @@
 
   var cidadeSel = '', filtroCidade = '';
 
+  /* Desenho por cidade. Dezesseis das vinte e oito têm arte própria — são
+     exatamente as que carregam guia de verdade. As outras doze são passagens
+     de um ou dois lugares, e ganham o cartão compacto com trilho de cor.
+     Isso não é falta: a ilustração virou SINAL de que ali tem conteúdo. */
+  var ARTE_CIDADE = {
+    'nova york': 'ny', 'doha': 'doha', 'sao paulo': 'sp', 'paris': 'paris',
+    'barcelona': 'barcelona', 'lisboa': 'lisboa', 'madri': 'madri', 'roma': 'roma',
+    'florenca': 'florenca', 'milao': 'milao', 'boston': 'boston',
+    'zaragoza e lleida': 'zaragoza', 'delhi': 'delhi', 'agra': 'agra',
+    'jaipur': 'jaipur', 'mumbai': 'mumbai'
+  };
+
   /* Cor do país, DERIVADA do nome. Doze países hoje e mais a cada viagem —
      uma tabela à mão viraria manutenção. O mesmo país dá sempre a mesma cor. */
   function corPais(pais) {
@@ -2370,6 +2382,35 @@
   }
 
   function linhaCidade(c) {
+    var arte = ARTE_CIDADE[c.chave];
+    var sub = [];
+    if (c.pais) sub.push(esc(c.pais));
+    sub.push(c.n ? '<b>' + c.n + '</b> lugar' + (c.n > 1 ? 'es' : '') : 'roteiro de dias');
+    if (c.notas) sub.push('<b>' + c.notas + '</b> com nota de vocês');
+
+    /* Cartão ilustrado: o nome deita sobre o desenho, como na grade de
+       viagens — que é o que o Helio pediu de volta. */
+    if (arte && HERO_ARTE[arte]) {
+      var cc = el('button', 'destino cidade-arte');
+      cc.type = 'button';
+      var ar = el('div', 'destino-arte');
+      ar.innerHTML = HERO_ARTE[arte]();
+      cc.appendChild(ar);
+      var ct = el('div', 'destino-txt');
+      ct.appendChild(el('strong', null, esc(c.nome)));
+      ct.appendChild(el('span', null, sub.join(' · ')));
+      var tv = el('div', 'tagrow'), vis = {};
+      c.fontes.forEach(function (f) {
+        if (vis[f.destino]) return; vis[f.destino] = 1;
+        var dd = HERO_DESTINOS.filter(function (x) { return x.id === f.destino; })[0];
+        tv.appendChild(el('span', 'tag' + (f.porta ? ' gold' : ''), esc(dd ? dd.nome : f.destino)));
+      });
+      ct.appendChild(tv);
+      cc.appendChild(ct);
+      cc.onclick = function () { cidadeSel = c.chave; aba = 'cidade'; render(); };
+      return cc;
+    }
+
     var b = el('button', 'cidade');
     b.type = 'button';
     var rail = el('i', 'rail');
@@ -2377,10 +2418,6 @@
     b.appendChild(rail);
     var t = el('div', 'ct');
     t.appendChild(el('strong', null, esc(c.nome)));
-    var sub = [];
-    if (c.pais) sub.push(esc(c.pais));
-    sub.push(c.n ? '<b>' + c.n + '</b> lugar' + (c.n > 1 ? 'es' : '') : 'roteiro de dias');
-    if (c.notas) sub.push('<b>' + c.notas + '</b> com nota de vocês');
     t.appendChild(el('span', null, sub.join(' · ')));
     /* Uma etiqueta por VIAGEM, não por parada: Boston tem dois dias na mesma
        viagem e mostrava "Boston 2024" duas vezes. */
@@ -2431,7 +2468,7 @@
 
     if (fortes.length) {
       root.appendChild(el('h3', 'sec', 'Cidades com conteúdo de sobra'));
-      var gf = el('div', 'cidades-grid');
+      var gf = el('div', 'destinos');
       fortes.forEach(function (c) { gf.appendChild(linhaCidade(c)); });
       root.appendChild(gf);
     }
